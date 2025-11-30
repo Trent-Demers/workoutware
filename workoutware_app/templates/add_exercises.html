@@ -35,13 +35,58 @@
             background-color: #2196f3;
             color: white;
         }
+        .template-btn {
+            background-color: #ff9800;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        .template-btn:hover {
+            background-color: #f57c00;
+        }
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
     <h1>{{ session.session_name }} - {{ session.session_date }}</h1>
     
-    <a href="{% url 'log_workout' %}">← Back to Log Workout</a> | 
-    <a href="{% url 'progress' %}">📊 View Progress</a>
+    <div class="header-actions">
+        <div class="nav-links">
+            <a href="{% url 'log_workout' %}">← Back to Log Workout</a>
+            <span>|</span>
+            <a href="{% url 'progress' %}">📊 View Progress</a>
+        </div>
+        
+        {% if not session.is_template %}
+        <form action="{% url 'save_as_template' session.session_id %}" method="post" style="margin: 0;">
+            {% csrf_token %}
+            <button type="submit" class="template-btn">
+                💾 Save as Template
+            </button>
+        </form>
+        {% else %}
+        <span style="background-color: #e3f2fd; padding: 10px 20px; border-radius: 5px; font-weight: bold; color: #1976d2;">
+            📋 This is a Template
+        </span>
+        {% endif %}
+    </div>
     
     <hr>
     
@@ -74,6 +119,7 @@
                 <h3>{{ forloop.counter }}. {{ item.session_exercise.exercise_id.name }}</h3>
                 <p><strong>Target:</strong> {{ item.session_exercise.target_sets }} sets × {{ item.session_exercise.target_reps }} reps</p>
                 
+                {% if not session.is_template %}
                 <div class="set-form">
                     <h4>Log Next Set:</h4>
                     <form action="{% url 'log_set' item.session_exercise.session_exercise_id %}" method="post" style="display: inline-block;">
@@ -92,8 +138,9 @@
                         <button type="submit">Log Set {{ item.sets.count|add:1 }}</button>
                     </form>
                 </div>
+                {% endif %}
                 
-                <h4>Completed Sets:</h4>
+                <h4>{% if session.is_template %}Planned Sets:{% else %}Completed Sets:{% endif %}</h4>
                 {% if item.sets %}
                     <table>
                         <thead>
@@ -116,7 +163,13 @@
                         </tbody>
                     </table>
                 {% else %}
-                    <p style="color: #666;">No sets logged yet for this exercise.</p>
+                    <p style="color: #666;">
+                        {% if session.is_template %}
+                            No sets defined in this template. Sets will be logged when using this template.
+                        {% else %}
+                            No sets logged yet for this exercise.
+                        {% endif %}
+                    </p>
                 {% endif %}
             </div>
         {% endfor %}

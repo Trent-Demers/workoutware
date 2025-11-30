@@ -60,23 +60,69 @@
         .card-blue {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
-        .features-section {
-            background-color: #f5f5f5;
-            padding: 30px;
-            border-radius: 8px;
-            margin-top: 40px;
+        .card-purple {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
         }
-        .feature-list {
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #4caf50;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2196f3;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        .achievements-section {
+            background-color: #f5f5f5;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        .pr-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
-        .feature-item {
+        .pr-item {
             background-color: white;
             padding: 15px;
             border-left: 4px solid #4caf50;
             border-radius: 5px;
+        }
+        .goal-item {
+            background-color: white;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .progress-mini {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-mini-fill {
+            height: 100%;
+            background-color: #4caf50;
         }
         .logout-btn {
             background-color: white;
@@ -104,6 +150,25 @@
         </form>
     </div>
     
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">🔥 {{ streak_days }}</div>
+            <div class="stat-label">Day Workout Streak</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ workouts_this_week }}</div>
+            <div class="stat-label">Workouts This Week</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ total_workouts }}</div>
+            <div class="stat-label">Total Workouts</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ recent_prs|length }}</div>
+            <div class="stat-label">Recent PRs</div>
+        </div>
+    </div>
+    
     <div class="dashboard-cards">
         <a href="{% url 'log_workout' %}" class="dashboard-card card-blue">
             <div class="card-icon">💪</div>
@@ -117,12 +182,66 @@
             <div class="card-description">See your trends, PRs, and validation history</div>
         </a>
         
-        <a href="#" class="dashboard-card card-orange">
+        <a href="{% url 'manage_goals' %}" class="dashboard-card card-orange">
             <div class="card-icon">🎯</div>
-            <div class="card-title">Goals</div>
-            <div class="card-description">Set and track your fitness goals (Coming Soon)</div>
+            <div class="card-title">Manage Goals</div>
+            <div class="card-description">Set and track your fitness goals</div>
+        </a>
+        
+        <a href="{% url 'log_body_stats' %}" class="dashboard-card card-purple">
+            <div class="card-icon">📏</div>
+            <div class="card-title">Log Body Stats</div>
+            <div class="card-description">Track bodyweight and measurements</div>
         </a>
     </div>
     
-    </body>
+    <div class="achievements-section">
+        <h2>🏆 Recent Personal Records</h2>
+        {% if recent_prs %}
+            <div class="pr-list">
+                {% for pr in recent_prs %}
+                <div class="pr-item">
+                    <strong>{{ pr.exercise_name }}</strong><br>
+                    <span style="font-size: 1.3em; color: #4caf50;">{{ pr.pb_weight }} lbs</span>
+                    {% if pr.previous_pr %}
+                        <span style="color: #666;"> (+{{ pr.improvement|floatformat:1 }} lbs from {{ pr.previous_pr }} lbs)</span>
+                    {% endif %}<br>
+                    <small style="color: #666;">{{ pr.pb_date|date:"M d, Y" }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="padding: 15px; background-color: white; border-radius: 5px;">
+                No PRs yet. Start logging workouts to track your progress!
+            </p>
+        {% endif %}
+    </div>
+    
+    <div class="achievements-section" style="margin-top: 20px;">
+        <h2>🎯 Active Goals</h2>
+        {% if active_goals %}
+            {% for goal in active_goals %}
+            <div class="goal-item">
+                <strong>{{ goal.goal_description }}</strong><br>
+                <span style="color: #666;">Target: {{ goal.target_value }} {{ goal.unit }}</span>
+                {% if goal.target_date %} by {{ goal.target_date|date:"M d" }}{% endif %}<br>
+                
+                {% if goal.current_value %}
+                    <div class="progress-mini">
+                        {% widthratio goal.current_value goal.target_value 100 as progress_percent %}
+                        <div class="progress-mini-fill" style="width: {% if progress_percent > 100 %}100{% else %}{{ progress_percent }}{% endif %}%;"></div>
+                    </div>
+                    <small>{{ goal.current_value }} / {{ goal.target_value }} {{ goal.unit }} ({{ progress_percent }}%)</small>
+                {% else %}
+                    <small style="color: #999;">Not started yet</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="padding: 15px; background-color: white; border-radius: 5px;">
+                No active goals. <a href="{% url 'manage_goals' %}" style="color: #2196f3;">Set a goal</a> to stay motivated!
+            </p>
+        {% endif %}
+    </div>
+</body>
 </html>

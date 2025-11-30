@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/workoutware.css">
+    <title>Leaderboard</title>
+    <style>
+        .leaderboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .leaderboard-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .leaderboard-section h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .leaderboard-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        .leaderboard-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .leaderboard-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .rank-badge {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            color: white;
+        }
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #e8e8e8); color: #333; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #e6a85c); color: white; }
+        .rank-other { background: linear-gradient(135deg, #90caf9, #64b5f6); }
+        .nav-buttons {
+            margin: 20px 0;
+        }
+        .nav-buttons a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #2196f3;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-right: 10px;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="leaderboard-container">
+        <h1>🏆 Community Leaderboard</h1>
+        
+        <div class="nav-buttons">
+            <a href="{% url 'home' %}">← Dashboard</a>
+            <a href="{% url 'progress' %}">📊 My Progress</a>
+            <a href="{% url 'manage_goals' %}">🎯 Goals</a>
+        </div>
+        
+        <div class="info-box">
+            <p><strong>ℹ️ Privacy Notice:</strong> All leaderboard data is anonymous. No personal information is displayed to protect user privacy.</p>
+        </div>
+        
+        <div class="leaderboard-section">
+            <h2>💪 Top Lifts by Exercise</h2>
+            <p style="color: #666; margin-bottom: 20px;">Highest recorded weights across all users</p>
+            
+            {% if top_lifts %}
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Rank</th>
+                        <th>Exercise</th>
+                        <th style="width: 150px;">Top Weight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lift in top_lifts %}
+                    <tr>
+                        <td>
+                            <span class="rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% else %}rank-other{% endif %}">
+                                {{ forloop.counter }}
+                            </span>
+                        </td>
+                        <td><strong>{{ lift.exercise_id__name }}</strong></td>
+                        <td style="font-size: 1.2em; color: #4caf50; font-weight: bold;">
+                            {% if lift.top_weight %}{{ lift.top_weight }} lbs{% else %}N/A{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="text-align: center; padding: 40px; color: #999;">No data available yet. Be the first to set a record!</p>
+            {% endif %}
+        </div>
+        
+        <div class="leaderboard-section">
+            <h2>🔥 Most Active This Month</h2>
+            <p style="color: #666; margin-bottom: 20px;">Users with the most workouts completed this month</p>
+            
+            {% if most_active %}
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Rank</th>
+                        <th>User ID</th>
+                        <th style="width: 200px;">Workouts Completed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in most_active %}
+                    <tr>
+                        <td>
+                            <span class="rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% else %}rank-other{% endif %}">
+                                {{ forloop.counter }}
+                            </span>
+                        </td>
+                        <td>User #{{ user.user_id }}</td>
+                        <td style="font-size: 1.2em; color: #ff9800; font-weight: bold;">
+                            {{ user.workout_count }} workouts
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="text-align: center; padding: 40px; color: #999;">No activity data yet for this month.</p>
+            {% endif %}
+        </div>
+        
+        <div class="info-box" style="background: #fff3e0; border-left-color: #ff9800;">
+            <p><strong>💡 Tip:</strong> Keep logging workouts to climb the leaderboard! Consistency is key to achieving your fitness goals.</p>
+        </div>
+    </div>
+</body>
+</html>

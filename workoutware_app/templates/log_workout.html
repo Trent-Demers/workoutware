@@ -1,9 +1,180 @@
 <!DOCTYPE html>
 <html>
 <head>
-     {% load static %}
+    {% load static %}
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/workoutware.css">
     <title>Log Workout</title>
+    <style>
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .template-card {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            position: relative;
+        }
+        .template-card h4 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+        .template-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-use {
+            flex: 1;
+            padding: 8px 15px;
+            background-color: #4caf50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-edit-template {
+            padding: 8px 12px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-delete-template {
+            padding: 8px 12px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .suggestion-box {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+            margin: 20px 0;
+        }
+        .suggestion-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .suggestion-badge {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid #ff9800;
+            color: #e65100;
+            font-weight: bold;
+        }
+        .workout-list {
+            list-style: none;
+            padding: 0;
+        }
+        .workout-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4caf50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .workout-info {
+            flex: 1;
+        }
+        .workout-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-view {
+            padding: 8px 15px;
+            background-color: #2196f3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn-delete-workout {
+            padding: 8px 15px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-edit-workout {
+            padding: 8px 15px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-edit-workout:hover {
+            background-color: #f57c00;
+        }
+        .btn-save-workout {
+            padding: 8px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-save-workout:hover {
+            background-color: #388e3c;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+        }
+        .modal-content h3 {
+            margin-top: 0;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h1>Log Workout</h1>
@@ -32,18 +203,179 @@
     
     <hr>
     
+    {% if suggestions %}
+    <div class="suggestion-box">
+        <h3>💡 Recommended Exercises</h3>
+        <p>You haven't trained these exercises recently:</p>
+        <div class="suggestion-list">
+            {% for ex in suggestions %}
+                <span class="suggestion-badge">{{ ex.name }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if templates %}
+    <h2>📋 Workout Templates</h2>
+    <div class="template-grid">
+        {% for template in templates %}
+        <div class="template-card">
+            <h4>{{ template.session_name }}</h4>
+            <p style="font-size: 0.9em; color: #666;">Saved template for quick workouts</p>
+            <div class="template-actions">
+                <button onclick="showRenameModal({{ template.session_id }}, '{{ template.session_name }}')" class="btn-use">
+                    Use Template
+                </button>
+                <a href="{% url 'add_exercises_to_session' template.session_id %}" class="btn-edit-template" title="Edit Template">
+                    ✏️
+                </a>
+                <form action="{% url 'delete_template' template.session_id %}" method="post" style="display: inline;" onsubmit="return confirm('Delete this template?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-delete-template" title="Delete Template">🗑️</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <hr>
+    {% endif %}
+    
     <h2>Recent Workouts</h2>
     {% if recent_sessions %}
-        <ul>
+        <ul class="workout-list">
         {% for session in recent_sessions %}
-            <li>
-                <strong>{{ session.session_name }}</strong> - {{ session.session_date }}
-                <a href="{% url 'add_exercises_to_session' session.session_id %}">View/Continue</a>
+            <li class="workout-item">
+                <div class="workout-info">
+                    <strong id="workout-name-{{ session.session_id }}">{{ session.session_name }}</strong> - {{ session.session_date|date:"M d, Y" }}
+                    <input type="text" id="edit-name-{{ session.session_id }}" value="{{ session.session_name }}" style="display: none; padding: 5px; border: 2px solid #2196f3; border-radius: 3px;">
+                </div>
+                <div class="workout-actions">
+                    <button id="edit-btn-{{ session.session_id }}" class="btn-edit-workout" onclick="editWorkoutName({{ session.session_id }})">Edit Name</button>
+                    <button id="save-btn-{{ session.session_id }}" class="btn-save-workout" onclick="saveWorkoutName({{ session.session_id }})" style="display: none;">Save</button>
+                    <a href="{% url 'add_exercises_to_session' session.session_id %}" class="btn-view">View/Continue</a>
+                    <form action="{% url 'delete_workout' session.session_id %}" method="post" style="display: inline;" onsubmit="return confirm('Delete this workout? This cannot be undone.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-delete-workout">Delete</button>
+                    </form>
+                </div>
             </li>
         {% endfor %}
         </ul>
     {% else %}
         <p>No workouts logged yet. Start your first one above!</p>
     {% endif %}
+
+    <!-- Rename Template Modal -->
+    <div id="renameModal" class="modal">
+        <div class="modal-content">
+            <h3>Name Your Workout</h3>
+            <form id="renameForm" method="post">
+                {% csrf_token %}
+                <input type="text" id="newSessionName" name="session_name" placeholder="Enter workout name" required>
+                <div class="modal-buttons">
+                    <button type="submit" style="background-color: #4caf50; color: white;">Create Workout</button>
+                    <button type="button" onclick="closeRenameModal()" style="background-color: #666; color: white;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showRenameModal(templateId, templateName) {
+            const modal = document.getElementById('renameModal');
+            const form = document.getElementById('renameForm');
+            const input = document.getElementById('newSessionName');
+            
+            // Set form action
+            form.action = '/template/' + templateId + '/use/';
+            
+            // Set default name (remove "Template" suffix if exists)
+            input.value = templateName.replace(' (Template)', '');
+            
+            modal.style.display = 'block';
+        }
+
+        function closeRenameModal() {
+            document.getElementById('renameModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('renameModal');
+            if (event.target == modal) {
+                closeRenameModal();
+            }
+        }
+        function editWorkoutName(sessionId) {
+            document.getElementById('workout-name-' + sessionId).style.display = 'none';
+            document.getElementById('edit-name-' + sessionId).style.display = 'inline-block';
+            document.getElementById('edit-btn-' + sessionId).style.display = 'none';
+            document.getElementById('save-btn-' + sessionId).style.display = 'inline-block';
+        }
+
+        async function saveWorkoutName(sessionId) {
+            const newName = document.getElementById('edit-name-' + sessionId).value;
+            
+            // Send update to server
+            const response = await fetch(`/workout/${sessionId}/rename/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: `session_name=${encodeURIComponent(newName)}`
+            });
+
+            if (response.ok) {
+                // Update display
+                document.getElementById('workout-name-' + sessionId).textContent = newName;
+                document.getElementById('workout-name-' + sessionId).style.display = 'inline';
+                document.getElementById('edit-name-' + sessionId).style.display = 'none';
+                document.getElementById('edit-btn-' + sessionId).style.display = 'inline-block';
+                document.getElementById('save-btn-' + sessionId).style.display = 'none';
+            } else {
+                alert('Error saving name. Please try again.');
+            }
+        }
+
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Template rename modal functions (existing)
+        function showRenameModal(templateId, templateName) {
+            const modal = document.getElementById('renameModal');
+            const form = document.getElementById('renameForm');
+            const input = document.getElementById('newSessionName');
+            
+            form.action = '/template/' + templateId + '/use/';
+            input.value = templateName.replace(' (Template)', '');
+            
+            modal.style.display = 'block';
+        }
+
+        function closeRenameModal() {
+            document.getElementById('renameModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('renameModal');
+            if (event.target == modal) {
+                closeRenameModal();
+            }
+        }
+    </script>
 </body>
 </html>

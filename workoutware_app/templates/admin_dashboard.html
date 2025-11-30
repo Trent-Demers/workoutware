@@ -1,62 +1,335 @@
+<!DOCTYPE html>
+<html>
 <head>
-    <link rel="stylesheet" type="text/css" href="../static/stylesheets/workoutware.css">
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/workoutware.css">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .admin-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #4caf50;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2196f3;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        .section {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .exercise-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+        .exercise-table th {
+            background-color: #2196f3;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .exercise-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        .exercise-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .user-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .user-card {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ff9800;
+        }
+        .logout-btn {
+            background-color: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .logout-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .btn-edit {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .btn-edit:hover {
+            background-color: #f57c00;
+        }
+        .btn-delete:hover {
+            background-color: #d32f2f;
+        }
+        .edit-form {
+            display: none;
+            background: #fff3e0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #ff9800;
+        }
+        .edit-form input, .edit-form select, .edit-form textarea {
+            margin: 5px 0;
+            padding: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Admin Dashboard</h1>
-    <!-- {% for x in user_data %}
-        <p>{{x.first_name}}</p>
-    {% endfor %} -->
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Log Out</button>
-    </form>
-
-    <h2>Current Exercises:</h2>
-
-    {% for x in exercises %}
-        <p>{{x.exercise_id}}) {{x.name}}</p>
-    {% endfor %}
-
-    <h2>Add New Exercise:</h2>
-
-    <form action="{% url 'add_exercise' %}" method="post">
-        {% csrf_token %}
-        <div class="form-container">
-            <label for="exercise_name">Exercise Name:</label>
-            <input id="exercise_name" type="text" name="exercise_name" value=""><br>
-
-            <label for="exercise_type">Exercise Type:</label>
-            <select name="exercise_type" id="exercise_type">
-                <option value="cardio">Cardio</option>
-                <option value="strength">Strength</option>
-                <option value="flexibility">Flexibility</option>
-            </select><br>
-
-            <label for="exercise_subtype">Exercise Subtype:</label>
-            <select name="exercise_subtype" id="exercise_subtype">
-                <option value="compound">Compound</option>
-                <option value="steady_state">Steady State</option>
-                <option value="isometric">Isometric</option>
-            </select><br>
-
-            <label for="exercise_equipment">Exercise Equipment:</label>
-            <select name="exercise_equipment" id="exercise_equipment">
-                <option value="body_weight">Body Weight</option>
-                <option value="barbell">Barbell</option>
-                <option value="dumbbell">Dumbbell</option>
-            </select><br>
-
-            <label for="exercise_difficulty">Exercise Difficulty:</label>
-            <input id="exercise_difficulty" type="number" name="exercise_difficulty" step="1" value="1"><br>
-
-            <label for="exercise_description">Exercise Description:</label>
-            <textarea id="exercise_description" name="exercise_description" rows="5" cols="40" placeholder="Enter your description here..."></textarea><br>
-
-            <label for="exercise_demo">Exercise Demo Link:</label>
-            <input id="exercise_demo" type="text" name="exercise_demo" value=""><br>
-
-            <input type="submit" value="Add Exercise">
+    <div class="admin-header">
+        <div>
+            <h1>🔧 Admin Dashboard</h1>
+            <p>System Management & Oversight</p>
         </div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Log Out</button>
+        </form>
+    </div>
+
+    <div class="admin-cards">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_users }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_exercises }}</div>
+            <div class="stat-label">Exercise Library</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_workouts }}</div>
+            <div class="stat-label">Total Workouts Logged</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ active_today }}</div>
+            <div class="stat-label">Active Today</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>👥 Recent Users</h2>
+        {% if recent_users %}
+            <div class="user-list">
+                {% for user in recent_users %}
+                <div class="user-card">
+                    <strong>{{ user.first_name }} {{ user.last_name }}</strong><br>
+                    <small style="color: #666;">{{ user.email }}</small><br>
+                    <small style="color: #666;">Registered: {{ user.date_registered|date:"M d, Y" }}</small><br>
+                    <small style="color: #666;">Goal: {{ user.fitness_goal|default:"Not set" }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No users registered yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>💪 Exercise Library Management</h2>
+        <p><strong>Total Exercises:</strong> {{ total_exercises }}</p>
         
-    </form>
+        <h3>Add New Exercise</h3>
+        <form action="{% url 'add_exercise' %}" method="post">
+            {% csrf_token %}
+            <div class="form-container">
+                <label for="exercise_name">Exercise Name:</label>
+                <input id="exercise_name" type="text" name="exercise_name" value="" required><br>
+
+                <label for="exercise_type">Exercise Type:</label>
+                <select name="exercise_type" id="exercise_type" required>
+                    <option value="strength">Strength</option>
+                    <option value="cardio">Cardio</option>
+                    <option value="flexibility">Flexibility</option>
+                </select><br>
+
+                <label for="exercise_subtype">Exercise Subtype:</label>
+                <select name="exercise_subtype" id="exercise_subtype">
+                    <option value="compound">Compound</option>
+                    <option value="isolation">Isolation</option>
+                    <option value="steady_state">Steady State</option>
+                    <option value="isometric">Isometric</option>
+                </select><br>
+
+                <label for="exercise_equipment">Exercise Equipment:</label>
+                <select name="exercise_equipment" id="exercise_equipment">
+                    <option value="body_weight">Body Weight</option>
+                    <option value="barbell">Barbell</option>
+                    <option value="dumbbell">Dumbbell</option>
+                    <option value="machine">Machine</option>
+                    <option value="cable">Cable</option>
+                </select><br>
+
+                <label for="exercise_difficulty">Exercise Difficulty (1-5):</label>
+                <input id="exercise_difficulty" type="number" name="exercise_difficulty" min="1" max="5" step="1" value="3" required><br>
+
+                <label for="exercise_description">Exercise Description:</label>
+                <textarea id="exercise_description" name="exercise_description" rows="5" cols="40" placeholder="How to perform this exercise..."></textarea><br>
+
+                <label for="exercise_demo">Exercise Demo Link:</label>
+                <input id="exercise_demo" type="text" name="exercise_demo" placeholder="https://youtube.com/..." value=""><br>
+
+                <input type="submit" value="Add Exercise">
+            </div>
+        </form>
+
+        <h3>Current Exercises in Library</h3>
+        {% if exercises %}
+            <table class="exercise-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Subtype</th>
+                        <th>Equipment</th>
+                        <th>Difficulty</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ex in exercises %}
+                    <tr>
+                        <td>{{ ex.exercise_id }}</td>
+                        <td><strong>{{ ex.name }}</strong></td>
+                        <td>{{ ex.type|capfirst }}</td>
+                        <td>{{ ex.subtype|default:"--" }}</td>
+                        <td>{{ ex.equipment|default:"--" }}</td>
+                        <td>{{ ex.difficulty }}/5</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-edit" onclick="toggleEdit({{ ex.exercise_id }})">Edit</button>
+                                <form action="{% url 'delete_exercise' ex.exercise_id %}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this exercise?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-delete">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div id="edit-form-{{ ex.exercise_id }}" class="edit-form">
+                                <h4>Edit: {{ ex.name }}</h4>
+                                <form action="{% url 'edit_exercise' ex.exercise_id %}" method="post">
+                                    {% csrf_token %}
+                                    <label>Name:</label>
+                                    <input type="text" name="exercise_name" value="{{ ex.name }}" required><br>
+                                    
+                                    <label>Type:</label>
+                                    <select name="exercise_type">
+                                        <option value="strength" {% if ex.type == 'strength' %}selected{% endif %}>Strength</option>
+                                        <option value="cardio" {% if ex.type == 'cardio' %}selected{% endif %}>Cardio</option>
+                                        <option value="flexibility" {% if ex.type == 'flexibility' %}selected{% endif %}>Flexibility</option>
+                                    </select><br>
+                                    
+                                    <label>Subtype:</label>
+                                    <input type="text" name="exercise_subtype" value="{{ ex.subtype }}"><br>
+                                    
+                                    <label>Equipment:</label>
+                                    <input type="text" name="exercise_equipment" value="{{ ex.equipment }}"><br>
+                                    
+                                    <label>Difficulty (1-5):</label>
+                                    <input type="number" name="exercise_difficulty" min="1" max="5" value="{{ ex.difficulty }}"><br>
+                                    
+                                    <label>Description:</label>
+                                    <textarea name="exercise_description" rows="3">{{ ex.description }}</textarea><br>
+                                    
+                                    <label>Demo Link:</label>
+                                    <input type="text" name="exercise_demo" value="{{ ex.demo_link }}"><br>
+                                    
+                                    <button type="submit" style="background-color: #4caf50; color: white; padding: 8px 15px; border: none; border-radius: 3px; cursor: pointer;">Save Changes</button>
+                                    <button type="button" onclick="toggleEdit({{ ex.exercise_id }})" style="background-color: #666; color: white; padding: 8px 15px; border: none; border-radius: 3px; cursor: pointer;">Cancel</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No exercises in library yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>📊 System Analytics</h2>
+        <p><strong>Most Popular Exercises:</strong></p>
+        {% if popular_exercises %}
+            <ul>
+            {% for ex in popular_exercises %}
+                <li><strong>{{ ex.name }}</strong> - Used {{ ex.usage_count }} times</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No workout data yet.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleEdit(exerciseId) {
+            const editForm = document.getElementById('edit-form-' + exerciseId);
+            if (editForm.style.display === 'none' || editForm.style.display === '') {
+                editForm.style.display = 'block';
+            } else {
+                editForm.style.display = 'none';
+            }
+        }
+    </script>
 </body>
+</html>
