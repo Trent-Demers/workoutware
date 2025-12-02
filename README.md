@@ -1,3 +1,70 @@
+# Workoutware: Installation and Setup
+Workoutware is a Django-based exercise tracking application backed by a relational database (see ER diagram below). This sections explains how to setup and run the application on your local machine.
+
+## Prerequisites
+- **PYTHON VERSION 3.10+**
+- **GIT**
+- **PIP VERSION: 25.2**
+- **MyAQL VERSION: 8.0**
+
+
+
+## Running the Application
+- Download the repository from Github
+  ```
+  git clone https://github.com/Trent-Demers/workoutware
+  cd workoutware
+  ```
+- Setup MySQL container with Docker
+  ```
+  docker pull mysql:8.0
+  docker run --name workoutware -e MYSQL_ROOT_PASSWORD=Rutgers123 -p 3306:3306 -d mysql:8.0
+  ```
+- Setup database
+
+  Run scripts in the _sql_ folder (can be done using MySQL Workbench, DBeaver, or through VSCode)
+- Create and activate virtual environment
+  ```
+  python -m venv .venv
+  ```
+    **Windows**
+    ```
+    cd .venv/Scripts
+    activate
+    ```
+
+    **Mac**
+    ```
+    cd .venv/bin
+    activate
+    ```
+- Installing Dependencies
+
+  All dependencies are listed in **`requirements.txt`**.
+  
+  To install everything, run:
+  ```
+  pip install -r requirements.txt
+  ```
+- Linking Django to MySQL Database
+  ```
+  python manage.py makemigrations
+  python manage.py migrate
+  ```
+- Creating an Admin account (Optional but recommended)
+  ```
+  python manage.py createsuperuser
+  ```
+- Run the application & start the server
+  ```
+  python manage.py runserver
+  ```
+- To see the use of the application, **user must sign up**
+
+
+
+
+
 ## 📊 ER Diagram 
 
 ```mermaid
