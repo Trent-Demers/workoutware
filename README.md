@@ -5,7 +5,7 @@ Workoutware is a Django-based exercise tracking application backed by a relation
 - **PYTHON VERSION 3.10+**
 - **GIT**
 - **PIP VERSION: 25.2**
-- **MyAQL VERSION: 8.0**
+- **MySQL VERSION: 8.0**
 
 
 
