@@ -97,7 +97,7 @@ class data_validation(models.Model):
         db_table = 'data_validation'
 
 class progress(models.Model):
-    metric_id = models.AutoField(primary_key=True)
+    progress_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey('user_info', on_delete=models.CASCADE, db_column='user_id')
     exercise_id = models.ForeignKey('exercise', on_delete=models.CASCADE, db_column='exercise_id')
     date = models.DateField()
