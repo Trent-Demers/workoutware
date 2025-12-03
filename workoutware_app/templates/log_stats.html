@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/workoutware.css">
+    <title>Log Body Stats</title>
+    <style>
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .stats-table th {
+            background-color: #2196f3;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .stats-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        .stats-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>📏 Log Body Stats</h1>
+    
+    <a href="{% url 'home' %}">← Back to Dashboard</a> | 
+    <a href="{% url 'progress' %}">📊 View Progress</a>
+    
+    <hr>
+    
+    <h2>Log Today's Measurements</h2>
+    <form action="{% url 'log_body_stats' %}" method="post" class="form-container">
+        {% csrf_token %}
+        
+        <label for="date">Date:</label>
+        <input type="date" name="date" id="date" value="{{ today|date:'Y-m-d' }}" required><br>
+        
+        <label for="weight">Bodyweight (lbs):</label>
+        <input type="number" name="weight" id="weight" step="0.1" required><br>
+        
+        <label for="neck">Neck (inches):</label>
+        <input type="number" name="neck" id="neck" step="0.1" placeholder="Optional"><br>
+        
+        <label for="waist">Waist (inches):</label>
+        <input type="number" name="waist" id="waist" step="0.1" placeholder="Optional"><br>
+        
+        <label for="hips">Hips (inches):</label>
+        <input type="number" name="hips" id="hips" step="0.1" placeholder="Optional"><br>
+        
+        <label for="body_fat">Body Fat %:</label>
+        <input type="number" name="body_fat" id="body_fat" step="0.1" placeholder="Optional"><br>
+        
+        <label for="notes">Notes:</label>
+        <textarea name="notes" id="notes" rows="3" placeholder="How do you feel today?"></textarea><br>
+        
+        <button type="submit">Log Stats</button>
+    </form>
+    
+    <hr>
+    
+    <h2>Recent Measurements</h2>
+    {% if recent_logs %}
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Weight</th>
+                    <th>Neck</th>
+                    <th>Waist</th>
+                    <th>Hips</th>
+                    <th>Body Fat %</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in recent_logs %}
+                <tr>
+                    <td>{{ log.date|date:"M d, Y" }}</td>
+                    <td>{{ log.weight }} lbs</td>
+                    <td>{% if log.neck %}{{ log.neck }}"{% else %}--{% endif %}</td>
+                    <td>{% if log.waist %}{{ log.waist }}"{% else %}--{% endif %}</td>
+                    <td>{% if log.hips %}{{ log.hips }}"{% else %}--{% endif %}</td>
+                    <td>{% if log.body_fat_percentage %}{{ log.body_fat_percentage }}%{% else %}--{% endif %}</td>
+                    <td>{{ log.notes|default:"--" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="padding: 20px; background-color: #e3f2fd; border-radius: 5px;">
+            No measurements logged yet. Start tracking your body composition!
+        </p>
+    {% endif %}
+</body>
+</html>
