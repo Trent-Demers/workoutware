@@ -165,10 +165,15 @@
             <div class="stat-number">🔥 {{ streak_days }}</div>
             <div class="stat-label">Day Workout Streak</div>
         </div>
-        <div class="stat-box">
-            <div class="stat-number">{{ workouts_this_week }}</div>
-            <div class="stat-label">Workouts This Week</div>
-        </div>
+        <a href="{% url 'completed_workouts_week' %}" style="text-decoration: none; color: inherit;">
+            <div class="stat-box stat-box-clickable">
+                <div class="stat-number">{{ workouts_this_week }}</div>
+                <div class="stat-label">Workouts This Week</div>
+                <div style="font-size: 0.8em; color: #888; margin-top: 5px;">
+                    View completed workouts this week →
+                </div>
+            </div>
+        </a>
         <a href="{% url 'completed_workouts' %}" style="text-decoration: none; color: inherit;">
             <div class="stat-box stat-box-clickable">
                 <div class="stat-number">{{ total_workouts }}</div>

@@ -29,6 +29,7 @@ urlpatterns = [
     path('workout/<int:session_id>/rename/', views.rename_workout, name="rename_workout"),  
     path('workout/<int:session_id>/complete/', views.complete_workout, name="complete_workout"),
     path('workouts/completed/', views.completed_workouts, name="completed_workouts"),
+    path('workouts/completed/week/', views.completed_workouts_week, name="completed_workouts_week"),
 
     
     # Progress & Analytics

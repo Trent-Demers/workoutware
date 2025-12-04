@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="/static/stylesheets/workoutware.css">
+    <title>This Week's Workouts</title>
+    <style>
+        .workout-item { background:white;padding:15px;margin:10px 0;border-left:4px solid #4caf50;border-radius:5px; }
+    </style>
+</head>
+<body>
+
+<h1>🔥 Workouts Completed This Week</h1>
+<a href="{% url 'home' %}">← Back to Dashboard</a> |
+<a href="{% url 'progress' %}"> Progress</a>
+
+{% if sessions %}
+    <ul class="workout-list">
+        {% for session in sessions %}
+        <li class="workout-item">
+            <strong>{{ session.session_name }}</strong><br>
+            {{ session.session_date|date:"M d, Y" }}
+            <br>
+            <a href="{% url 'add_exercises_to_session' session.session_id %}">
+                View Workout Details →
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p style="background:#e3f2fd;padding:15px;border-radius:5px;">
+        No completed workouts yet this week — go get after it 💪
+    </p>
+{% endif %}
+</body>
+</html>

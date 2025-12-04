@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.utils import timezone
 from django.db import connection
 from django.db.models import Sum, Avg, Max, Count, Q
 from django.http import JsonResponse
@@ -255,12 +256,13 @@ def home(request):
                 goal.current_value = latest_pr.pb_weight
                 goal.save()
     
+    today = timezone.now().date()
     week_start = date.today() - timedelta(days=date.today().weekday())
     workouts_this_week = workout_sessions.objects.filter(
         user_id=user_id,
         session_date__gte=week_start,
         completed=True,
-        is_template=False
+        is_template=False,
     ).count()
     
     total_workouts = workout_sessions.objects.filter(
@@ -405,6 +407,22 @@ def completed_workouts(request):
     }
     return render(request, "completed_workouts.html", context)
 
+@login_required
+def completed_workouts_week(request):
+    user_record = get_or_create_user_record(request.user)
+
+    today = timezone.now().date()
+    week_start = today - timedelta(days=today.weekday())  # Monday → today
+
+    sessions = workout_sessions.objects.filter(
+        user_id=user_record,
+        is_template=False,
+        completed=True,
+        session_date__gte=week_start,
+        session_date__lte=today,
+    ).order_by('-session_date')
+
+    return render(request, "completed_workouts_week.html", { "sessions": sessions })
 
 @login_required
 def use_template(request, template_id):
