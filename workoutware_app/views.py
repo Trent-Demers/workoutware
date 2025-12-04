@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from .models import (user_info, exercise, workout_sessions, session_exercises, 
                      sets, data_validation, progress, user_pb, goals, user_stats_log, target, exercise_target_association)
 from .recommendations import get_workout_recommendations
+from .progress_utils import rebuild_progress_for_user
 from datetime import datetime, date, timedelta
 from decimal import Decimal
 from collections import defaultdict
@@ -330,7 +331,7 @@ def log_workout(request):
     # Get recent sessions (excluding templates)
     recent_sessions = workout_sessions.objects.filter(
         user_id=user_id,
-        completed=True,
+        completed=False,
         is_template=False
     ).order_by('-session_date', '-session_id')[:5]
     
@@ -362,13 +363,29 @@ def create_workout_session(request):
             session_date=request.POST.get('session_date', date.today()),
             start_time=request.POST.get('start_time') or None,
             bodyweight=request.POST.get('bodyweight') or None,
-            is_template=False
+            is_template=False,
+            completed=False
         )
         new_session.save()
         
         return redirect('add_exercises_to_session', session_id=new_session.session_id)
     
     return redirect('log_workout')
+
+
+@login_required
+def complete_workout(request, session_id):
+    if request.method == "POST":
+        # Look up the workout session; 404 if someone tampers with the URL
+        session = get_object_or_404(workout_sessions, session_id=session_id)
+        
+        # Mark it as completed
+        session.completed = True
+        session.save()
+
+    # Send the user back to the log workout page
+    return redirect('log_workout')   # make sure this matches the name in urls.py
+
 
 @login_required
 def use_template(request, template_id):
@@ -584,6 +601,8 @@ def view_progress(request):
     user_record = get_or_create_user_record(request.user)
     user_id = user_record.user_id
     
+    rebuild_progress_for_user(user_id)
+
     # Get progress data
     progress_data = progress.objects.filter(
         user_id=user_id

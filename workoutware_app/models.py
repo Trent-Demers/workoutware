@@ -46,7 +46,7 @@ class workout_sessions(models.Model):
     end_time = models.TimeField(blank=True, null=True)
     duration_minutes = models.IntegerField(blank=True, null=True)
     bodyweight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    completed = models.BooleanField(default=True)
+    completed = models.BooleanField(default=False)
     is_template = models.BooleanField(default=False)
     
     class Meta:
@@ -60,7 +60,7 @@ class session_exercises(models.Model):
     exercise_order = models.IntegerField()
     target_sets = models.IntegerField(blank=True, null=True)
     target_reps = models.IntegerField(blank=True, null=True)
-    completed = models.BooleanField(default=True)
+    completed = models.BooleanField(default=False)
     
     class Meta:
         managed = False

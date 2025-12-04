@@ -90,7 +90,7 @@
     
     <hr>
     
-    <h2>Add Exercise to Workout</h2>
+    <h2>Add Exercise to Workout Session</h2>
     <form action="{% url 'add_exercise_to_session' session.session_id %}" method="post" class="form-container">
         {% csrf_token %}
         <label for="exercise_id">Select Exercise:</label>
@@ -112,7 +112,7 @@
     
     <hr>
     
-    <h2>Exercises in This Workout</h2>
+    <h2>Exercises in This Workout Session</h2>
     {% if session_data %}
         {% for item in session_data %}
             <div class="exercise-block">

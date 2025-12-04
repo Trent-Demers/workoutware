@@ -240,19 +240,40 @@
     <hr>
     {% endif %}
     
-    <h2>Recent Workouts</h2>
+    <h2>Recent Workout Sessions</h2>
     {% if recent_sessions %}
         <ul class="workout-list">
         {% for session in recent_sessions %}
             <li class="workout-item">
                 <div class="workout-info">
-                    <strong id="workout-name-{{ session.session_id }}">{{ session.session_name }}</strong> - {{ session.session_date|date:"M d, Y" }}
+                    <strong id="workout-name-{{ session.session_id }}">{{ session.session_name }}</strong>
+                    - {{ session.session_date|date:"M d, Y" }}
+                    {% if session.completed %}
+                        <span style="margin-left: 10px; color: #2e7d32; font-weight: bold;">
+                            ✅ Completed
+                        </span>
+                    {% else %}
+                        <span style="margin-left: 10px; color: #f57c00; font-weight: bold;">
+                            ⏳ In Progress
+                        </span>
+                    {% endif %}
                     <input type="text" id="edit-name-{{ session.session_id }}" value="{{ session.session_name }}" style="display: none; padding: 5px; border: 2px solid #2196f3; border-radius: 3px;">
                 </div>
                 <div class="workout-actions">
                     <button id="edit-btn-{{ session.session_id }}" class="btn-edit-workout" onclick="editWorkoutName({{ session.session_id }})">Edit Name</button>
                     <button id="save-btn-{{ session.session_id }}" class="btn-save-workout" onclick="saveWorkoutName({{ session.session_id }})" style="display: none;">Save</button>
+            
                     <a href="{% url 'add_exercises_to_session' session.session_id %}" class="btn-view">View/Continue</a>
+
+                    <form action="{% url 'complete_workout' session.session_id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn-save-workout"
+                                {% if session.completed %}disabled style="opacity: 0.6; cursor: default;"{% endif %}>
+                            {% if session.completed %}Completed{% else %}Mark Completed{% endif %}
+                        </button>
+                    </form>
+
                     <form action="{% url 'delete_workout' session.session_id %}" method="post" style="display: inline;" onsubmit="return confirm('Delete this workout? This cannot be undone.');">
                         {% csrf_token %}
                         <button type="submit" class="btn-delete-workout">Delete</button>
