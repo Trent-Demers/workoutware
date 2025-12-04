@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/workoutware.css">
+    <title>Completed Workouts</title>
+    <style>
+        .workout-list {
+            list-style: none;
+            padding: 0;
+        }
+        .workout-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4caf50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .workout-info {
+            flex: 1;
+        }
+        .workout-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .status-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            margin-left: 8px;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>✅ Completed Workouts</h1>
+
+    <a href="{% url 'home' %}">← Back to Dashboard</a> |
+    <a href="{% url 'log_workout' %}">💪 Log Workout</a>
+
+    <p style="margin-top: 10px; color: #555;">
+        These are your past completed, non-template workout sessions.
+    </p>
+
+    {% if sessions %}
+        <ul class="workout-list">
+            {% for session in sessions %}
+                <li class="workout-item">
+                    <div class="workout-info">
+                        <strong>{{ session.session_name }}</strong>
+                        <span class="status-pill">Completed</span><br>
+                        <span style="color: #666;">
+                            {{ session.session_date|date:"M d, Y" }}
+                            {% if session.start_time %}
+                                • {{ session.start_time|time:"g:i A" }}
+                            {% endif %}
+                            {% if session.duration_minutes %}
+                                • {{ session.duration_minutes }} min
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="workout-actions">
+                        <a href="{% url 'add_exercises_to_session' session.session_id %}" class="btn-view">
+                            View / Review
+                        </a>
+                        <form action="{% url 'delete_workout' session.session_id %}"
+                              method="post"
+                              style="display:inline;"
+                              onsubmit="return confirm('Delete this workout? This cannot be undone.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-delete-workout">Delete</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="padding: 15px; background-color: #e3f2fd; border-radius: 5px;">
+            You don't have any completed workouts yet. Finish a workout session and mark it as completed to see it here.
+        </p>
+    {% endif %}
+</body>
+</html>

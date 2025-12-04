@@ -386,6 +386,25 @@ def complete_workout(request, session_id):
     # Send the user back to the log workout page
     return redirect('log_workout')   # make sure this matches the name in urls.py
 
+@login_required
+def completed_workouts(request):
+    user_record = get_or_create_user_record(request.user)
+
+    sessions = (
+        workout_sessions.objects
+        .filter(
+            user_id=user_record,
+            is_template=False,
+            completed=True,
+        )
+        .order_by('-session_date', '-start_time')
+    )
+
+    context = {
+        "sessions": sessions,
+    }
+    return render(request, "completed_workouts.html", context)
+
 
 @login_required
 def use_template(request, template_id):

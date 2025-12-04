@@ -78,6 +78,16 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             border-left: 4px solid #4caf50;
         }
+        .stat-box-clickable {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+.stat-box-clickable:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
         .stat-number {
             font-size: 2.5em;
             font-weight: bold;
@@ -159,10 +169,15 @@
             <div class="stat-number">{{ workouts_this_week }}</div>
             <div class="stat-label">Workouts This Week</div>
         </div>
-        <div class="stat-box">
-            <div class="stat-number">{{ total_workouts }}</div>
-            <div class="stat-label">Total Workouts</div>
-        </div>
+        <a href="{% url 'completed_workouts' %}" style="text-decoration: none; color: inherit;">
+            <div class="stat-box stat-box-clickable">
+                <div class="stat-number">{{ total_workouts }}</div>
+                <div class="stat-label">Total Workouts</div>
+                <div style="font-size: 0.8em; color: #888; margin-top: 5px;">
+                    View past completed workouts →
+                </div>
+            </div>
+        </a>
         <div class="stat-box">
             <div class="stat-number">{{ recent_prs|length }}</div>
             <div class="stat-label">Recent PRs</div>
