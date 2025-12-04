@@ -6,7 +6,8 @@ from django.db import connection
 from django.db.models import Sum, Avg, Max, Count, Q
 from django.http import JsonResponse
 from .models import (user_info, exercise, workout_sessions, session_exercises, 
-                     sets, data_validation, progress, user_pb, goals, user_stats_log)
+                     sets, data_validation, progress, user_pb, goals, user_stats_log, target, exercise_target_association)
+from .recommendations import get_workout_recommendations
 from datetime import datetime, date, timedelta
 from decimal import Decimal
 from collections import defaultdict
@@ -153,6 +154,7 @@ def validate_weight_input(user_id, exercise_id, input_weight):
                 'message': f'✓ Looks good! Within your typical range.',
                 'expected_max': max_weight
             }
+
 
 # ============================================================================
 # MAIN VIEWS
@@ -645,12 +647,16 @@ def view_progress(request):
         'weights': [float(log.weight) for log in bodyweight_logs]
     }
     
+    recommendations = get_workout_recommendations(user_id)
+
     context = {
         'progress_data': progress_data,
         'validations': recent_validations,
         'exercise_trends': json.dumps(exercise_trends),
         'bodyweight_trend': json.dumps(bodyweight_trend),
         'user_exercises': user_exercises,
+        'weight_increase_recs': recommendations['weight_increase'],
+        'neglected_muscle_group_recs': recommendations['neglected_muscle_groups'],
     }
     
     return render(request, 'progress.html', context)
@@ -776,3 +782,23 @@ def signup(request):
         form = UserCreationForm()
     
     return render(request, 'registration/signup.html', {'form': form})
+
+
+
+
+@login_required
+def progress_view(request):
+    user = request.user
+
+    # whatever you already compute for progress...
+    # progress_data = ...
+
+    recommendations = get_workout_recommendations(user)
+
+    context = {
+        # "progress_data": progress_data,
+        "weight_increase_recs": recommendations["weight_increase"],
+        "neglected_muscle_group_recs": recommendations["neglected_muscle_groups"],
+    }
+
+    return render(request, "workoutware_app/progress.html", context)

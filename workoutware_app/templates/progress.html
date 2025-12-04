@@ -145,6 +145,39 @@
     </div>
     
     <div class="section-header">
+        <h2>💡 Workout Recommendations</h2>
+        <p>Auto-generated suggestions based on your recent training</p>
+    </div>
+
+    <div class="chart-container">
+        {% if weight_increase_recs or neglected_muscle_group_recs.groups %}
+            {% if weight_increase_recs %}
+                <h3>Suggested Weight Increases</h3>
+                <ul>
+                    {% for rec in weight_increase_recs %}
+                        <li>{{ rec.message }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No weight increase recommendations yet – keep hitting your target reps!</p>
+            {% endif %}
+
+            {% if neglected_muscle_group_recs.groups %}
+                <h3>Neglected Muscle Groups (last {{ neglected_muscle_group_recs.lookback_days }} days)</h3>
+                <ul>
+                    {% for msg in neglected_muscle_group_recs.messages %}
+                        <li>{{ msg|safe }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No clearly neglected muscle groups detected recently.</p>
+            {% endif %}
+        {% else %}
+            <p>No recommendations yet – complete a few more workouts to unlock insights.</p>
+        {% endif %}
+    </div>
+
+    <div class="section-header">
         <h2>Weekly Progress Metrics</h2>
         <p>Your strength data aggregated by week</p>
     </div>

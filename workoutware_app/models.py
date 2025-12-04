@@ -171,3 +171,23 @@ class workout_plan(models.Model):
     class Meta:
         managed = False
         db_table = 'workout_plan'
+
+class target(models.Model):
+    target_id = models.AutoField(primary_key=True)
+    target_name = models.CharField(max_length=50)
+    target_group = models.CharField(max_length=50)
+    target_function = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'target'
+
+class exercise_target_association(models.Model):
+    association_id = models.AutoField(primary_key=True)
+    exercise_id = models.ForeignKey('exercise', on_delete=models.CASCADE, db_column='exercise_id')
+    target_id = models.ForeignKey('target', on_delete=models.CASCADE, db_column='target_id')
+    intensity = models.CharField(max_length=20, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'exercise_target_association'
