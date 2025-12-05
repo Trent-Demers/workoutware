@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="progress",
             fields=[
-                ("metric_id", models.AutoField(primary_key=True, serialize=False)),
+                ("progress_id", models.AutoField(primary_key=True, serialize=False)),
                 ("date", models.DateField()),
                 ("period_type", models.CharField(max_length=20)),
                 (
