@@ -7,7 +7,7 @@ from django.db import connection
 from django.db.models import Sum, Avg, Max, Count, Q
 from django.http import JsonResponse
 from .models import (user_info, exercise, workout_sessions, session_exercises, 
-                     sets, data_validation, progress, user_pb, goals, user_stats_log, target, exercise_target_association)
+                     sets, data_validation, progress, user_pb, goals, user_stats_log, target, exercise_target_association, workout_goal_link)
 from .recommendations import get_workout_recommendations
 from .progress_utils import rebuild_progress_for_user
 from datetime import datetime, date, timedelta
@@ -70,7 +70,7 @@ def get_exercise_suggestions(user_id):
     
     return suggestions
 
-def check_and_record_pr(user_id, exercise_id, weight, reps, set_obj):
+def check_and_record_pr(user_id, exercise_id, weight, reps, set_obj, session):
     """Check if this is a PR and record it"""
     existing_pr = user_pb.objects.filter(
         user_id=user_id,
@@ -83,6 +83,7 @@ def check_and_record_pr(user_id, exercise_id, weight, reps, set_obj):
             user_pb.objects.create(
                 user_id=user_info.objects.get(user_id=user_id),
                 exercise_id=exercise.objects.get(exercise_id=exercise_id),
+                session = session,
                 pr_type='max_weight',
                 pb_weight=weight,
                 pb_reps=reps,
@@ -95,6 +96,7 @@ def check_and_record_pr(user_id, exercise_id, weight, reps, set_obj):
         user_pb.objects.create(
             user_id=user_info.objects.get(user_id=user_id),
             exercise_id=exercise.objects.get(exercise_id=exercise_id),
+            session = session,
             pr_type='max_weight',
             pb_weight=weight,
             pb_reps=reps,
@@ -167,7 +169,6 @@ def home(request):
     """Enhanced dashboard with stats, PRs, and goals"""
     if request.user.is_superuser:
         # ADMIN DASHBOARD
-        from django.db.models import Count
         
         total_users = user_info.objects.count()
         total_exercises = exercise.objects.count()
@@ -244,6 +245,18 @@ def home(request):
         status='active'
     ).select_related('exercise_id')[:3]
     
+    goal_workout_counts = (
+        workout_goal_link.objects
+        .filter(
+            user_id=user_record,          # FK to user_info
+            session__completed=True,
+            session__is_template=False,
+        )
+        .values("goal_id")
+        .annotate(num_sessions=Count("session_id"))
+    )
+    counts_by_goal = {row["goal_id"]: row["num_sessions"] for row in goal_workout_counts}
+
     for goal in active_goals:
         if goal.exercise_id:
             latest_pr = user_pb.objects.filter(
@@ -252,9 +265,10 @@ def home(request):
                 pr_type='max_weight'
             ).order_by('-pb_date').first()
             
-            if latest_pr:
-                goal.current_value = latest_pr.pb_weight
-                goal.save()
+            goal.current_value = latest_pr.pb_weight if latest_pr else 0
+        else:
+            # WORKOUT GOAL: based on number of completed workouts linked to this goal
+            goal.current_value = counts_by_goal.get(goal.goal_id, 0)
     
     today = timezone.now().date()
     week_start = date.today() - timedelta(days=date.today().weekday())
@@ -345,20 +359,28 @@ def log_workout(request):
     
     suggestions = get_exercise_suggestions(user_id)
     
+    active_goals = goals.objects.filter(
+        user_id=user_id,     # or user_id=user_record, both work for FK
+        status='active'
+    )
     return render(request, 'log_workout.html', {
         'exercises': exercises_list,
         'recent_sessions': recent_sessions,
         'templates': templates,
+        'active_goals': active_goals,
         'suggestions': suggestions,
         'today': date.today()
     })
 
 @login_required
 def create_workout_session(request):
-    """Create new workout session"""
+    """Create new workout session (optionally linked to a goal)"""
     if request.method == 'POST':
         user_record = get_or_create_user_record(request.user)
-        
+
+        # Read goal_id from the form (can be blank)
+        selected_goal_id = request.POST.get('goal_id')  # from <select name="goal_id">
+
         new_session = workout_sessions(
             user_id=user_record,
             session_name=request.POST.get('session_name'),
@@ -369,7 +391,23 @@ def create_workout_session(request):
             completed=False
         )
         new_session.save()
-        
+
+        # If user chose a goal, create the link row
+        if selected_goal_id:
+            try:
+                goal_obj = goals.objects.get(
+                    goal_id=selected_goal_id,
+                    user_id=user_record  # make sure goal belongs to this user
+                )
+                workout_goal_link.objects.create(
+                    user_id=user_record,
+                    goal=goal_obj,
+                    session=new_session
+                )
+            except goals.DoesNotExist:
+                # silently ignore if somehow invalid goal_id was posted
+                pass
+
         return redirect('add_exercises_to_session', session_id=new_session.session_id)
     
     return redirect('log_workout')
@@ -606,7 +644,8 @@ def log_set(request, session_exercise_id):
                 ex.exercise_id,
                 weight_input,
                 reps_input,
-                new_set
+                new_set,
+                session
             )
         
         # Log validation

@@ -111,11 +111,11 @@ class progress(models.Model):
         managed = False
         db_table = 'progress'
 
-# NEW MODELS - Using your existing tables
 class user_pb(models.Model):
     pr_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey('user_info', on_delete=models.CASCADE, db_column='user_id')
     exercise_id = models.ForeignKey('exercise', on_delete=models.CASCADE, db_column='exercise_id')
+    session = models.ForeignKey('workout_sessions', on_delete=models.CASCADE, db_column='session_id', null=False)
     pr_type = models.CharField(max_length=20)
     pb_weight = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     pb_reps = models.IntegerField(blank=True, null=True)
@@ -123,7 +123,7 @@ class user_pb(models.Model):
     pb_date = models.DateField()
     previous_pr = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    
+
     class Meta:
         managed = False
         db_table = 'user_pb'
@@ -191,3 +191,14 @@ class exercise_target_association(models.Model):
     class Meta:
         managed = False
         db_table = 'exercise_target_association'
+
+class workout_goal_link(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey('user_info',on_delete=models.CASCADE,db_column='user_id',to_field='user_id')
+    goal = models.ForeignKey('goals',on_delete=models.CASCADE,db_column='goal_id',to_field='goal_id')
+    session = models.ForeignKey('workout_sessions',on_delete=models.CASCADE,db_column='session_id',to_field='session_id')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'workout_goal_link'

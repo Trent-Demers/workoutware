@@ -197,6 +197,14 @@
             <label for="bodyweight">Your Weight Today (lbs):</label>
             <input type="number" id="bodyweight" name="bodyweight" step="0.1" placeholder="Optional"><br>
             
+            <label for="goal_id">Count this workout toward a goal (optional):</label>
+                <select id="goal_id" name="goal_id">
+                    <option value="">-- None --</option>
+                    {% for goal in active_goals %}
+                        <option value="{{ goal.goal_id }}">{{ goal.goal_description }}</option>
+                    {% endfor %}
+                </select><br><br>    
+
             <button type="submit">Create Workout Session</button>
         </div>
     </form>
