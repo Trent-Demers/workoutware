@@ -22,10 +22,11 @@ import json
 def get_or_create_user_record(request_user):
     """Get or create user_info record for Django auth user"""
     try:
-        return user_info.objects.get(email=request_user.email)
+        return user_info.objects.get(username=request_user.username)
     except user_info.DoesNotExist:
         return user_info.objects.create(
-            first_name=request_user.first_name or request_user.username,
+            username=request_user.username,
+            first_name=request_user.first_name or '',
             last_name=request_user.last_name or '',
             email=request_user.email,
             password_hash='django_auth',
@@ -245,30 +246,30 @@ def home(request):
         status='active'
     ).select_related('exercise_id')[:3]
     
-    goal_workout_counts = (
-        workout_goal_link.objects
-        .filter(
-            user_id=user_record,          # FK to user_info
-            session__completed=True,
-            session__is_template=False,
-        )
-        .values("goal_id")
-        .annotate(num_sessions=Count("session_id"))
-    )
-    counts_by_goal = {row["goal_id"]: row["num_sessions"] for row in goal_workout_counts}
+    # goal_workout_counts = (
+    #     workout_goal_link.objects
+    #     .filter(
+    #         user_id=user_record,          # FK to user_info
+    #         session__completed=True,
+    #         session__is_template=False,
+    #     )
+    #     .values("goal_id")
+    #     .annotate(num_sessions=Count("session_id"))
+    # )
+    # counts_by_goal = {row["goal_id"]: row["num_sessions"] for row in goal_workout_counts}
 
-    for goal in active_goals:
-        if goal.exercise_id:
-            latest_pr = user_pb.objects.filter(
-                user_id=user_id,
-                exercise_id=goal.exercise_id,
-                pr_type='max_weight'
-            ).order_by('-pb_date').first()
+    # for goal in active_goals:
+    #     if goal.exercise_id:
+    #         latest_pr = user_pb.objects.filter(
+    #             user_id=user_id,
+    #             exercise_id=goal.exercise_id,
+    #             pr_type='max_weight'
+    #         ).order_by('-pb_date').first()
             
-            goal.current_value = latest_pr.pb_weight if latest_pr else 0
-        else:
-            # WORKOUT GOAL: based on number of completed workouts linked to this goal
-            goal.current_value = counts_by_goal.get(goal.goal_id, 0)
+    #         goal.current_value = latest_pr.pb_weight if latest_pr else 0
+    #     else:
+    #         # WORKOUT GOAL: based on number of completed workouts linked to this goal
+            # goal.current_value = counts_by_goal.get(goal.goal_id, 0)
     
     today = timezone.now().date()
     week_start = date.today() - timedelta(days=date.today().weekday())
@@ -869,6 +870,7 @@ def signup(request):
     """User registration"""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
+        print('here')
         if form.is_valid():
             user = form.save()
             login(request, user)
