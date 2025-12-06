@@ -424,7 +424,7 @@ def add_exercise(request):
 
         exercise.objects.create(
             name=name,
-            exercise_type=ex_type,
+            type=ex_type,
             subtype=subtype,
             equipment=equipment,
             difficulty=difficulty,
@@ -456,7 +456,7 @@ def edit_exercise(request, exercise_id):
     ex = get_object_or_404(exercise, exercise_id=exercise_id)
 
     ex.name = request.POST.get("exercise_name")
-    ex.exercise_type = request.POST.get("exercise_type")
+    ex.type = request.POST.get("exercise_type")
     ex.subtype = request.POST.get("exercise_subtype")
     ex.equipment = request.POST.get("exercise_equipment")
     ex.difficulty = request.POST.get("exercise_difficulty")
