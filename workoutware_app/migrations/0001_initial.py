@@ -431,6 +431,10 @@ class Migration(migrations.Migration):
                 ),
                 ("created_at", models.DateTimeField(blank=False, null=False)),
             ],
+            options={
+                "db_table": "workout_goal_link",
+                "managed": False,
+            },
         ),
         migrations.CreateModel(
             name="user_pb",
