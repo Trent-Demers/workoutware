@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "exercise",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "target",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "user_info",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -106,7 +106,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "session_exercises",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -139,7 +139,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "sets",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -166,7 +166,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "exercise_target_association",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -213,7 +213,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "progress",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -255,7 +255,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "goals",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -301,7 +301,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "data_validation",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -346,7 +346,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "user_stats_log",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -367,7 +367,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "workout_plan",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -401,7 +401,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "workout_sessions",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.CreateModel(
@@ -480,7 +480,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "db_table": "user_pb",
-                "managed": True,
+                "managed": False,
             },
         ),
         migrations.AddField(
