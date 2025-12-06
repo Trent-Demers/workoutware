@@ -69,7 +69,7 @@ class user_info(models.Model):
     user_type = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'user_info'
 
     def __str__(self) -> str:
@@ -87,7 +87,7 @@ class exercise(models.Model):
     Fields:
         exercise_id (int): Primary key.
         name (str): Human-readable exercise name.
-        exercise_type (str): High-level category (Strength, Cardio, etc.).
+        type (str): High-level category (Strength, Cardio, etc.).
         subtype (str): Body region / muscle group (Chest, Legs, Back, etc.).
         equipment (str): Equipment required (Dumbbell, Barbell, Machine, etc.).
         difficulty (str): Difficulty level (Beginner, Intermediate, Advanced).
@@ -98,7 +98,7 @@ class exercise(models.Model):
 
     exercise_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    exercise_type = models.CharField(max_length=50)
+    type = models.CharField(max_length=50)
     subtype = models.CharField(max_length=50, blank=True, null=True)
     equipment = models.CharField(max_length=50, blank=True, null=True)
     difficulty = models.CharField(max_length=50, blank=True, null=True)
@@ -107,7 +107,7 @@ class exercise(models.Model):
     image = models.ImageField(upload_to="exercise_images/", blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "exercise"
 
     def __str__(self) -> str:
@@ -146,7 +146,7 @@ class workout_sessions(models.Model):
     is_template = models.BooleanField(default=False)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'workout_sessions'
 
     def __str__(self) -> str:
@@ -182,7 +182,7 @@ class session_exercises(models.Model):
     completed = models.BooleanField(default=False)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'session_exercises'
 
     def __str__(self) -> str:
@@ -224,7 +224,7 @@ class sets(models.Model):
     completion_time = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'sets'
 
     def __str__(self) -> str:
@@ -263,7 +263,7 @@ class data_validation(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'data_validation'
 
     def __str__(self) -> str:
@@ -301,7 +301,7 @@ class progress(models.Model):
     workout_count = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'progress'
 
     def __str__(self) -> str:
@@ -343,7 +343,7 @@ class user_pb(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'user_pb'
 
     def __str__(self) -> str:
@@ -394,7 +394,7 @@ class goals(models.Model):
     completion_date = models.DateField(blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'goals'
 
     def __str__(self) -> str:
@@ -430,7 +430,7 @@ class user_stats_log(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'user_stats_log'
 
     def __str__(self) -> str:
@@ -460,7 +460,7 @@ class workout_plan(models.Model):
     number_of_days = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'workout_plan'
 
     def __str__(self) -> str:
@@ -488,7 +488,7 @@ class target(models.Model):
     target_function = models.CharField(max_length=50)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'target'
 
     def __str__(self) -> str:
@@ -516,7 +516,7 @@ class exercise_target_association(models.Model):
     intensity = models.CharField(max_length=20, blank=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'exercise_target_association'
 
     def __str__(self) -> str:
@@ -525,12 +525,29 @@ class exercise_target_association(models.Model):
 
 
 class workout_goal_link(models.Model):
+    """
+    Link table between goals and workout sessions.
+    """
     id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey('user_info',on_delete=models.CASCADE,db_column='user_id',to_field='user_id')
-    goal = models.ForeignKey('goals',on_delete=models.CASCADE,db_column='goal_id',to_field='goal_id')
-    session = models.ForeignKey('workout_sessions',on_delete=models.CASCADE,db_column='session_id',to_field='session_id')
-    created_at = models.DateTimeField(auto_now_add=True)
+    user_id = models.ForeignKey(
+        'user_info',
+        on_delete=models.CASCADE,
+        db_column='user_id'
+    )
+    goal = models.ForeignKey(
+        'goals',
+        on_delete=models.SET_NULL,
+        db_column='goal',
+        null=True,
+        blank=True
+    )
+    session = models.ForeignKey(
+        'workout_sessions',
+        on_delete=models.CASCADE,
+        db_column='session'
+    )
+    created_at = models.DateTimeField()
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'workout_goal_link'
