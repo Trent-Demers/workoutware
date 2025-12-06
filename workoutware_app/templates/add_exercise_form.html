@@ -1,0 +1,342 @@
+<!--
+    Template: add_exercise_form.html
+    Purpose: Global 'Add New Exercise' form for admins/users.
+    Features:
+      - Dropdowns for type, subtype, equipment, difficulty
+      - Description field
+      - YouTube demo link with live preview
+      - Image upload with live preview
+-->
+
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Exercises to Workout</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'stylesheets/workoutware.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+        .session-meta {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .badge-template {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #ffe0b2;
+            color: #e65100;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        .section-card {
+            margin-top: 20px;
+            padding: 15px 18px;
+            border-radius: 10px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        select, input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 0.95em;
+        }
+        .inline {
+            display: flex;
+            gap: 10px;
+        }
+        .inline > div {
+            flex: 1;
+        }
+        button, .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1976d2;
+        }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .exercise-block {
+            margin-top: 18px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+        }
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .exercise-name {
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+        .exercise-target {
+            font-size: 0.9em;
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        th {
+            background: #f0f0f0;
+        }
+        .no-sets {
+            font-size: 0.9em;
+            color: #777;
+            margin-top: 6px;
+        }
+        .log-set-form {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #eef7ff;
+            border: 1px solid #bbdefb;
+        }
+        .log-set-form h4 {
+            margin: 0 0 6px 0;
+            font-size: 0.95em;
+        }
+        .top-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    {% if session %}
+        <div class="session-header">
+            <div>
+                <h1>
+                    {% if session.is_template %}
+                        Edit Template Workout
+                    {% else %}
+                        Add Exercises to Workout
+                    {% endif %}
+                </h1>
+                <div class="session-meta">
+                    Name: <strong>{{ session.session_name }}</strong>
+                    {% if not session.is_template and session.session_date %}
+                        &nbsp; | &nbsp; Date: {{ session.session_date }}
+                    {% endif %}
+                    {% if session.is_template %}
+                        <span class="badge-template">TEMPLATE</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# ----------------- ADD EXERCISE TO THIS SESSION ----------------- #}
+        <div class="section-card">
+            <h2>Add Exercise</h2>
+            <form method="post" action="{% url 'add_exercise_to_session' session.session_id %}">
+                {% csrf_token %}
+
+                <label for="exercise_id">Select Exercise:</label>
+                <select name="exercise_id" id="exercise_id" required>
+                    <option value="">-- Choose an exercise --</option>
+                    {% for ex in exercises %}
+                        <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <div class="inline">
+                    <div>
+                        <label for="target_sets">Target Sets:</label>
+                        <input type="number" id="target_sets" name="target_sets" min="1" value="3">
+                    </div>
+                    <div>
+                        <label for="target_reps">Target Reps:</label>
+                        <input type="number" id="target_reps" name="target_reps" min="1" value="10">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 12px;">
+                    + Add Exercise to Workout
+                </button>
+            </form>
+        </div>
+
+        {# ----------------- EXERCISES INSIDE THIS SESSION ----------------- #}
+        <div class="section-card">
+            <h2>
+                {% if session.is_template %}
+                    Exercises in This Template
+                {% else %}
+                    Exercises in This Workout
+                {% endif %}
+            </h2>
+
+            {% if session_data %}
+                {% for item in session_data %}
+                    <div class="exercise-block">
+                        <div class="exercise-header">
+                            <div class="exercise-name">
+                                {{ forloop.counter }}. {{ item.session_exercise.exercise_id.name }}
+                            </div>
+                            <div class="exercise-target">
+                                Target:
+                                {{ item.session_exercise.target_sets|default:"-" }} sets
+                                ×
+                                {{ item.session_exercise.target_reps|default:"-" }} reps
+                            </div>
+                        </div>
+
+                        {# ---------- LOG NEXT SET (only for non-templates) ---------- #}
+                        {% if not session.is_template %}
+                            <div class="log-set-form">
+                                <h4>Log Next Set</h4>
+                                <form method="post" action="{% url 'log_set' item.session_exercise.session_exercise_id %}">
+                                    {% csrf_token %}
+                                    <div class="inline">
+                                        <div>
+                                            <label>Weight (lbs):</label>
+                                            <input type="number" step="0.5" name="weight" placeholder="e.g. 100">
+                                        </div>
+                                        <div>
+                                            <label>Reps:</label>
+                                            <input type="number" name="reps" min="1" placeholder="e.g. 8">
+                                        </div>
+                                        <div>
+                                            <label>RPE:</label>
+                                            <input type="number" name="rpe" min="1" max="10" value="7">
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" name="set_number"
+                                           value="{{ item.sets|length|add:'1' }}">
+
+                                    <button type="submit" class="btn btn-primary" style="margin-top: 8px;">
+                                        Log Set
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+
+                        {# ---------- SETS TABLE ---------- #}
+                        {% if item.sets %}
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Set #</th>
+                                        <th>Weight</th>
+                                        <th>Reps</th>
+                                        <th>RPE</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for s in item.sets %}
+                                        <tr>
+                                            <td>{{ s.set_number }}</td>
+                                            <td>
+                                                {% if s.weight %}
+                                                    {{ s.weight }}
+                                                {% else %}
+                                                    Bodyweight
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ s.reps }}</td>
+                                            <td>{{ s.rpe }}</td>
+                                            <td>
+                                                {% if s.completion_time %}
+                                                    {{ s.completion_time|date:"m/d H:i" }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="no-sets">
+                                {% if session.is_template %}
+                                    No sets logged (template only tracks targets).
+                                {% else %}
+                                    No sets logged yet for this exercise.
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-sets">No exercises added yet. Use the form above to add one.</p>
+            {% endif %}
+        </div>
+
+        {# ----------------- ACTION BUTTONS AT BOTTOM ----------------- #}
+        {% if not session.is_template %}
+            <div class="section-card">
+                <h3>Finish Workout</h3>
+                <form method="post" action="{% url 'complete_workout' session.session_id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        Mark Workout as Completed
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+
+    {% else %}
+        <h1>No Session Found</h1>
+        <p>You are not inside an active workout session. Go back and create one.</p>
+        <a href="{% url 'log_workout' %}" class="btn btn-secondary">Back to Log Workout</a>
+    {% endif %}
+
+</div>
+</body>
+</html>

@@ -80,13 +80,17 @@ WSGI_APPLICATION = 'workoutware.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'workoutware', 
+        'NAME': 'workout_db',
         'USER': 'root',
         'PASSWORD': 'Rutgers123',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
 }
+
 
 
 # Password validation
@@ -129,3 +133,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Local override for SQLite
+try:
+    from .local_settings import *
+except ImportError:
+    pass
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+

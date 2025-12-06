@@ -1,3 +1,12 @@
 venv/
 .venv/
-*.pyc
+*.pycworkoutware/local_settings.py
+db.sqlite3
+db.sqlite3
+# Local stuff we don't want in git
+db.sqlite3
+venv/
+.idea/
+media/
+__pycache__/
+**/__pycache__/
