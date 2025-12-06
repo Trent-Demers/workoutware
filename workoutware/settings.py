@@ -97,7 +97,7 @@ WSGI_APPLICATION = 'workoutware.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'workout_db',
+        'NAME': 'workoutware',
         'USER': 'root',
         'PASSWORD': 'Rutgers123',
         'HOST': '127.0.0.1',     # Important!
