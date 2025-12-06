@@ -522,3 +522,15 @@ class exercise_target_association(models.Model):
     def __str__(self) -> str:
         """Return a descriptive label for the association."""
         return f"{self.exercise_id} → {self.target_id} ({self.intensity or 'unspecified'})"
+
+
+class workout_goal_link(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey('user_info',on_delete=models.CASCADE,db_column='user_id',to_field='user_id')
+    goal = models.ForeignKey('goals',on_delete=models.CASCADE,db_column='goal_id',to_field='goal_id')
+    session = models.ForeignKey('workout_sessions',on_delete=models.CASCADE,db_column='session_id',to_field='session_id')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = True
+        db_table = 'workout_goal_link'
