@@ -57,9 +57,9 @@ class ExerciseAdmin(admin.ModelAdmin):
     Displays key identifying fields and allows filtering/searching to make
     exercise management easier for instructors or developers.
     """
-    list_display = ("exercise_id", "name", "exercise_type", "equipment", "difficulty")
-    search_fields = ("name", "exercise_type", "equipment")
-    list_filter = ("exercise_type", "equipment")
+    list_display = ("exercise_id", "name", "type", "equipment", "difficulty")
+    search_fields = ("name", "type", "equipment")
+    list_filter = ("type", "equipment")
 
 
 @admin.register(user_info)
