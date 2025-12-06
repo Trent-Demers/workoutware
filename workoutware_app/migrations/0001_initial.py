@@ -407,7 +407,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="workout_goal_link",
             fields=[
-                ("link_id", models.AutoField(primary_key=True, serialize=False)),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
                 (
                     "goal",
                     models.ForeignKey(
@@ -429,6 +429,7 @@ class Migration(migrations.Migration):
                         to="workoutware_app.workout_sessions",
                     ),
                 ),
+                ("created_at", models.DateTimeField(blank=False, null=False)),
             ],
         ),
         migrations.CreateModel(
