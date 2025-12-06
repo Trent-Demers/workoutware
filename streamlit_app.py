@@ -50,7 +50,7 @@ def get_connection():
         host="127.0.0.1",
         user="root",
         password="Rutgers123",
-        database="workout_db",
+        database="workoutware",
         port=3306
     )
 
