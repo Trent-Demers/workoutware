@@ -1,201 +1,230 @@
-from collections import defaultdict
-from datetime import timedelta
+"""
+AI-Based Workout Recommendations for WorkoutWare.
 
-from django.utils import timezone
+This module analyzes a user's historical training data to generate
+personalized exercise recommendations in two major categories:
 
-from .models import (
-    sets,
-    session_exercises,
-    workout_sessions,
-    exercise,
-    exercise_target_association,
-    target,
-)
+1. **Weight Increase Recommendations**
+   - Identifies exercises where the user's max weight has stalled.
+   - Suggests specific next-step weight targets based on progress trends.
+
+2. **Neglected Muscle Group Detection**
+   - Analyzes the frequency of training sessions per muscle group.
+   - Identifies muscles the user has not trained enough recently.
+
+These recommendations are displayed in the Progress Dashboard.
+The logic here is lightweight and rule-based but structured such that
+future versions can integrate ML or deep-learning models.
+
+Dependencies:
+    - Django ORM
+    - `progress` model (aggregated statistics)
+    - `exercise` model (muscle group classification)
+
+All functions in this module are pure functions:
+They take a `user_id` and return structured dictionaries with
+recommendations that can be directly rendered in templates.
+"""
+
+from django.db import connection
+from datetime import date, timedelta
 
 
-# 1) Increase weight suggestions (when user completes goal reps 3x (in 3 sets))
-WEIGHT_INCREASE_PERCENT = 2.5  
-MIN_CONSECUTIVE_SETS = 3       # must hit target on this many sets
+# ------------------------------------------------------------------------------
+# INTERNAL HELPER FUNCTIONS
+# ------------------------------------------------------------------------------
 
-
-def get_weight_increase_recommendations(user_id):
+def _fetch_recent_progress(user_id):
     """
-    For each session_exercise, if the user hit target_reps on the last
-    MIN_CONSECUTIVE_SETS working sets, suggest a small weight increase.
+    Retrieve the user's weekly aggregated progress metrics for all exercises.
+
+    Args:
+        user_id (int): user_info primary key.
+
+    Returns:
+        list of dict:
+            Each item contains:
+                - exercise_id
+                - exercise_name
+                - max_weight
+                - previous_max_weight
+                - date
     """
-
-    # look at recent working sets for this user (not templates)
-    recent_sets = (
-        sets.objects
-        .filter(
-            session_exercise_id__session_id__user_id=user_id,
-            session_exercise_id__session_id__is_template=False,
-            completed=True,
-            is_warmup=False,
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT p.exercise_id,
+                   e.name,
+                   p.max_weight,
+                   LAG(p.max_weight) OVER (PARTITION BY p.exercise_id ORDER BY p.date) AS prev_weight,
+                   p.date
+            FROM progress p
+            JOIN exercise e ON p.exercise_id = e.exercise_id
+            WHERE p.user_id = %s AND p.period_type = 'weekly'
+            ORDER BY p.exercise_id, p.date DESC
+            """,
+            [user_id],
         )
-        .select_related(
-            "session_exercise_id",
-            "session_exercise_id__exercise_id",
-            "session_exercise_id__session_id",
+        rows = cursor.fetchall()
+
+    return [
+        {
+            "exercise_id": r[0],
+            "exercise_name": r[1],
+            "max_weight": float(r[2]) if r[2] else None,
+            "previous_max_weight": float(r[3]) if r[3] else None,
+            "date": r[4],
+        }
+        for r in rows
+    ]
+
+
+def _fetch_muscle_group_usage(user_id, weeks=4):
+    """
+    Compute how often the user has trained each muscle group in the past X weeks.
+
+    Args:
+        user_id (int)
+        weeks (int): Time window for analysis.
+
+    Returns:
+        dict: {muscle_group_name: session_count}
+    """
+    start_date = date.today() - timedelta(weeks=weeks)
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT e.subtype AS muscle_group,
+                   COUNT(*) AS frequency
+            FROM workout_sessions ws
+            JOIN session_exercises se ON ws.session_id = se.session_id
+            JOIN exercise e ON se.exercise_id = e.exercise_id
+            WHERE ws.user_id = %s
+              AND ws.completed = 1
+              AND ws.session_date >= %s
+            GROUP BY e.subtype
+            """,
+            [user_id, start_date],
         )
-        .order_by("-completion_time")
-    )
+        rows = cursor.fetchall()
 
-    # group sets by session_exercise
-    by_session_exercise = defaultdict(list)
-    for s in recent_sets:
-        by_session_exercise[s.session_exercise_id_id].append(s)
+    return {row[0]: row[1] for row in rows}
 
+
+# ------------------------------------------------------------------------------
+# PUBLIC RECOMMENDATION FUNCTIONS
+# ------------------------------------------------------------------------------
+
+def recommend_weight_increases(user_id):
+    """
+    Analyze progress history to identify exercises where the user might
+    increase weight based on stalled or slow progress.
+
+    Logic:
+        - If max weight has not increased for 2+ weeks → suggest adding 2.5–5 lbs.
+        - If recent max_weight > previous → no suggestion needed.
+        - If user has no data → skip.
+
+    Args:
+        user_id (int)
+
+    Returns:
+        list of dict:
+            Each item has:
+                - exercise_name
+                - current_weight
+                - previous_weight
+                - recommended_weight
+                - reason
+    """
+    progress_history = _fetch_recent_progress(user_id)
     recommendations = []
 
-    for se_id, se_sets in by_session_exercise.items():
-        # take latest N sets
-        last_sets = se_sets[:MIN_CONSECUTIVE_SETS]
-        if len(last_sets) < MIN_CONSECUTIVE_SETS:
+    grouped = {}
+    for row in progress_history:
+        grouped.setdefault(row["exercise_name"], []).append(row)
+
+    for name, rows in grouped.items():
+        if len(rows) < 2:
+            continue  # not enough history
+
+        current = rows[0]
+        previous = rows[1]
+
+        cur_w = current["max_weight"]
+        prev_w = previous["max_weight"]
+
+        if cur_w is None or prev_w is None:
             continue
 
-        se = last_sets[0].session_exercise_id          # session_exercises instance
-        ex = se.exercise_id                            # exercise instance
-        target_reps = se.target_reps
-
-        if target_reps is None:
-            continue
-
-        # check if user hit target reps on all these sets
-        if not all((s.reps or 0) >= target_reps for s in last_sets):
-            continue
-
-        current_weight = float(last_sets[0].weight or 0.0)
-        if current_weight <= 0:
-            continue
-
-        suggested_weight = round(
-            current_weight * (1 + WEIGHT_INCREASE_PERCENT / 100.0), 2
-        )
-
-        recommendations.append({
-            "exercise_name": ex.name,
-            "current_weight": current_weight,
-            "suggested_weight": suggested_weight,
-            "target_reps": target_reps,
-            "num_sets": MIN_CONSECUTIVE_SETS,
-            "message": (
-                f"For {ex.name}, you hit at least {target_reps} reps on your last "
-                f"{MIN_CONSECUTIVE_SETS} working sets at {current_weight} lbs. "
-                f"Consider increasing to ~{suggested_weight} lbs next time."
-            ),
-        })
+        # If weight hasn't changed → progressive overload suggestion
+        if abs(cur_w - prev_w) < 0.1:
+            recommendations.append(
+                {
+                    "exercise_name": name,
+                    "current_weight": cur_w,
+                    "previous_weight": prev_w,
+                    "recommended_weight": round(cur_w + 2.5, 1),
+                    "reason": "No progress in 2 weeks — increase weight slightly.",
+                }
+            )
 
     return recommendations
 
 
-
-
-# 2) Neglected muscle group recommendations
-LOOKBACK_DAYS = 30
-
-
-def get_neglected_muscle_group_recommendations(user_id, lookback_days=LOOKBACK_DAYS):
+def recommend_neglected_muscle_groups(user_id):
     """
-    Use exercise_target_association + target tables to find muscle groups with
-    low or zero training volume in the last `lookback_days` days.
+    Identify muscle groups that the user has not trained enough recently.
+
+    Logic:
+        - Count sessions per muscle group in last 4 weeks.
+        - Compare to expected baseline (e.g., trained at least 3 times).
+        - Groups below baseline are considered neglected.
+
+    Args:
+        user_id (int)
+
+    Returns:
+        list of dict:
+            Each item has:
+                - muscle_group
+                - frequency
+                - recommended_action
     """
+    usage = _fetch_muscle_group_usage(user_id, weeks=4)
+    recommendations = []
 
-    start_date = timezone.now().date() - timedelta(days=lookback_days)
+    BASELINE = 3  # expected frequency in 4 weeks
 
-    # all working sets for this user in the lookback window
-    sets_qs = (
-        sets.objects
-        .filter(
-            session_exercise_id__session_id__user_id=user_id,
-            session_exercise_id__session_id__session_date__gte=start_date,
-            session_exercise_id__session_id__is_template=False,
-            completed=True,
-            is_warmup=False,
-        )
-        .select_related(
-            "session_exercise_id",
-            "session_exercise_id__exercise_id",
-        )
-    )
-
-    volume_by_group = defaultdict(float)
-
-    for s in sets_qs:
-        ex = s.session_exercise_id.exercise_id
-
-        # all target rows for this exercise
-        targets = (
-            exercise_target_association.objects
-            .filter(exercise_id=ex)
-            .select_related("target_id")
-        )
-
-        if not targets:
-            continue
-
-        set_volume = float(s.weight or 0.0) * (s.reps or 0)
-        if set_volume <= 0:
-            continue
-
-        share = set_volume / len(targets)
-
-        for assoc in targets:
-            group = assoc.target_id.target_group  # <- your model
-            volume_by_group[group] += share
-
-    # all groups that exist in DB
-    from .models import target  # imported here to avoid circular imports
-    all_groups = set(target.objects.values_list("target_group", flat=True))
-
-    neglected_groups = []
-    messages = []
-
-    # groups never trained in this window
-    never_trained = sorted(all_groups - set(volume_by_group.keys()))
-    for g in never_trained:
-        neglected_groups.append(g)
-        messages.append(
-            f"You haven't trained **{g}** in the last {lookback_days} days."
-        )
-
-    # among trained groups, mark significantly low volume
-    if volume_by_group:
-        max_vol = max(volume_by_group.values())
-        threshold = max_vol * 0.3  # < 30% of top group
-
-        low_vol_groups = sorted(
-            [g for g, v in volume_by_group.items() if v < threshold]
-        )
-        for g in low_vol_groups:
-            neglected_groups.append(g)
-            messages.append(
-                f"Your total volume for **{g}** is much lower than your main muscle groups."
+    for group, freq in usage.items():
+        if freq < BASELINE:
+            recommendations.append(
+                {
+                    "muscle_group": group,
+                    "frequency": freq,
+                    "recommended_action": f"Add 1–2 more {group} exercises per week.",
+                }
             )
 
-    # dedupe while keeping order
-    seen = set()
-    unique_groups = []
-    for g in neglected_groups:
-        if g not in seen:
-            unique_groups.append(g)
-            seen.add(g)
-
-    return {
-        "groups": unique_groups,
-        "messages": messages,
-        "lookback_days": lookback_days,
-    }
+    return recommendations
 
 
-
-
-# HELPER FUNCTION
 def get_workout_recommendations(user_id):
-    weight_recs = get_weight_increase_recommendations(user_id)
-    neglected_recs = get_neglected_muscle_group_recommendations(user_id)
+    """
+    Produce a combined recommendation package for the user's dashboard.
 
+    Args:
+        user_id (int)
+
+    Returns:
+        dict:
+            {
+                "weight_increase": [...],
+                "neglected_muscle_groups": [...]
+            }
+    """
     return {
-        "weight_increase": weight_recs,
-        "neglected_muscle_groups": neglected_recs,
+        "weight_increase": recommend_weight_increases(user_id),
+        "neglected_muscle_groups": recommend_neglected_muscle_groups(user_id),
     }

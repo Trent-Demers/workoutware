@@ -1,3 +1,18 @@
+"""
+Django management utility script for the WorkoutWare project.
+
+This script provides command-line support for administrative Django tasks,
+including running the development server, applying migrations, creating apps,
+and executing custom management commands.
+
+It serves as the entry point for Django's command-line interface by setting the
+appropriate settings module and delegating to `django.core.management`.
+
+Typical usage:
+    python manage.py runserver
+    python manage.py makemigrations
+    python manage.py migrate
+"""
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os

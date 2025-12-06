@@ -1,4 +1,18 @@
 """
+URL routing configuration for the WorkoutWare project.
+
+This module defines the URL patterns for the entire application.
+It maps URL paths to their corresponding Django views, primarily by including
+the URL configuration from the `workoutware_app` application.
+
+Structure:
+    - Admin site URLs
+    - Core application URLs (from workoutware_app.urls)
+    - Authentication URLs (login, logout)
+
+All incoming HTTP requests are routed through this file.
+"""
+"""
 URL configuration for workoutware project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
