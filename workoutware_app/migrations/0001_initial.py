@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('expected_max', models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True)),
                 ('flagged_as', models.CharField(blank=True, max_length=20, null=True)),
                 ('user_action', models.CharField(blank=True, max_length=20, null=True)),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                ('timestamp', models.DateTimeField(blank=True, null=True)),
             ],
             options={
                 'db_table': 'data_validation',
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
             name='exercise_target_association',
             fields=[
                 ('association_id', models.AutoField(primary_key=True, serialize=False)),
-                ('intensity', models.CharField(blank=True, max_length=20)),
+                ('intensity', models.CharField(max_length=20)),
             ],
             options={
                 'db_table': 'exercise_target_association',
@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
                 ('exercise_order', models.IntegerField()),
                 ('target_sets', models.IntegerField(blank=True, null=True)),
                 ('target_reps', models.IntegerField(blank=True, null=True)),
-                ('completed', models.BooleanField(default=False)),
+                ('completed', models.BooleanField(default=True)),
             ],
             options={
                 'db_table': 'session_exercises',
@@ -125,8 +125,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('target_id', models.AutoField(primary_key=True, serialize=False)),
                 ('target_name', models.CharField(max_length=50)),
-                ('target_group', models.CharField(max_length=50)),
-                ('target_function', models.CharField(max_length=50)),
+                ('target_group', models.CharField(blank=True, max_length=50, null=True)),
+                ('target_function', models.CharField(blank=True, max_length=100, null=True)),
             ],
             options={
                 'db_table': 'target',
@@ -136,7 +136,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='user_info',
             fields=[
-                ('user_id', models.IntegerField(primary_key=True, serialize=False)),
+                ('user_id', models.AutoField(primary_key=True, serialize=False)),
+                ('username', models.CharField(max_length=50)),
                 ('first_name', models.CharField(max_length=50)),
                 ('last_name', models.CharField(max_length=50)),
                 ('address', models.CharField(blank=True, max_length=50, null=True)),
@@ -150,7 +151,7 @@ class Migration(migrations.Migration):
                 ('height', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True)),
                 ('date_registered', models.DateField(blank=True, null=True)),
                 ('date_unregistered', models.DateField(blank=True, null=True)),
-                ('registered', models.BooleanField(default=True)),
+                ('registered', models.BooleanField(blank=True, null=True)),
                 ('fitness_goal', models.CharField(blank=True, max_length=50, null=True)),
                 ('user_type', models.CharField(blank=True, max_length=50, null=True)),
             ],
@@ -197,7 +198,7 @@ class Migration(migrations.Migration):
             name='workout_goal_link',
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('created_at', models.DateTimeField()),
             ],
             options={
                 'db_table': 'workout_goal_link',
@@ -227,11 +228,39 @@ class Migration(migrations.Migration):
                 ('end_time', models.TimeField(blank=True, null=True)),
                 ('duration_minutes', models.IntegerField(blank=True, null=True)),
                 ('bodyweight', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True)),
-                ('completed', models.BooleanField(default=False)),
+                ('completed', models.BooleanField(default=True)),
                 ('is_template', models.BooleanField(default=False)),
             ],
             options={
                 'db_table': 'workout_sessions',
+                'managed': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='daily_workout_plan',
+            fields=[
+                ('daily_plan_id', models.AutoField(primary_key=True, serialize=False)),
+                ('day', models.IntegerField()),
+                ('wk_day', models.CharField(blank=True, max_length=50, null=True)),
+            ],
+            options={
+                'db_table': 'daily_workout_plan',
+                'managed': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='exercise_history_summary',
+            fields=[
+                ('summary_id', models.AutoField(primary_key=True, serialize=False)),
+                ('total_workouts', models.IntegerField(default=0)),
+                ('total_sets', models.IntegerField(default=0)),
+                ('total_reps', models.IntegerField(default=0)),
+                ('lifetime_volume', models.DecimalField(decimal_places=2, default=0.0, max_digits=12)),
+                ('current_pr', models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True)),
+                ('last_workout_date', models.DateField(blank=True, null=True)),
+            ],
+            options={
+                'db_table': 'exercise_history_summary',
                 'managed': False,
             },
         ),

@@ -1,280 +1,314 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" type="text/css" href="/static/stylesheets/workoutware.css">
-    <title>Progress & Trends</title>
-    <style>
-        .progress-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        .progress-table th {
-            background-color: #4caf50;
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-        .progress-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-        .progress-table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .validation-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        .validation-table th {
-            background-color: #2196f3;
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-        .validation-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-        .flag-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-        .badge-outlier { background-color: #ffcdd2; color: #c62828; }
-        .badge-new_pr { background-color: #c8e6c9; color: #2e7d32; }
-        .badge-normal { background-color: #bbdefb; color: #1565c0; }
-        .badge-suspicious_low { background-color: #ffe0b2; color: #e65100; }
-        .badge-first_time { background-color: #e1bee7; color: #6a1b9a; }
-        .section-header {
-            background-color: #f5f5f5;
-            padding: 15px;
-            margin: 30px 0 10px 0;
-            border-left: 4px solid #2196f3;
-        }
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .chart-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .chart-container h3 {
-            margin-top: 0;
-            color: #2196f3;
-        }
-        .chart-controls {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .chart-controls label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .chart-controls select {
-            padding: 8px 15px;
-            border: 2px solid #2196f3;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-    </style>
-</head>
-<body>
-    <h1>📊 Your Progress & Trends</h1>
-    
-    <a href="{% url 'home' %}">← Back to Dashboard</a> | 
-    <a href="{% url 'log_workout' %}">💪 Log Workout</a> | 
-    <a href="{% url 'log_body_stats' %}">📏 Log Body Stats</a>
-    
-    <div class="section-header">
-        <h2>📈 Top Exercise Progression (Auto-Display)</h2>
-        <p>Your top 5 exercises by total volume</p>
-    </div>
-    
-    <div class="charts-grid" id="top-exercise-charts">
-        <!-- Top 5 charts inserted here by JavaScript -->
-    </div>
-    
-    <div class="section-header">
-        <h2>🔍 Custom Exercise Progression</h2>
-        <p>Select any exercise to view detailed progression</p>
-    </div>
-    
-    <div class="chart-controls">
-        <label for="exerciseSelect">Select Exercise:</label>
-        <select id="exerciseSelect" onchange="loadCustomChart()">
-            <option value="">-- Choose an exercise --</option>
-            {% for ex_id, ex_name in user_exercises %}
-                <option value="{{ ex_id }}">{{ ex_name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    
-    <div id="customChartsContainer" style="display: none;">
-        <div class="chart-container">
-            <h3 id="chartTitle">Loading...</h3>
-            <canvas id="weightChart"></canvas>
-        </div>
-        
-        <div class="chart-container">
-            <h3>Average Reps Per Set</h3>
-            <canvas id="repsChart"></canvas>
-        </div>
-        
-        <div class="chart-container">
-            <h3>Total Volume Per Workout</h3>
-            <canvas id="volumeChart"></canvas>
-        </div>
-    </div>
-    
-    <div class="section-header">
-        <h2>⚖️ Bodyweight Trend</h2>
-    </div>
-    
-    <div class="chart-container">
-        <canvas id="bodyweight-chart"></canvas>
-    </div>
-    
-    <div class="section-header">
-        <h2>💡 Workout Recommendations</h2>
-        <p>Auto-generated suggestions based on your recent training</p>
-    </div>
-
-    <div class="chart-container">
-        {% if weight_increase_recs or neglected_muscle_group_recs.groups %}
+ <head>
+  <link href="{% static 'stylesheets/workoutware.css' %}" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <title>
+   Progress &amp; Trends
+  </title>
+ </head>
+ <body>
+ <div class="container-wrapper">
+  <h1 class="fade-in">
+   <i class="fas fa-chart-line"></i> Your Progress &amp; Trends
+  </h1>
+  <div class="nav-links fade-in">
+   <a href="{% url 'home' %}">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+   </a>
+   <a href="{% url 'log_workout' %}">
+    <i class="fas fa-dumbbell"></i> Log Workout
+   </a>
+   <a href="{% url 'log_body_stats' %}">
+    <i class="fas fa-ruler-combined"></i> Log Body Stats
+   </a>
+  </div>
+  <div class="section-header fade-in">
+   <h2>
+    <i class="fas fa-chart-area"></i> Top Exercise Progression
+   </h2>
+   <p>
+    Your top 5 exercises by total volume
+   </p>
+  </div>
+  <div class="charts-grid fade-in" id="top-exercise-charts">
+   <!-- Top 5 charts inserted here by JavaScript -->
+  </div>
+  <div class="section-header fade-in">
+   <h2>
+    <i class="fas fa-search"></i> Custom Exercise Progression
+   </h2>
+   <p>
+    Select any exercise to view detailed progression
+   </p>
+  </div>
+  <div class="chart-controls form-container fade-in">
+   <label for="exerciseSelect">
+    <i class="fas fa-list"></i> Select Exercise
+   </label>
+   <select id="exerciseSelect" onchange="loadCustomChart()">
+    <option value="">
+     -- Choose an exercise --
+    </option>
+    {% for ex_id, ex_name in user_exercises %}
+    <option value="{{ ex_id }}">
+     {{ ex_name }}
+    </option>
+    {% endfor %}
+   </select>
+  </div>
+  <div id="customChartsContainer" style="display: none;">
+   <div class="chart-container fade-in">
+    <h3 id="chartTitle">
+     Loading...
+    </h3>
+    <canvas id="weightChart">
+    </canvas>
+   </div>
+   <div class="chart-container fade-in">
+    <h3>
+     <i class="fas fa-repeat"></i> Average Reps Per Set
+    </h3>
+    <canvas id="repsChart">
+    </canvas>
+   </div>
+   <div class="chart-container fade-in">
+    <h3>
+     <i class="fas fa-weight-hanging"></i> Total Volume Per Workout
+    </h3>
+    <canvas id="volumeChart">
+    </canvas>
+   </div>
+  </div>
+  <div class="section-header fade-in">
+   <h2>
+    <i class="fas fa-weight-scale"></i> Bodyweight Trend
+   </h2>
+  </div>
+  <div class="chart-container fade-in">
+   <canvas id="bodyweight-chart">
+   </canvas>
+  </div>
+  <div class="section-header fade-in">
+   <h2>
+    <i class="fas fa-lightbulb"></i> Workout Recommendations
+   </h2>
+   <p>
+    Auto-generated suggestions based on your recent training
+   </p>
+  </div>
+  <div class="chart-container fade-in">
+   {% if weight_increase_recs or neglected_muscle_group_recs.groups %}
             {% if weight_increase_recs %}
-                <h3>Suggested Weight Increases</h3>
-                <ul>
-                    {% for rec in weight_increase_recs %}
-                        <li>{{ rec.message }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No weight increase recommendations yet – keep hitting your target reps!</p>
-            {% endif %}
+   <h3>
+    <i class="fas fa-arrow-up"></i> Suggested Weight Increases
+   </h3>
+   <ul style="padding-left: 20px;">
+    {% for rec in weight_increase_recs %}
+    <li style="list-style: disc; margin-bottom: 8px; color: var(--text-secondary);">
+     {{ rec.message }}
+    </li>
+    {% endfor %}
+   </ul>
+   {% else %}
+   <p style="color: var(--text-muted);">
+    <i class="fas fa-info-circle"></i> No weight increase recommendations yet – keep hitting your target reps!
+   </p>
+   {% endif %}
 
             {% if neglected_muscle_group_recs.groups %}
-                <h3>Neglected Muscle Groups (last {{ neglected_muscle_group_recs.lookback_days }} days)</h3>
-                <ul>
-                    {% for msg in neglected_muscle_group_recs.messages %}
-                        <li>{{ msg|safe }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No clearly neglected muscle groups detected recently.</p>
-            {% endif %}
+   <h3 style="margin-top: 25px;">
+    <i class="fas fa-exclamation-triangle"></i> Neglected Muscle Groups (last {{ neglected_muscle_group_recs.lookback_days }} days)
+   </h3>
+   <ul style="padding-left: 20px;">
+    {% for msg in neglected_muscle_group_recs.messages %}
+    <li style="list-style: disc; margin-bottom: 8px; color: var(--text-secondary);">
+     {{ msg|safe }}
+    </li>
+    {% endfor %}
+   </ul>
+   {% else %}
+   <p style="color: var(--text-muted);">
+    <i class="fas fa-check-circle"></i> No clearly neglected muscle groups detected recently.
+   </p>
+   {% endif %}
         {% else %}
-            <p>No recommendations yet – complete a few more workouts to unlock insights.</p>
-        {% endif %}
-    </div>
-
-    <div class="section-header">
-        <h2>Weekly Progress Metrics</h2>
-        <p>Your strength data aggregated by week</p>
-    </div>
-    
-    {% if progress_data %}
-        <table class="progress-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Exercise</th>
-                    <th>Period</th>
-                    <th>Max Weight</th>
-                    <th>Avg Weight</th>
-                    <th>Total Volume</th>
-                    <th>Workouts</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in progress_data %}
-                <tr>
-                    <td>{{ p.date|date:"M d, Y" }}</td>
-                    <td><strong>{{ p.exercise_id.name }}</strong></td>
-                    <td>{{ p.period_type|capfirst }}</td>
-                    <td>{% if p.max_weight %}{{ p.max_weight }} lbs{% else %}N/A{% endif %}</td>
-                    <td>{% if p.avg_weight %}{{ p.avg_weight|floatformat:1 }} lbs{% else %}N/A{% endif %}</td>
-                    <td>{% if p.total_volume %}{{ p.total_volume|floatformat:0 }} lbs{% else %}N/A{% endif %}</td>
-                    <td>{{ p.workout_count }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p style="padding: 20px; background-color: #fff3e0; border-radius: 5px;">
-            No progress data yet. Complete a few workouts to see your trends!
-        </p>
-    {% endif %}
-    
-    <div class="section-header">
-        <h2>Recent Validation Checks</h2>
-        <p>Real-time data accuracy monitoring</p>
-    </div>
-    
-    {% if validations %}
-        <table class="validation-table">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Exercise</th>
-                    <th>Input Weight</th>
-                    <th>Expected Max</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for v in validations %}
-                <tr>
-                    <td>{{ v.timestamp|date:"M d, Y H:i" }}</td>
-                    <td><strong>{{ v.exercise_id.name }}</strong></td>
-                    <td>{{ v.input_weight }} lbs</td>
-                    <td>{% if v.expected_max %}{{ v.expected_max }} lbs{% else %}N/A{% endif %}</td>
-                    <td>
-                        <span class="flag-badge badge-{{ v.flagged_as }}">
-                            {% if v.flagged_as == 'outlier' %}⚠️ Outlier
-                            {% elif v.flagged_as == 'new_pr' %}🎉 New PR!
-                            {% elif v.flagged_as == 'normal' %}✓ Normal
-                            {% elif v.flagged_as == 'suspicious_low' %}⚠️ Low
-                            {% elif v.flagged_as == 'first_time' %}🌟 First Time
+   <div class="empty-state">
+    <i class="fas fa-brain"></i>
+    <p>No recommendations yet – complete a few more workouts to unlock insights.</p>
+   </div>
+   {% endif %}
+  </div>
+  <div class="section-header fade-in">
+   <h2>
+    <i class="fas fa-calendar-check"></i> Weekly Progress Metrics
+   </h2>
+   <p>
+    Your strength data aggregated by week
+   </p>
+  </div>
+  {% if progress_data %}
+  <table class="progress-table fade-in">
+   <thead>
+    <tr>
+     <th>
+      <i class="far fa-calendar"></i> Date
+     </th>
+     <th>
+      <i class="fas fa-dumbbell"></i> Exercise
+     </th>
+     <th>
+      <i class="fas fa-clock"></i> Period
+     </th>
+     <th>
+      <i class="fas fa-arrow-up"></i> Max Weight
+     </th>
+     <th>
+      <i class="fas fa-balance-scale"></i> Avg Weight
+     </th>
+     <th>
+      <i class="fas fa-cube"></i> Total Volume
+     </th>
+     <th>
+      <i class="fas fa-hashtag"></i> Workouts
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for p in progress_data %}
+    <tr>
+     <td>
+      {{ p.date|date:"M d, Y" }}
+     </td>
+     <td>
+      <strong>
+       {{ p.exercise_id.name }}
+      </strong>
+     </td>
+     <td>
+      {{ p.period_type|capfirst }}
+     </td>
+     <td>
+      {% if p.max_weight %}{{ p.max_weight }} lbs{% else %}N/A{% endif %}
+     </td>
+     <td>
+      {% if p.avg_weight %}{{ p.avg_weight|floatformat:1 }} lbs{% else %}N/A{% endif %}
+     </td>
+     <td>
+      {% if p.total_volume %}{{ p.total_volume|floatformat:0 }} lbs{% else %}N/A{% endif %}
+     </td>
+     <td>
+      {{ p.workout_count }}
+     </td>
+    </tr>
+    {% endfor %}
+   </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state fade-in">
+   <i class="fas fa-chart-bar"></i>
+   <p>No progress data yet. Complete a few workouts to see your trends!</p>
+  </div>
+  {% endif %}
+  <div class="section-header fade-in">
+   <h2>
+    <i class="fas fa-shield-check"></i> Recent Validation Checks
+   </h2>
+   <p>
+    Real-time data accuracy monitoring
+   </p>
+  </div>
+  {% if validations %}
+  <table class="validation-table fade-in">
+   <thead>
+    <tr>
+     <th>
+      <i class="fas fa-clock"></i> Timestamp
+     </th>
+     <th>
+      <i class="fas fa-dumbbell"></i> Exercise
+     </th>
+     <th>
+      <i class="fas fa-weight-hanging"></i> Input Weight
+     </th>
+     <th>
+      <i class="fas fa-chart-line"></i> Expected Max
+     </th>
+     <th>
+      <i class="fas fa-flag"></i> Status
+     </th>
+     <th>
+      <i class="fas fa-bolt"></i> Action
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    {% for v in validations %}
+    <tr>
+     <td>
+      {{ v.timestamp|date:"M d, Y H:i" }}
+     </td>
+     <td>
+      <strong>
+       {{ v.exercise_id.name }}
+      </strong>
+     </td>
+     <td>
+      {{ v.input_weight }} lbs
+     </td>
+     <td>
+      {% if v.expected_max %}{{ v.expected_max }} lbs{% else %}N/A{% endif %}
+     </td>
+     <td>
+      <span class="flag-badge badge-{{ v.flagged_as }}">
+       {% if v.flagged_as == 'outlier' %}<i class="fas fa-exclamation-triangle"></i> Outlier
+                            {% elif v.flagged_as == 'new_pr' %}<i class="fas fa-trophy"></i> New PR!
+                            {% elif v.flagged_as == 'normal' %}<i class="fas fa-check"></i> Normal
+                            {% elif v.flagged_as == 'suspicious_low' %}<i class="fas fa-arrow-down"></i> Low
+                            {% elif v.flagged_as == 'first_time' %}<i class="fas fa-star"></i> First Time
                             {% else %}{{ v.flagged_as|capfirst }}{% endif %}
-                        </span>
-                    </td>
-                    <td>{{ v.user_action|default:"Logged"|capfirst }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p style="padding: 20px; background-color: #e3f2fd; border-radius: 5px;">
-            No validation history yet. Log some workouts to see smart validation in action!
-        </p>
-    {% endif %}
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script>
-        // Parse data from Django context
+      </span>
+     </td>
+     <td>
+      {{ v.user_action|default:"Logged"|capfirst }}
+     </td>
+    </tr>
+    {% endfor %}
+   </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state fade-in">
+   <i class="fas fa-shield-check"></i>
+   <p>No validation history yet. Log some workouts to see smart validation in action!</p>
+  </div>
+  {% endif %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js">
+  </script>
+  <script>
+   // Parse data from Django context
         const exerciseTrends = {{ exercise_trends|safe }};
         const bodyweightTrend = {{ bodyweight_trend|safe }};
+        
+        // Chart color scheme matching new CSS
+        const chartColors = {
+            primary: '#00b894',
+            secondary: '#00cec9',
+            accent: '#e17055',
+            info: '#74b9ff',
+            gridColor: 'rgba(0, 184, 148, 0.1)',
+            textColor: '#8b949e'
+        };
         
         // PART 1: Create TOP 5 exercise charts (auto-display)
         const topChartsContainer = document.getElementById('top-exercise-charts');
         
         for (const [exerciseName, data] of Object.entries(exerciseTrends)) {
             const chartDiv = document.createElement('div');
-            chartDiv.className = 'chart-container';
+            chartDiv.className = 'chart-container fade-in';
             
             const title = document.createElement('h3');
-            title.textContent = exerciseName;
+            title.innerHTML = '<i class="fas fa-chart-line"></i> ' + exerciseName;
             chartDiv.appendChild(title);
             
             const canvas = document.createElement('canvas');
@@ -288,25 +322,38 @@
                     datasets: [{
                         label: 'Max Weight (lbs)',
                         data: data.max_weights,
-                        borderColor: '#4caf50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                        tension: 0.3,
-                        fill: true
+                        borderColor: chartColors.primary,
+                        backgroundColor: 'rgba(0, 184, 148, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: chartColors.primary,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { display: true }
+                        legend: { 
+                            display: true,
+                            labels: { color: chartColors.textColor }
+                        }
                     },
                     scales: {
                         y: {
                             beginAtZero: false,
+                            grid: { color: chartColors.gridColor },
                             ticks: {
+                                color: chartColors.textColor,
                                 callback: function(value) {
                                     return value + ' lbs';
                                 }
                             }
+                        },
+                        x: {
+                            grid: { color: chartColors.gridColor },
+                            ticks: { color: chartColors.textColor }
                         }
                     }
                 }
@@ -330,7 +377,7 @@
             const data = await response.json();
             
             const exerciseName = document.getElementById('exerciseSelect').selectedOptions[0].text;
-            document.getElementById('chartTitle').textContent = `${exerciseName} - Max Weight Progression`;
+            document.getElementById('chartTitle').innerHTML = '<i class="fas fa-dumbbell"></i> ' + exerciseName + ' - Max Weight Progression';
             document.getElementById('customChartsContainer').style.display = 'block';
             
             // Destroy old charts
@@ -346,15 +393,28 @@
                     datasets: [{
                         label: 'Max Weight (lbs)',
                         data: data.max_weights,
-                        borderColor: '#4caf50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                        tension: 0.3,
+                        borderColor: chartColors.primary,
+                        backgroundColor: 'rgba(0, 184, 148, 0.1)',
+                        tension: 0.4,
                         fill: true
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: false } }
+                    scales: { 
+                        y: { 
+                            beginAtZero: false,
+                            grid: { color: chartColors.gridColor },
+                            ticks: { color: chartColors.textColor }
+                        },
+                        x: {
+                            grid: { color: chartColors.gridColor },
+                            ticks: { color: chartColors.textColor }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: chartColors.textColor } }
+                    }
                 }
             });
             
@@ -366,15 +426,28 @@
                     datasets: [{
                         label: 'Avg Reps',
                         data: data.avg_reps,
-                        borderColor: '#2196f3',
-                        backgroundColor: 'rgba(33, 150, 243, 0.1)',
-                        tension: 0.3,
+                        borderColor: chartColors.info,
+                        backgroundColor: 'rgba(116, 185, 255, 0.1)',
+                        tension: 0.4,
                         fill: true
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: true } }
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: chartColors.gridColor },
+                            ticks: { color: chartColors.textColor }
+                        },
+                        x: {
+                            grid: { color: chartColors.gridColor },
+                            ticks: { color: chartColors.textColor }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: chartColors.textColor } }
+                    }
                 }
             });
             
@@ -386,19 +459,33 @@
                     datasets: [{
                         label: 'Total Volume (lbs)',
                         data: data.total_volume,
-                        backgroundColor: 'rgba(255, 152, 0, 0.5)',
-                        borderColor: '#ff9800',
-                        borderWidth: 2
+                        backgroundColor: 'rgba(225, 112, 85, 0.5)',
+                        borderColor: chartColors.accent,
+                        borderWidth: 2,
+                        borderRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: true } }
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: chartColors.gridColor },
+                            ticks: { color: chartColors.textColor }
+                        },
+                        x: {
+                            grid: { color: chartColors.gridColor },
+                            ticks: { color: chartColors.textColor }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: chartColors.textColor } }
+                    }
                 }
             });
         }
         
-        // PART 3: Bodyweight chart (FIXED: recent on right, older on left)
+        // PART 3: Bodyweight chart
         if (bodyweightTrend.dates.length > 0) {
             new Chart(document.getElementById('bodyweight-chart'), {
                 type: 'line',
@@ -407,30 +494,44 @@
                     datasets: [{
                         label: 'Bodyweight (lbs)',
                         data: bodyweightTrend.weights,
-                        borderColor: '#2196f3',
-                        backgroundColor: 'rgba(33, 150, 243, 0.1)',
-                        tension: 0.3,
-                        fill: true
+                        borderColor: chartColors.secondary,
+                        backgroundColor: 'rgba(0, 206, 201, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: chartColors.secondary,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { display: true }
+                        legend: { 
+                            display: true,
+                            labels: { color: chartColors.textColor }
+                        }
                     },
                     scales: {
                         y: {
                             beginAtZero: false,
+                            grid: { color: chartColors.gridColor },
                             ticks: {
+                                color: chartColors.textColor,
                                 callback: function(value) {
                                     return value + ' lbs';
                                 }
                             }
+                        },
+                        x: {
+                            grid: { color: chartColors.gridColor },
+                            ticks: { color: chartColors.textColor }
                         }
                     }
                 }
             });
         }
-    </script>
+  </script>
+  </div>
 </body>
 </html>

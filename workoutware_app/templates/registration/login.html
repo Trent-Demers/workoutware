@@ -1,113 +1,44 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Login - WorkoutWare</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-        }
-        .login-container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            max-width: 400px;
-            width: 100%;
-        }
-        h2 {
-            text-align: center;
-            color: #667eea;
-            margin-bottom: 30px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin-top: 15px;
-            color: #333;
-            font-weight: bold;
-        }
-        input {
-            padding: 12px;
-            margin-top: 5px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        button {
-            margin-top: 25px;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button:hover {
-            transform: translateY(-2px);
-        }
-        .signup-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-        }
-        .signup-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-        .error {
-            background-color: #ffebee;
-            color: #f44336;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-        <h2>💪 WorkoutWare Login</h2>
-        
-        {% if form.errors %}
-        <div class="error">
-            Invalid username or password.
-        </div>
-        {% endif %}
-        
-        <form method="post">
-            {% csrf_token %}
-            
-            <label for="id_username">Username:</label>
-            {{ form.username }}
-            
-            <label for="id_password">Password:</label>
-            {{ form.password }}
-            
-            <button type="submit">Log In</button>
-        </form>
-        
-        <div class="signup-link">
-            Don't have an account? <a href="{% url 'signup' %}">Sign up here</a>
-        </div>
-    </div>
-</body>
+ <head>
+  <link href="{% static 'stylesheets/workoutware.css' %}" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <meta charset="utf-8"/>
+  <title>
+   Login - WorkoutWare
+  </title>
+ </head>
+ <body>
+  <div class="login-container fade-in">
+   <h2>
+    <i class="fas fa-dumbbell"></i> WorkoutWare Login
+   </h2>
+   {% if form.errors %}
+   <div class="error">
+    <i class="fas fa-exclamation-circle"></i> Invalid username or password.
+   </div>
+   {% endif %}
+   <form method="post">
+    {% csrf_token %}
+    <label for="id_username">
+     <i class="fas fa-user"></i> Username
+    </label>
+    {{ form.username }}
+    <label for="id_password">
+     <i class="fas fa-lock"></i> Password
+    </label>
+    {{ form.password }}
+    <button type="submit">
+     <i class="fas fa-sign-in-alt"></i> Log In
+    </button>
+   </form>
+   <div class="signup-link">
+    Don't have an account?
+    <a href="{% url 'signup' %}">
+     <i class="fas fa-user-plus"></i> Sign up here
+    </a>
+   </div>
+  </div>
+ </body>
 </html>

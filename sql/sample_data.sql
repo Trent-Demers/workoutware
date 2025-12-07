@@ -149,7 +149,104 @@ INSERT INTO user_info (
 
 ('evasquez', 'Evan', 'Vasquez', '61 Oak Ln', 'New York', 'NY', 'USA', 'evan.v@example.com', NULL,
  SHA2('admin99',256), '1984-11-08', 183.10, '2025-01-06', NULL, 1, 'System Administration', 'admin');
- 
+
+
+INSERT INTO auth_user (
+    password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES
+
+('pbkdf2_sha256$1000000$EOEjMPIoDXcuLDybHImacV$GD/uXRhoVx0CvIxommalrmAxDxT1Jr9+KOE4YZReyzE=', '2025-01-10', 0, 'jdoe', 'John', 'Doe', 'john.doe@example.com', 0, 1, '2025-01-10'),
+
+('pbkdf2_sha256$1000000$PpeWFRkCc4zxH2YPelcjJg$tvFyk23deoWUkoiWo82WbI0pz/P6r1QSUcaQyqeTguA=', '2025-01-11', 0, 'esmith', 'Emily', 'Smith', 'emily.smith@example.com', 0, 1, '2025-01-11'),
+
+('pbkdf2_sha256$1000000$Cxv4cgqyqVT3VjMUOmgJnW$FI5PtwytMIxI/qKJgFzJd4Xa33GTPvajw8nxpuRu1MA=', '2025-01-11', 0, 'mjohnson', 'Michael', 'Johnson', 'mike.j@example.com', 0, 1, '2025-01-11'),
+
+('pbkdf2_sha256$1000000$ToZ5SGWrd5g3jjuQTQGwxE$BDHInilAeSJI4VhlkpeL5iB/npMGjlcXm6A90tyV8zo=', '2025-01-12', 0, 'sbrown', 'Sophia', 'Brown', 'sophia.b@example.com', 0, 1, '2025-01-12'),
+
+('pbkdf2_sha256$1000000$dlNZVYj5ACkrdHQHS4qDkV$++JTb/iHSSH6FquZYC5p14Uq53PZTIydUEC3qXoTxII=', '2025-01-09', 1, 'cwilson', 'Chris', 'Wilson', 'chris.w@example.com', 1, 1, '2025-01-09'),
+
+('pbkdf2_sha256$1000000$wqBa7GBZMkVInlGLrJLFwL$PlTZ207X8VbeJut4Wn2Q8GEvaiAETbPi47tEFIjZHfo=', '2025-01-13', 0, 'ajones', 'Ava', 'Jones', 'ava.jones@example.com', 0, 1, '2025-01-13'),
+
+('pbkdf2_sha256$1000000$phU1IPL30Bjg9U8Vrlftjc$Z3kwH4CXD0QFCCA0+idqNITciylcT5SDK3sUEyvAO7E=', '2025-01-13', 0, 'wmartin', 'William', 'Martin', 'will.martin@example.com', 0, 1, '2025-01-13'),
+
+('pbkdf2_sha256$1000000$MP9P6qIAKVPCUpF2aYyryw$jSUIyt4dtghXDhLJ7XDjuCc9HsZPbz+VKh2czf2upRQ=', '2025-01-14', 0, 'llee', 'Lily', 'Lee', 'lily.lee@example.com', 0, 1, '2025-01-14'),
+
+('pbkdf2_sha256$1000000$DkK2cfKd4i0iH39MrhpDQc$n0yMH6eB0fXjO0z215KDESJWCOkxrZF2LG8fVacyfjY=', '2025-01-14', 0, 'dclark', 'Daniel', 'Clark', 'dan.clark@example.com', 0, 1, '2025-01-14'),
+
+('pbkdf2_sha256$1000000$ddPkzlPch1pBXMtxUYR5PP$+CpH0YHUnUv7KSWrvzGALMZAlYZbzxmWDqfksOvS/gc=', '2025-01-15', 0, 'nharris', 'Noah', 'Harris', 'noah.h@example.com', 0, 1, '2025-01-15'),
+
+('pbkdf2_sha256$1000000$bmNGOhlKgKX99Oeq9lJtES$B8/UHO+hxnIjJQr55tDzqxXTmP9eS51zQo+n1tnfZ9c=', '2025-01-15', 0, 'ogreen', 'Olivia', 'Green', 'olivia.g@example.com', 0, 1, '2025-01-15'),
+
+('pbkdf2_sha256$1000000$2aWZtmCdajYcH4GF0WHBAz$wqLYuedEyOl09ao6PXptcNkYWHtL04v9R0TwCB/IMpk=', '2025-01-15', 0, 'pphillips', 'Paul', 'Phillips', 'paul.p@example.com', 0, 1, '2025-01-15'),
+
+('pbkdf2_sha256$1000000$TvLdMMg9aFw2OYXCInzFCi$AxesIUzP2yG9XWBKo6GYmjXp1k/MguN2S98Rr/Sx2u8=', '2025-01-16', 0, 'zreid', 'Zoe', 'Reid', 'zoe.reid@example.com', 0, 1, '2025-01-16'),
+
+('pbkdf2_sha256$1000000$yNarVnyRy74DovEXK4Gbeo$cAgPdv5O6f1vPdDGncTRLd+L5TGVQyszQRsD9VWAR6k=', '2025-01-16', 0, 'gturner', 'George', 'Turner', 'george.t@example.com', 0, 1, '2025-01-16'),
+
+('pbkdf2_sha256$1000000$IhorMpmJINSQoxl1a3DVyv$pPvYNgYgWFTS3lPu3EkHFKqD7euWh3oNQlJLKFCvkIw=', '2025-01-16', 0, 'bwalker', 'Bella', 'Walker', 'bella.w@example.com', 0, 1, '2025-01-16'),
+
+('pbkdf2_sha256$1000000$pgdJG8hG9bMiX1SXDn8KJr$QH7J6ylMntV72n9ewnLxnqNTwOe8qG+8RFquOJXv6C8=', '2025-01-08', 1, 'tking', 'Thomas', 'King', 'thomas.king@example.com', 1, 1, '2025-01-08'),
+
+('pbkdf2_sha256$1000000$PRjv1P9SlMSWQ23UPonSm6$cJBmF+X3Sbik2xvZ3JVEK09bDcD80eJnOYJWyjrMWoo=', '2025-01-17', 0, 'nhernandez', 'Natalie', 'Hernandez', 'natalie.h@example.com', 0, 1, '2025-01-17'),
+
+('pbkdf2_sha256$1000000$QvJ3EF2G9GlzzevqMrq92h$l++abxU3JRWukCKbGbsOtOeJWl3foyxGcWpFWB1sPCo=', '2025-01-17', 0, 'cscott', 'Caleb', 'Scott', 'caleb.scott@example.com', 0, 1, '2025-01-17'),
+
+('pbkdf2_sha256$1000000$IqjEB3eKrBwZIbvh0eVZJk$HPrnxJf+sQmuOvdiKqdWVu2eklDj5/citzUBuUk+G1Q=', '2025-01-17', 0, 'lyoung', 'Layla', 'Young', 'layla.y@example.com', 0, 1, '2025-01-17'),
+
+('pbkdf2_sha256$1000000$Yaf0198VjJ4DGmwcjVbh3p$+9WjfIMCy6SA+G+VVvy72Y5dsbS4mZCbwJIO9gNMEX8=', '2025-01-18', 0, 'jroberts', 'James', 'Roberts', 'james.r@example.com', 0, 1, '2025-01-18'),
+
+('pbkdf2_sha256$1000000$R1zOkFIKmG4IOijeDH5Gkv$FoPOTjC076La1HIjKvzmrRsjvgsVuPYohqrQjBo/Om0=', '2025-01-18', 0, 'rhall', 'Ruby', 'Hall', 'ruby.h@example.com', 0, 1, '2025-01-18'),
+
+('pbkdf2_sha256$1000000$LNpPcpkvzF26Gl0uMLJMJ8$j3lTRaQxV/JRj4mciMvWaJfJBNKKRpYtSEEXTf8VS5Y=', '2025-01-18', 0, 'hlopez', 'Henry', 'Lopez', 'henry.l@example.com', 0, 1, '2025-01-18'),
+
+('pbkdf2_sha256$1000000$s7n7eqEwmgryjm1Fi9bEUX$r8G9Flomo0cFAyse6lUbCuX/Aj7otGK7kaYHCpHe8cA=', '2025-01-18', 0, 'wwhite', 'Willa', 'White', 'willa.w@example.com', 0, 1, '2025-01-18'),
+
+('pbkdf2_sha256$1000000$K69dnOOtnGPq47zeLuhMKb$+yn8R8X/HNn/KFHjMZO1oi62x/DwboHhMJZqlvbsRD4=', '2025-01-19', 0, 'gking', 'Gabriel', 'King', 'gabe.king@example.com', 0, 1, '2025-01-19'),
+
+('pbkdf2_sha256$1000000$sx3x51XH7Y0sNreXZpN6jb$/GgJfQ2rMCiGgiT9szIGVxX40GPRC6yKXKgoGj90W88=', '2025-01-19', 0, 'isanders', 'Isla', 'Sanders', 'isla.s@example.com', 0, 1, '2025-01-19'),
+
+('pbkdf2_sha256$1000000$ObbZLCJjnHukc0ugCJjYvS$zHmdMXuJ+fHhmU4fSvqMgse+ZLS1eJfMyy5kyJ9hlbU=', '2025-01-19', 0, 'nward', 'Nathan', 'Ward', 'nate.w@example.com', 0, 1, '2025-01-19'),
+
+('pbkdf2_sha256$1000000$tkSDnCogcoDHF3C55AAtaJ$TSKDdhZlrRyCOAB9KVr1pHpA3EX+LFmGNsCZ/xiP4Ws=', '2025-01-19', 0, 'jsanchez', 'Julia', 'Sanchez', 'julia.s@example.com', 0, 1, '2025-01-19'),
+
+('pbkdf2_sha256$1000000$UOGUCLcqRfK7vJ0TxL8o3d$CZlSqVBiMzKyfUKSNPRt0TAEC5yiUOfqRnTvbizK970=', '2025-01-20', 0, 'rjenkins', 'Ryan', 'Jenkins', 'ryan.j@example.com', 0, 1, '2025-01-20'),
+
+('pbkdf2_sha256$1000000$POdPzwwCVg2YBvzFDKnMdt$t049iLld5/5aj9Q5lndUEh/AdrHwpZma29xywytaDgg=', '2025-01-20', 0, 'cporter', 'Chloe', 'Porter', 'chloe.p@example.com', 0, 1, '2025-01-20'),
+
+('pbkdf2_sha256$1000000$IqPD1ESf5qFpub2qC3CoRD$g9wDtolS0DrYCNxtQgPH6TgA3xHZwkKfu/W2+AIUhM4=', '2025-01-05', 1, 'agarcia', 'Aiden', 'Garcia', 'aiden.g@example.com', 1, 1, '2025-01-05'),
+
+('pbkdf2_sha256$1000000$brBqXfnTLstvj02XfdgQHx$9KoJMta7QU7AHVRug/WFjHbZdlPUDLmNinTU1dbXT4c=', '2025-01-20', 0, 'mmorris', 'Mia', 'Morris', 'mia.m@example.com', 0, 1, '2025-01-20'),
+
+('pbkdf2_sha256$1000000$0peoIXCeNyDlRkSTSt5zw9$7QsuSFmpvu1OIP8lPW3FQ+ajDW9bW8LwoK73YjMaEw4=', '2025-01-21', 0, 'mgray', 'Miles', 'Gray', 'miles.g@example.com', 0, 1, '2025-01-21'),
+
+('pbkdf2_sha256$1000000$3csuYvkgkXIqLG9oW4uAv8$oFUMRj073dxMoWDnhM+d7oqlKQeFGy5AEMGNc4BTZfI=', '2025-01-21', 0, 'swood', 'Scarlett', 'Wood', 'scarlett.w@example.com', 0, 1, '2025-01-21'),
+
+('pbkdf2_sha256$1000000$ZqqwVkChbQUWRGeVENUeXL$5me1DmKItsonWT88l0lNp4bHjzlkKBkOOSD1PT/PToY=', '2025-01-21', 0, 'hprice', 'Hudson', 'Price', 'hudson.p@example.com', 0, 1, '2025-01-21'),
+
+('pbkdf2_sha256$1000000$Ey8hsBNeECfi8LBMUK3E4D$Wd7tT43JfwuNe77aky1vk3LLE9jm87WHvYXBrfErKlI=', '2025-01-21', 0, 'pelias', 'Penelope', 'Elias', 'pen.elias@example.com', 0, 1, '2025-01-21'),
+
+('pbkdf2_sha256$1000000$4bzMXc5uKpR2EBrhdebkVR$A+8132bSLstYfb5iJLDjPmiZEhD9u96MRtwK2Z9bPd4=', '2025-01-22', 0, 'rmitchell', 'Ryder', 'Mitchell', 'ryder.m@example.com', 0, 1, '2025-01-22'),
+
+('pbkdf2_sha256$1000000$KMgnazChdDqXYV0xRjA8qp$Kdno2pFDSGB+STO4rmvLUM53ijngbwymmKxpwvOIOTo=', '2025-01-22', 0, 'acarson', 'Aria', 'Carson', 'aria.c@example.com', 0, 1, '2025-01-22'),
+
+('pbkdf2_sha256$1000000$wpaVBVD9pfZctRT8TXdsAu$dpBkvhWGGoTO+SbKML64KSDkMkKr3/63dZr+1IsB99E=', '2025-01-22', 0, 'jjordan', 'Jack', 'Jordan', 'jack.jordan@example.com', 0, 1, '2025-01-22'),
+
+('pbkdf2_sha256$1000000$cBZB6bi6eI52lXRKHJwNFb$DQRqf8ZXpXK+Q2UgBhZA1cBbcV22wz3m1DCn/sxEb1k=', '2025-01-22', 0, 'hroberts', 'Hailey', 'Roberts', 'hailey.r@example.com', 0, 1, '2025-01-22'),
+
+('pbkdf2_sha256$1000000$jimggAkVBOVtXt6jfyMBJm$iQhFuzZwZBoJV7IcCAvI+W4XYxZTMy1axjy64yvEFUI=', '2025-01-23', 0, 'jmartinez', 'Julian', 'Martinez', 'julian.m@example.com', 0, 1, '2025-01-23'),
+
+('pbkdf2_sha256$1000000$qS5JbtLYWApEq8aOq12kjP$uSEvYQ6fcDO9UC9cURAPIotG0lSkwJC0TMV212/d6xo=', '2025-01-23', 0, 'grogers', 'Grace', 'Rogers', 'grace.r@example.com', 0, 1, '2025-01-23'),
+
+('pbkdf2_sha256$1000000$9rEtduvObRvdIp5j5atUbj$CZEHitBZByWAIL0zd2K5Ey8x0QDNJODWiBXB6BdKbXQ=', '2025-01-23', 0, 'klopez', 'Kai', 'Lopez', 'kai.lopez@example.com', 0, 1, '2025-01-23'),
+
+('pbkdf2_sha256$1000000$j0rCd0yHzinc3j48YeuweT$L2kkB/fng56cAF6o0hEZng9U1kwSpDG4d6xRtoCuqg8=', '2025-01-23', 0, 'carmstrong', 'Carter', 'Armstrong', 'carter.a@example.com', 0, 1, '2025-01-23'),
+
+('pbkdf2_sha256$1000000$yajWWbF3e0FcqCsyHBJ95i$x45XoIZlIXGpZFSm4sKm29Z4nSue3oa1miXKmRCbWj8=', '2025-01-24', 0, 'delson', 'Delilah', 'Elson', 'delilah.e@example.com', 0, 1, '2025-01-24'),
+
+('pbkdf2_sha256$1000000$QvPWf8Vh7TINswb9CSRd0x$bXW6e9cbaUn6bJmBPcJaNq+2OMElZaWEcx5E3uU9odI=', '2025-01-24', 0, 'phunt', 'Parker', 'Hunt', 'parker.h@example.com', 0, 1, '2025-01-24'),
+
+('pbkdf2_sha256$1000000$hM6lgN6INLoGu9FdoWNXqw$FFNr0bM7RTmWLpXLffvlXlRKqp08++B5LhkaV8IiLXc=', '2025-01-24', 0, 'ssharp', 'Stella', 'Sharp', 'stella.s@example.com', 0, 1, '2025-01-24'); 
+
+
  --
  -- EXERCISE TEST DATA
  --
