@@ -1,3 +1,61 @@
+<!--
+    Template: User Dashboard
+
+    Purpose:
+    --------
+    - Main landing page for logged-in users.
+    - Provides a quick overview of:
+        • Current streak and workout counts
+        • Navigation to key features (workouts, progress, goals, body stats)
+        • Recent personal records (PRs)
+        • Active goals with mini progress bars
+
+    Expected Context Variables:
+    ---------------------------
+    user :
+        Django User object; `user.username` is shown in the welcome header.
+
+    streak_days : int
+        Current consecutive-day workout streak.
+
+    workouts_this_week : int
+        Number of completed workouts in the current week.
+
+    total_workouts : int
+        Total number of completed workouts by this user.
+
+    recent_prs : iterable of PR objects/dicts
+        Each item should provide:
+            • exercise_name
+            • pb_weight
+            • previous_pr (optional)
+            • improvement (difference vs previous PR)
+            • pb_date
+
+    active_goals : iterable of Goal objects
+        Each goal should provide:
+            • goal_description
+            • target_value
+            • current_value (optional)
+            • unit (e.g., lbs, reps, workouts, minutes)
+            • target_date (optional)
+
+    URL Dependencies (named URL patterns):
+    --------------------------------------
+    - 'logout'                 → POST log out
+    - 'completed_workouts_week'→ list of workouts completed this week
+    - 'completed_workouts'     → list of all completed workouts
+    - 'log_workout'            → start/log a workout session
+    - 'progress'               → analytics / progress dashboard
+    - 'manage_goals'           → goal management page
+    - 'log_body_stats'         → body metrics logging page
+
+    Notes:
+    ------
+    - Cards and stat boxes are fully clickable only where wrapped in <a> tags.
+    - Mini goal progress bar uses `{% widthratio %}` to compute `progress_percent`.
+    - No JavaScript is required; all behavior is purely navigational and presentational.
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -159,7 +217,7 @@
             <button type="submit" class="logout-btn">Log Out</button>
         </form>
     </div>
-    
+
     <div class="stats-grid">
         <div class="stat-box">
             <div class="stat-number">🔥 {{ streak_days }}</div>
@@ -188,33 +246,33 @@
             <div class="stat-label">Recent PRs</div>
         </div>
     </div>
-    
+
     <div class="dashboard-cards">
         <a href="{% url 'log_workout' %}" class="dashboard-card card-blue">
             <div class="card-icon">💪</div>
             <div class="card-title">Log Workout</div>
             <div class="card-description">Start a new workout session and track your exercises</div>
         </a>
-        
+
         <a href="{% url 'progress' %}" class="dashboard-card card-green">
             <div class="card-icon">📊</div>
             <div class="card-title">View Progress</div>
             <div class="card-description">See your trends, PRs, and validation history</div>
         </a>
-        
+
         <a href="{% url 'manage_goals' %}" class="dashboard-card card-orange">
             <div class="card-icon">🎯</div>
             <div class="card-title">Manage Goals</div>
             <div class="card-description">Set and track your fitness goals</div>
         </a>
-        
+
         <a href="{% url 'log_body_stats' %}" class="dashboard-card card-purple">
             <div class="card-icon">📏</div>
             <div class="card-title">Log Body Stats</div>
             <div class="card-description">Track bodyweight and measurements</div>
         </a>
     </div>
-    
+
     <div class="achievements-section">
         <h2>🏆 Recent Personal Records</h2>
         {% if recent_prs %}
@@ -236,7 +294,7 @@
             </p>
         {% endif %}
     </div>
-    
+
     <div class="achievements-section" style="margin-top: 20px;">
         <h2>🎯 Active Goals</h2>
         {% if active_goals %}
@@ -245,7 +303,7 @@
                 <strong>{{ goal.goal_description }}</strong><br>
                 <span style="color: #666;">Target: {{ goal.target_value }} {{ goal.unit }}</span>
                 {% if goal.target_date %} by {{ goal.target_date|date:"M d" }}{% endif %}<br>
-                
+
                 {% if goal.current_value %}
                     <div class="progress-mini">
                         {% widthratio goal.current_value goal.target_value 100 as progress_percent %}

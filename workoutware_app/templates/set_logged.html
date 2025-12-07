@@ -1,3 +1,47 @@
+<!--
+    Template: Set Logged Confirmation Page
+
+    Purpose:
+    --------
+    Display a confirmation page after a workout set is logged, including:
+      • Smart validation results (normal, outlier, new PR, suspicious low, first-time)
+      • Personal Record celebration (animated gold-highlight box)
+      • Clear breakdown of the recorded set details
+      • Navigation link back to the workout session
+
+    Context Variables Expected:
+    ---------------------------
+    is_pr : boolean
+        Indicates whether this logged set is a new personal record.
+
+    exercise_name : string
+        Human-readable name of the exercise (e.g., "Bench Press").
+
+    set : object with attributes:
+        • weight (float or None → bodyweight)
+        • reps (int)
+        • rpe (int, 1–10)
+        • set_number (int)
+
+    previous_pr : float or None
+        The previous highest recorded weight for this exercise (if any).
+        Only used when is_pr is True.
+
+    validation : object containing:
+        • flag (string: 'outlier', 'new_pr', 'normal', 'suspicious_low', 'first_time')
+        • message (human-readable validation message)
+
+    session_id : int
+        Used for navigation back to the workout session.
+
+    Design Notes:
+    -------------
+    • Five visual validation states exist, each mapped to dedicated color-coded CSS classes.
+    • PR section includes animated "pulse" effect.
+    • No JavaScript required — this is a fully static feedback page.
+    • Safe for production: no state modifications happen here; all logic runs in the backend.
+
+-->
 <!DOCTYPE html>
 <html>
 <head>

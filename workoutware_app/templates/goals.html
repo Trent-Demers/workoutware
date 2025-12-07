@@ -1,3 +1,31 @@
+<!--
+    Template: Fitness Goals Management
+
+    Purpose:
+    - Allow users to create new fitness goals (strength, endurance, bodyweight, etc.).
+    - Display active goals with progress bars showing completion percentage.
+    - Allow users to mark goals as completed or abandoned.
+    - Display completed goals separately with completion details.
+
+    Context variables expected:
+    - exercises: list of Exercise objects for optional linking
+    - goals: list of Goal objects with attributes:
+        • goal_type
+        • goal_description
+        • target_value
+        • current_value
+        • unit
+        • target_date
+        • status ('active', 'completed', 'abandoned')
+        • exercise_id (optional FK to Exercise)
+        • completion_date
+
+    Notes:
+    - Progress bar uses Django's widthratio to compute percentage.
+    - Only 'active' goals appear in the Active Goals section.
+    - 'completed' goals appear in the Completed Goals section.
+-->
+
 <!DOCTYPE html>
 <html>
 <head>

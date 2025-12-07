@@ -1,3 +1,10 @@
+/*
+ * Styles for the WorkoutWare login page.
+ * - #login_box_container: centers the login box within its parent.
+ * - #login_box: defines size, background color, and padding for the login card.
+ * - .form-container: arranges form elements in a vertical column layout.
+ */
+
 #login_box_container {
     display: flex;
     justify-content: center;

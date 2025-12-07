@@ -1,3 +1,19 @@
+<!--
+    Template: Manage Workout Session / Add Exercise
+
+    This page allows the user to:
+    - Add an exercise to an existing workout session.
+    - Log sets (weight, reps, RPE) for each exercise in the session.
+    - View all exercises and their logged or planned sets for the selected session.
+
+    Context variables expected:
+    - session: the WorkoutSession object (including session_name and is_template).
+    - exercises: list of Exercise objects to choose from.
+    - session_data: iterable where each item contains:
+        - session_exercise: the SessionExercises instance.
+        - sets: list of Set instances linked to that session_exercise.
+-->
+
 <!DOCTYPE html>
 <html>
 <head>

@@ -1,4 +1,25 @@
 <!DOCTYPE html>
+<!--
+    Template: Completed Workouts List
+
+    Purpose:
+    - Display all completed, non-template workout sessions for the logged-in user.
+    - Give quick access to:
+        • Navigate back to main dashboard
+        • Log a new workout
+        • View/review details of a past workout
+        • Delete a completed workout
+
+    Context variables expected:
+    - sessions: iterable of WorkoutSession objects where:
+        • session_name: name/title of the workout
+        • session_date: date of the workout
+        • start_time: optional start time
+        • duration_minutes: optional duration in minutes
+        • session_id: primary key used in URLs
+-->
+
+<!DOCTYPE html>
 <html>
 <head>
     {% load static %}

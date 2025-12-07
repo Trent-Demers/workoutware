@@ -1,3 +1,23 @@
+"""
+URL configuration for workoutware_app.
+
+This module defines all URL routes specific to the workout tracking application,
+and maps them to view functions in views.py.
+
+High-level groups:
+- Home & dashboard
+- Admin exercise management
+- Authentication
+- Workout logging and session management
+- Templates (saved workout blueprints)
+- Workout lifecycle (rename, complete, delete, history)
+- Progress & analytics (charts + JSON data for Chart.js)
+- Goals management
+- Body stats logging
+
+Each path is named so it can be referenced from templates using Django's `{% url %}` tag.
+"""
+
 from django.urls import path
 from . import views
 

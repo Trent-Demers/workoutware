@@ -1,3 +1,54 @@
+<!--
+    Template: Manage Goals (Advanced Goal Tracking)
+
+    Purpose:
+    - Allow users to create new exercise-specific fitness goals.
+    - Display active goals with progress bars and time remaining.
+    - Display recently completed goals.
+    - Provide quick navigation to dashboard, progress tracking, and workout logging.
+
+    Context variables expected:
+    - exercises:
+        List of Exercise objects used to select which exercise a goal relates to.
+
+    - active_goals:
+        Queryset of user Goal objects where status = "active".
+        Each goal has:
+            • exercise_id (FK to Exercise)
+            • goal_type (string: 'max_weight', 'total_volume', 'workout_count')
+            • target_value (numeric)
+            • current_value (numeric or None)
+            • target_date (date)
+            • other internal attributes (status, timestamps)
+
+    - completed_goals:
+        List of goals marked completed recently.
+
+    Template features:
+    1. **Goal Creation Form**
+       - User chooses an exercise, goal type, numeric target, and target date.
+       - Posts to the current view using POST.
+
+    2. **Active Goals Section**
+       - Shows a goal card for each active goal.
+       - Progress bar uses custom template filters:
+            • goal.current_value|div:goal.target_value|mul:100
+         (These filters must be defined in your Django project.)
+       - Shows days remaining using Django's `timeuntil` filter.
+
+    3. **Completed Goals Section**
+       - Shows a summary card for recently completed goals.
+
+    4. **Navigation**
+       - Back to Dashboard
+       - View Progress
+       - Log Workout
+
+    Notes:
+    - No personal user information is shown; only goal-specific data.
+    - Progress bar width auto-adjusts using inline style percentages.
+    - Uses CSS grid to arrange goal cards responsively.
+-->
 <!DOCTYPE html>
 <html>
 <head>
