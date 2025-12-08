@@ -1,3 +1,90 @@
+<!--
+    Template: Progress & Trends Dashboard
+
+    Purpose:
+    - Display a full analytics dashboard for user workout progression, body trends, validations, and auto-generated recommendations.
+    - Combine tables, charts, and summaries into a single unified progress view.
+    - Provide interactive charts using Chart.js, including auto-generated top-exercise charts and user-selected exercise trends.
+
+    Expected Context Variables:
+    --------------------------------
+    exercise_trends:
+        A JSON-serializable dictionary structured as:
+        {
+            "Exercise Name": {
+                "dates": [...],
+                "max_weights": [...]
+            },
+            ...
+        }
+        Used to automatically generate “Top 5 Exercise Progression” charts.
+
+    user_exercises:
+        List of (exercise_id, exercise_name) pairs for the dropdown that loads
+        custom trend charts via AJAX (fetch to /progress/exercise/<id>/).
+
+    bodyweight_trend:
+        Dictionary containing:
+        {
+            "dates": [...],
+            "weights": [...]
+        }
+        Used for the bodyweight trend line chart.
+
+    weight_increase_recs:
+        List of recommendation objects with attribute `.message`
+        Suggests where users may increase weight based on recent repo performance.
+
+    neglected_muscle_group_recs:
+        Object containing:
+            • groups: list of muscles flagged
+            • lookback_days: integer
+            • messages: list of HTML-formatted suggestion strings
+
+    progress_data:
+        Weekly aggregated statistics per exercise. Each entry has:
+            • date
+            • exercise_id (FK → Exercise)
+            • period_type ("weekly", “monthly”, etc.)
+            • max_weight
+            • avg_weight
+            • total_volume
+            • workout_count
+
+    validations:
+        Recent input validation logs, where each record provides:
+            • timestamp
+            • exercise_id (FK → Exercise)
+            • input_weight
+            • expected_max
+            • flagged_as (outlier, new_pr, normal, suspicious_low, first_time)
+            • user_action (optional: confirmed, corrected, logged)
+        These rows generate color-coded badges.
+
+    Template Features Summary:
+    --------------------------------
+    1. Navigation links to Home, Workout Logging, and Body Stats Logging.
+    2. Auto-generated “Top 5 Exercises” progression charts rendered on load.
+    3. Dynamic trend explorer:
+        - User picks an exercise from a dropdown.
+        - Page fetches JSON from /progress/exercise/<id>/ and renders:
+            • Max weight progression
+            • Average reps per set
+            • Total volume per workout
+        - Old charts safely destroyed to avoid duplicates.
+    4. Bodyweight trend chart.
+    5. Auto-generated training recommendations.
+    6. Weekly aggregated progress table.
+    7. Validation monitoring table.
+
+    Notes:
+    --------------------------------
+    - Uses Chart.js 3.9.1.
+    - Requires backend API endpoint for /progress/exercise/<id>/ returning JSON.
+    - All context variables must be JSON-safe before rendering.
+    - This template does not modify state; all POST/PUT operations occur elsewhere.
+
+-->
 {% load static %}
 <!DOCTYPE html>
 <html>

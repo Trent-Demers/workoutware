@@ -1,3 +1,33 @@
+<!--
+    Template: Community Leaderboard
+
+    Purpose:
+    - Display leaderboard-style aggregated fitness statistics for all users.
+    - Preserve user privacy by showing only anonymous identifiers (no names).
+    - Provide three major components:
+        1. Navigation buttons for quick access to dashboard, progress, and goals.
+        2. Top Lifts:
+            • Shows highest recorded weights for each exercise across all users.
+            • Sorted in descending order of top_weight.
+        3. Most Active This Month:
+            • Shows users with the highest workout counts in the current month.
+            • Uses anonymous user_id to maintain privacy.
+
+    Context variables expected from Django view:
+    - top_lifts:
+        • Each object contains: exercise_id__name, top_weight
+    - most_active:
+        • Each object contains: user_id, workout_count
+    - These values are pre-aggregated in the backend using annotate(), Max(), Count(), etc.
+
+    Privacy Notice:
+    - Template intentionally does not display personal data (name, email).
+    - Only anonymous User ID values appear.
+
+    Styling Notes:
+    - rank-badge uses color-coded circles for ranks #1, #2, #3, and others.
+    - leaderboard-section visually separates the two ranking categories.
+-->
 {% load static %}
 <!DOCTYPE html>
 <html>

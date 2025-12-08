@@ -80,7 +80,11 @@ WSGI_APPLICATION = 'workoutware.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+<<<<<<< Updated upstream
         'NAME': 'workoutware', 
+=======
+        'NAME': 'workoutware_db',
+>>>>>>> Stashed changes
         'USER': 'root',
         'PASSWORD': 'Rutgers123',
         'HOST': 'localhost',

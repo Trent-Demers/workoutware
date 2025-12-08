@@ -1,4 +1,25 @@
-{% load static %}
+<!--
+    Template: Admin Dashboard
+
+    Purpose:
+    - Provides system-wide admin controls for WorkoutWare.
+    - Displays key metrics: total users, exercises, workouts, and daily activity.
+    - Shows recent users and their fitness details.
+    - Allows admins to:
+        • Add new exercises to the exercise library
+        • Edit or delete existing exercises
+        • View system analytics like most popular exercises
+    - Includes a logout button to end the admin session.
+
+    Context variables expected from Django view:
+    - total_users: total registered users
+    - total_exercises: number of exercises in library
+    - total_workouts: number of completed workout sessions
+    - active_today: users active within the current day
+    - recent_users: list of recently registered users
+    - exercises: complete exercise library for management
+    - popular_exercises: exercises ranked by usage_count
+-->{% load static %}
 <!DOCTYPE html>
 <html>
  <head>

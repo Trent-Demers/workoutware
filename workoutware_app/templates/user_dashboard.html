@@ -1,3 +1,61 @@
+<!--
+    Template: User Dashboard
+
+    Purpose:
+    --------
+    - Main landing page for logged-in users.
+    - Provides a quick overview of:
+        • Current streak and workout counts
+        • Navigation to key features (workouts, progress, goals, body stats)
+        • Recent personal records (PRs)
+        • Active goals with mini progress bars
+
+    Expected Context Variables:
+    ---------------------------
+    user :
+        Django User object; `user.username` is shown in the welcome header.
+
+    streak_days : int
+        Current consecutive-day workout streak.
+
+    workouts_this_week : int
+        Number of completed workouts in the current week.
+
+    total_workouts : int
+        Total number of completed workouts by this user.
+
+    recent_prs : iterable of PR objects/dicts
+        Each item should provide:
+            • exercise_name
+            • pb_weight
+            • previous_pr (optional)
+            • improvement (difference vs previous PR)
+            • pb_date
+
+    active_goals : iterable of Goal objects
+        Each goal should provide:
+            • goal_description
+            • target_value
+            • current_value (optional)
+            • unit (e.g., lbs, reps, workouts, minutes)
+            • target_date (optional)
+
+    URL Dependencies (named URL patterns):
+    --------------------------------------
+    - 'logout'                 → POST log out
+    - 'completed_workouts_week'→ list of workouts completed this week
+    - 'completed_workouts'     → list of all completed workouts
+    - 'log_workout'            → start/log a workout session
+    - 'progress'               → analytics / progress dashboard
+    - 'manage_goals'           → goal management page
+    - 'log_body_stats'         → body metrics logging page
+
+    Notes:
+    ------
+    - Cards and stat boxes are fully clickable only where wrapped in <a> tags.
+    - Mini goal progress bar uses `{% widthratio %}` to compute `progress_percent`.
+    - No JavaScript is required; all behavior is purely navigational and presentational.
+-->
 {% load static %}
 <!DOCTYPE html>
 <html>

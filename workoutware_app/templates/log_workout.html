@@ -1,3 +1,62 @@
+<!--
+    Template: Log Workout
+
+    Purpose:
+    - Provide all functionality for creating, editing, viewing, and managing workout sessions.
+    - Display workout templates, suggestions, recent sessions, and allow inline editing of session names.
+
+    Major Functional Sections:
+    1. New Workout Session Form
+        • User inputs: session_name, session_date, start_time, bodyweight, optional goal link.
+        • Submits via POST to: create_session
+
+    2. Suggested Exercises (Optional)
+        • suggestions: exercises user hasn’t trained recently.
+
+    3. Workout Templates
+        • templates: list of saved session templates (is_template = True)
+        • Actions:
+            - Use Template → opens modal requiring new workout name
+            - Edit Template → go to add_exercises_to_session
+            - Delete Template
+
+        • Uses JavaScript modal:
+            - showRenameModal(templateId, templateName)
+            - closeRenameModal()
+
+    4. Recent Workout Sessions
+        • recent_sessions: user’s active and completed sessions.
+        • Each item:
+            - Editable workout name (inline with JS + fetch POST)
+            - View / Continue workout page
+            - Mark Completed
+            - Delete workout
+
+        • Inline rename:
+            Functions:
+                editWorkoutName(id)
+                saveWorkoutName(id)
+                getCookie(name)
+
+    5. Modal for Using Templates
+        • renameModal allows setting a new session name before creating a workout from a template.
+
+    Context Variables Expected:
+        today → default date
+        active_goals → list of user goals still active
+        templates → list of workout templates
+        suggestions → list of exercises recommended
+        recent_sessions → recent workouts with attributes:
+            .session_id
+            .session_name
+            .session_date
+            .completed
+
+    Notes:
+    - All logic is controlled by Django URL patterns like create_session, add_exercises_to_session, etc.
+    - No personal data beyond user-specific sessions is displayed.
+    - Inline editing uses Fetch API with CSRF token retrieval for safety.
+-->
 {% load static %}
 <!DOCTYPE html>
 <html>
