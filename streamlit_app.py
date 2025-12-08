@@ -2,31 +2,35 @@
 WorkoutWare Streamlit Dashboard
 ===============================
 
-This module provides a lightweight analytics dashboard built with Streamlit.
-It connects directly to the WorkoutWare MySQL database and visualizes key
-performance metrics for demonstration, debugging, and analytics use cases.
+Internal analytics dashboard for the WorkoutWare fitness system.
 
-This dashboard is typically run locally by developers or project evaluators
-to quickly inspect:
+This app connects directly to the MySQL database `workoutware_db` and mirrors
+your ER diagram tables:
 
-    • User workout volume trends
-    • Best historical lifts
-    • Exercise usage frequency
-    • Daily/weekly training patterns
-    • PR summaries
+    user_info, workout_sessions, session_exercises, sets,
+    exercise, target, exercise_target_association,
+    user_stats_log, user_pb, goals, workout_plan,
+    daily_workout_plan, progress, data_validation
 
-The dashboard reads directly from the existing Django database using SQL
-queries. It is intentionally separated from the Django views because its
-purpose is internal analytics rather than production UI.
+It is for **developers / evaluators**, not end-users. It lets you quickly see:
 
-Run command:
+  • User list & profile info
+  • Workout history and volume
+  • PR (personal record) history
+  • Exercise usage & volume rankings
+  • Bodyweight trend
+  • Validation flags (outliers, new PRs, etc.)
+
+Run from the project root with:
+
     streamlit run streamlit_app.py
 """
 
-import streamlit as st
-import pandas as pd
-import mysql.connector
 from datetime import datetime
+
+import mysql.connector
+import pandas as pd
+import streamlit as st
 
 
 # ------------------------------------------------------------------------------
@@ -35,208 +39,406 @@ from datetime import datetime
 
 def get_connection():
     """
-    Create and return a connection to the MySQL database.
+    Open a NEW connection to the MySQL database.
 
-    Returns:
-        mysql.connector.connection.MySQLConnection
-            An active database connection.
-
-    Notes:
-        Connection parameters must match Django settings.py.
-        The Streamlit dashboard runs outside Django, so it needs
-        explicit credentials.
+    We DO NOT cache the connection. Each loader opens and closes its own
+    connection so we never reuse a dead connection (avoids
+    'MySQL Connection not available' errors).
     """
     return mysql.connector.connect(
         host="127.0.0.1",
         user="root",
         password="Rutgers123",
-        database="workoutware",
-        port=3306
+        database="workoutware_db",
+        port=3306,
     )
 
 
 # ------------------------------------------------------------------------------
-# DATA LOADERS
+# DATA LOADERS (ALL CACHE **DATAFRAMES**, NOT CONNECTIONS)
 # ------------------------------------------------------------------------------
 
+@st.cache_data(show_spinner="Loading users…")
 def load_users():
     """
-    Fetch all users from the user_info table.
+    Fetch all registered users from user_info.
 
-    Returns:
-        pandas.DataFrame:
-            Columns: user_id, first_name, last_name, email
+    Returns
+    -------
+    DataFrame with:
+        user_id, first_name, last_name, email,
+        date_registered, fitness_goal, user_type, display_name
+    """
+    query = """
+        SELECT
+            user_id,
+            first_name,
+            last_name,
+            email,
+            date_registered,
+            fitness_goal,
+            user_type,
+            registered
+        FROM user_info
+        ORDER BY
+            date_registered DESC,
+            user_id DESC;
     """
     conn = get_connection()
-    query = """
-        SELECT user_id, first_name, last_name, email
-        FROM user_info
-        ORDER BY date_registered DESC;
-    """
     df = pd.read_sql(query, conn)
     conn.close()
+
+    if df.empty:
+        return df
+
+    def make_display(row):
+        name = f"{row['first_name']} {row['last_name']}".strip()
+        if not name:
+            name = row["email"] or f"User #{row['user_id']}"
+        return f"{name} (id={row['user_id']})"
+
+    df["display_name"] = df.apply(make_display, axis=1)
     return df
 
 
-def load_user_progress(user_id):
+@st.cache_data(show_spinner="Loading workout history…")
+def load_workout_summary(user_id: int) -> pd.DataFrame:
     """
-    Load all daily and weekly progress metrics for a given user.
+    Summary of workouts per session for a given user.
 
-    Args:
-        user_id (int)
-
-    Returns:
-        pandas.DataFrame:
-            Contains date, exercise_id, max_weight, total_volume, period_type
+    Returns columns:
+        session_id, session_date, session_name, completed,
+        exercise_count, set_count, total_volume
+    """
+    query = """
+        SELECT
+            ws.session_id,
+            ws.session_date,
+            ws.session_name,
+            ws.completed,
+            COUNT(DISTINCT se.session_exercise_id) AS exercise_count,
+            COUNT(s.set_id) AS set_count,
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN s.weight IS NOT NULL AND s.reps IS NOT NULL
+                        THEN s.weight * s.reps
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS total_volume
+        FROM workout_sessions ws
+        LEFT JOIN session_exercises se
+            ON se.session_id = ws.session_id
+        LEFT JOIN sets s
+            ON s.session_exercise_id = se.session_exercise_id
+        WHERE
+            ws.user_id = %s
+            AND ws.is_template = 0
+        GROUP BY
+            ws.session_id,
+            ws.session_date,
+            ws.session_name,
+            ws.completed
+        ORDER BY
+            ws.session_date DESC,
+            ws.session_id DESC;
     """
     conn = get_connection()
-    query = """
-        SELECT p.date, p.exercise_id, e.name AS exercise_name,
-               p.max_weight, p.total_volume, p.period_type
-        FROM progress p
-        JOIN exercise e ON p.exercise_id = e.exercise_id
-        WHERE p.user_id = %s
-        ORDER BY p.date ASC;
-    """
     df = pd.read_sql(query, conn, params=[user_id])
     conn.close()
     return df
 
 
-def load_prs(user_id):
+@st.cache_data(show_spinner="Loading PRs…")
+def load_prs(user_id: int) -> pd.DataFrame:
     """
-    Load personal records (PRs) for a given user.
+    Personal records per exercise.
 
-    Args:
-        user_id (int)
-
-    Returns:
-        pandas.DataFrame:
-            Contains exercise name, PR weight, PR date, and previous PR value.
+    Returns columns:
+        exercise_name, pb_weight, pb_reps, pb_time, pb_date, previous_pr
     """
-    conn = get_connection()
     query = """
-        SELECT e.name AS exercise_name,
-               pb.pb_weight, pb.pb_date, pb.previous_pr
+        SELECT
+            e.name AS exercise_name,
+            pb.pb_weight,
+            pb.pb_reps,
+            pb.pb_time,
+            pb.pb_date,
+            pb.previous_pr
         FROM user_pb pb
-        JOIN exercise e ON pb.exercise_id = e.exercise_id
-        WHERE pb.user_id = %s
-        ORDER BY pb.pb_date DESC;
-    """
-    df = pd.read_sql(query, conn, params=[user_id])
-    conn.close()
-    return df
-
-
-def load_top_volume_exercises(user_id):
-    """
-    Compute which exercises contribute the highest total volume.
-
-    Args:
-        user_id (int)
-
-    Returns:
-        pandas.DataFrame:
-            exercise_name, total_volume
+        JOIN exercise e
+            ON pb.exercise_id = e.exercise_id
+        WHERE
+            pb.user_id = %s
+        ORDER BY
+            pb.pb_date DESC,
+            e.name ASC;
     """
     conn = get_connection()
-    query = """
-        SELECT e.name AS exercise_name,
-               SUM(s.weight * s.reps) AS volume
-        FROM sets s
-        JOIN session_exercises se ON s.session_exercise_id = se.session_exercise_id
-        JOIN exercise e ON se.exercise_id = e.exercise_id
-        JOIN workout_sessions ws ON ws.session_id = se.session_id
-        WHERE ws.user_id = %s
-          AND ws.completed = 1
-          AND ws.is_template = 0
-          AND s.weight IS NOT NULL
-        GROUP BY e.exercise_id
-        ORDER BY volume DESC;
+    df = pd.read_sql(query, conn, params=[user_id])
+    conn.close()
+    return df
+
+
+@st.cache_data(show_spinner="Loading progress metrics…")
+def load_progress(user_id: int) -> pd.DataFrame:
     """
+    Load weekly / daily progress from progress table.
+
+    Returns columns:
+        date, exercise_id, exercise_name, max_weight,
+        avg_weight, total_volume, period_type, workout_count
+    """
+    query = """
+        SELECT
+            p.date,
+            p.exercise_id,
+            e.name AS exercise_name,
+            p.max_weight,
+            p.avg_weight,
+            p.total_volume,
+            p.period_type,
+            p.workout_count
+        FROM progress p
+        JOIN exercise e
+            ON p.exercise_id = e.exercise_id
+        WHERE
+            p.user_id = %s
+        ORDER BY
+            p.date ASC,
+            e.name ASC;
+    """
+    conn = get_connection()
+    df = pd.read_sql(query, conn, params=[user_id])
+    conn.close()
+    return df
+
+
+@st.cache_data(show_spinner="Loading validation flags…")
+def load_validation_flags(user_id: int) -> pd.DataFrame:
+    """
+    Load recent smart-validation events.
+
+    Returns columns:
+        timestamp, exercise_name, input_weight,
+        expected_max, flagged_as, user_action
+    """
+    query = """
+        SELECT
+            v.timestamp,
+            e.name AS exercise_name,
+            v.input_weight,
+            v.expected_max,
+            v.flagged_as,
+            v.user_action
+        FROM data_validation v
+        LEFT JOIN exercise e
+            ON v.exercise_id = e.exercise_id
+        WHERE
+            v.user_id = %s
+        ORDER BY
+            v.timestamp DESC
+        LIMIT 100;
+    """
+    conn = get_connection()
+    df = pd.read_sql(query, conn, params=[user_id])
+    conn.close()
+    return df
+
+
+@st.cache_data(show_spinner="Loading bodyweight trend…")
+def load_bodyweight_trend(user_id: int) -> pd.DataFrame:
+    """
+    Bodyweight over time from user_stats_log.
+
+    Returns columns:
+        date, weight
+    """
+    query = """
+        SELECT
+            date,
+            weight
+        FROM user_stats_log
+        WHERE
+            user_id = %s
+            AND weight IS NOT NULL
+        ORDER BY
+            date ASC;
+    """
+    conn = get_connection()
+    df = pd.read_sql(query, conn, params=[user_id])
+    conn.close()
+    return df
+
+
+@st.cache_data(show_spinner="Loading top-volume exercises…")
+def load_top_volume_exercises(user_id: int) -> pd.DataFrame:
+    """
+    Total training volume per exercise.
+
+    Returns columns:
+        exercise_name, volume
+    """
+    query = """
+        SELECT
+            e.name AS exercise_name,
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN s.weight IS NOT NULL AND s.reps IS NOT NULL
+                        THEN s.weight * s.reps
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS volume
+        FROM workout_sessions ws
+        JOIN session_exercises se
+            ON se.session_id = ws.session_id
+        JOIN exercise e
+            ON e.exercise_id = se.exercise_id
+        LEFT JOIN sets s
+            ON s.session_exercise_id = se.session_exercise_id
+        WHERE
+            ws.user_id = %s
+            AND ws.completed = 1
+            AND ws.is_template = 0
+        GROUP BY
+            e.exercise_id,
+            e.name
+        ORDER BY
+            volume DESC;
+    """
+    conn = get_connection()
     df = pd.read_sql(query, conn, params=[user_id])
     conn.close()
     return df
 
 
 # ------------------------------------------------------------------------------
-# UI COMPONENTS
+# UI HELPERS
 # ------------------------------------------------------------------------------
 
-def display_user_overview(selected_user, users_df):
-    """
-    Display the selected user's profile summary.
+def show_user_overview(user_row: pd.Series):
+    st.subheader("👤 User Overview")
 
-    Args:
-        selected_user (int): user_id
-        users_df (DataFrame): dataframe containing user list
-    """
-    row = users_df[users_df["user_id"] == selected_user].iloc[0]
+    name = f"{user_row['first_name']} {user_row['last_name']}".strip()
+    if not name:
+        name = "(no name recorded)"
 
-    st.subheader("👤 User Information")
-    st.write(f"**Name:** {row.first_name} {row.last_name}")
-    st.write(f"**Email:** {row.email}")
+    st.write(f"**Name:** {name}")
+    st.write(f"**Email:** {user_row['email'] or '(none)'}")
+
+    if pd.notna(user_row.get("date_registered")):
+        st.write(f"**Registered:** {user_row['date_registered']:%Y-%m-%d}")
+    if user_row.get("fitness_goal"):
+        st.write(f"**Fitness Goal:** {user_row['fitness_goal']}")
+    if user_row.get("user_type"):
+        st.write(f"**User Type:** {user_row['user_type']}")
 
 
-def display_pr_table(pr_df):
-    """
-    Display a table of personal records.
-
-    Args:
-        pr_df (DataFrame)
-    """
+def show_pr_section(pr_df: pd.DataFrame):
     st.subheader("🏆 Personal Records")
     if pr_df.empty:
-        st.info("No PRs recorded yet.")
+        st.info("No PRs recorded yet for this user.")
         return
-    st.dataframe(pr_df)
+
+    df = pr_df.copy()
+    if "pb_date" in df.columns:
+        df["pb_date"] = pd.to_datetime(df["pb_date"]).dt.date
+    st.dataframe(df, use_container_width=True)
 
 
-def display_progress_charts(progress_df):
-    """
-    Plot progress trends for all exercises.
+def show_workout_history(df: pd.DataFrame):
+    st.subheader("📓 Workout History")
+    if df.empty:
+        st.info("No workouts logged yet for this user.")
+        return
 
-    Args:
-        progress_df (DataFrame)
-    """
-    st.subheader("📈 Progress Trends")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Completed Workouts", int(df["completed"].sum()))
+    with col2:
+        st.metric("Total Sessions", int(len(df)))
+    with col3:
+        st.metric("Total Volume (lbs)",
+                  int(df["total_volume"].sum()))
 
+    st.markdown("#### Recent Sessions")
+    st.dataframe(df.head(20), use_container_width=True)
+
+    # Simple chart: total volume over time
+    vol = df[["session_date", "total_volume"]].copy()
+    vol = vol.sort_values("session_date")
+    vol = vol.set_index("session_date")
+    st.line_chart(vol)
+
+
+def show_progress_charts(progress_df: pd.DataFrame):
+    st.subheader("📈 Progress by Exercise")
     if progress_df.empty:
-        st.warning("No progress data available.")
+        st.info("No progress rows found in `progress` table.")
         return
 
-    exercises = progress_df["exercise_name"].unique()
+    exercises = sorted(progress_df["exercise_name"].unique())
+    ex_name = st.selectbox("Choose exercise", exercises)
 
-    for ex in exercises:
-        st.write(f"### {ex}")
+    df_ex = progress_df[progress_df["exercise_name"] == ex_name].copy()
+    df_ex = df_ex.sort_values("date")
+    df_ex = df_ex.set_index("date")
 
-        df_ex = progress_df[progress_df["exercise_name"] == ex]
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**Max Weight Over Time (lbs)**")
+        if "max_weight" in df_ex:
+            st.line_chart(df_ex["max_weight"])
+        else:
+            st.write("No `max_weight` column in progress table.")
 
-        col1, col2 = st.columns(2)
+    with col2:
+        st.markdown("**Total Volume Over Time (lbs)**")
+        if "total_volume" in df_ex:
+            st.line_chart(df_ex["total_volume"])
+        else:
+            st.write("No `total_volume` column in progress table.")
 
-        with col1:
-            st.write("**Max Weight Over Time**")
-            st.line_chart(df_ex[["date", "max_weight"]].set_index("date"))
-
-        with col2:
-            st.write("**Training Volume Over Time**")
-            st.line_chart(df_ex[["date", "total_volume"]].set_index("date"))
+    st.markdown("**Raw Progress Data**")
+    st.dataframe(df_ex.reset_index(), use_container_width=True)
 
 
-def display_top_volume(top_vol_df):
-    """
-    Display which exercises have the highest overall training volume.
-
-    Args:
-        top_vol_df (DataFrame)
-    """
-    st.subheader("🔥 Highest Volume Exercises")
-
-    if top_vol_df.empty:
-        st.info("No logged workouts for this user.")
+def show_bodyweight_chart(weight_df: pd.DataFrame):
+    st.subheader("⚖️ Bodyweight Trend")
+    if weight_df.empty:
+        st.info("No bodyweight logs in `user_stats_log`.")
         return
 
-    st.bar_chart(top_vol_df.set_index("exercise_name"))
+    df = weight_df.copy()
+    df = df.sort_values("date").set_index("date")
+    st.line_chart(df["weight"])
+
+
+def show_validation_table(v_df: pd.DataFrame):
+    st.subheader("🛡️ Recent Validation Flags")
+    if v_df.empty:
+        st.info("No rows in `data_validation` for this user.")
+        return
+
+    df = v_df.copy()
+    if "timestamp" in df.columns:
+        df["timestamp"] = pd.to_datetime(df["timestamp"])
+    st.dataframe(df, use_container_width=True)
+
+
+def show_top_volume_chart(tv_df: pd.DataFrame):
+    st.subheader("🔥 Highest-Volume Exercises")
+    if tv_df.empty:
+        st.info("No completed workout volume for this user.")
+        return
+
+    df = tv_df.set_index("exercise_name")
+    st.bar_chart(df["volume"])
 
 
 # ------------------------------------------------------------------------------
@@ -244,52 +446,73 @@ def display_top_volume(top_vol_df):
 # ------------------------------------------------------------------------------
 
 def main():
-    """
-    Entry point for the Streamlit dashboard.
+    st.set_page_config(
+        page_title="WorkoutWare Streamlit Dashboard",
+        layout="wide",
+    )
 
-    Renders:
-        - User dropdown selector
-        - User profile information
-        - PR history table
-        - Daily / weekly progress charts
-        - Top-volume exercise chart
-    """
-    st.title("WorkoutWare Analytics Dashboard")
-    st.markdown("A developer-friendly interface for analyzing workout trends.")
+    st.title("WorkoutWare Streamlit Dashboard")
 
+    # ----- Sidebar: choose user -----
     st.sidebar.header("Select User")
     users_df = load_users()
 
     if users_df.empty:
-        st.error("No users found in database.")
+        st.error("No users found in `user_info`.")
         return
 
-    user_map = {f"{row.first_name} {row.last_name}": row.user_id for _, row in users_df.iterrows()}
-    selected_name = st.sidebar.selectbox("User", list(user_map.keys()))
-    selected_user = user_map[selected_name]
+    selected_display = st.sidebar.selectbox(
+        "User",
+        users_df["display_name"].tolist(),
+    )
+    user_row = users_df[users_df["display_name"] == selected_display].iloc[0]
+    user_id = int(user_row["user_id"])
 
-    # SECTION: USER INFO
-    display_user_overview(selected_user, users_df)
+    # ----- Sections -----
+    show_user_overview(user_row)
 
-    # SECTION: PERSONAL RECORDS
-    pr_df = load_prs(selected_user)
-    display_pr_table(pr_df)
+    # Layout: PRs + bodyweight
+    col_left, col_right = st.columns(2)
+    with col_left:
+        prs = load_prs(user_id)
+        show_pr_section(prs)
+    with col_right:
+        bw = load_bodyweight_trend(user_id)
+        show_bodyweight_chart(bw)
 
-    # SECTION: PROGRESS
-    progress_df = load_user_progress(selected_user)
-    display_progress_charts(progress_df)
+    st.markdown("---")
 
-    # SECTION: VOLUME
-    top_vol_df = load_top_volume_exercises(selected_user)
-    display_top_volume(top_vol_df)
+    # Workout history + top-volume
+    workouts = load_workout_summary(user_id)
+    top_vol = load_top_volume_exercises(user_id)
+
+    col1, col2 = st.columns([3, 2])
+    with col1:
+        show_workout_history(workouts)
+    with col2:
+        show_top_volume_chart(top_vol)
+
+    st.markdown("---")
+
+    # Progress table & charts
+    progress_df = load_progress(user_id)
+    show_progress_charts(progress_df)
+
+    st.markdown("---")
+
+    # Validation flags
+    v_df = load_validation_flags(user_id)
+    show_validation_table(v_df)
 
 
 # ------------------------------------------------------------------------------
-# RUN
+# ENTRY POINT
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
+
+
 
 
 
