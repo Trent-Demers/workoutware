@@ -45,6 +45,7 @@ WEEKLY = "weekly"
 MONTHLY = "monthly"
 QUARTERLY = "3 monthly"
 YEARLY = "yearly"
+ALL_TYPES = [DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY]
 
 
 # ------------------------------------------------------------------------------
@@ -67,9 +68,9 @@ def _base_set_queryset_for_user(user_id):
         .filter(
             session_exercise_id__session_id__user_id=user_id,
             session_exercise_id__session_id__is_template=False,
-            session_exercise_id__session_id__completed=True,
-            completed=True,
-            is_warmup=False,
+            #session_exercise_id__session_id__completed=True,
+            #completed=True,
+            #is_warmup=False,
             weight__isnull=False,
         )
         .select_related(
@@ -163,10 +164,11 @@ def rebuild_progress_for_user(user_id, period_types=None):
     if period_types is None:
         period_types = [WEEKLY]
 
-    # Step 1 — Delete old records for specified period types
+    # Step 1 — Delete old records for specified period types and invalid period types
     progress.objects.filter(
         user_id=user_id, 
-        period_type__in=period_types
+    ).exclude(
+        period_type__in=list(set(ALL_TYPES) - set(period_types))
     ).delete()
 
     # Step 2 — Get base queryset
