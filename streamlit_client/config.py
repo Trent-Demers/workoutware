@@ -48,7 +48,7 @@ def get_settings() -> Settings:
         app_name=os.getenv("APP_NAME", "Workoutware"),
         db_host=os.getenv("DB_HOST", "127.0.0.1"),
         db_port=int(os.getenv("DB_PORT", "3306")),
-        db_name=os.getenv("DB_NAME", "workoutware_db"),
+        db_name=os.getenv("DB_NAME", "workoutware"),
         db_user=os.getenv("DB_USER", "root"),
         db_password=os.getenv("DB_PASSWORD", "Rutgers123"),
         pr_outlier_pct=float(os.getenv("PR_OUTLIER_PCT", "0.15")),

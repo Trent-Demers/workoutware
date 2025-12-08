@@ -87,7 +87,7 @@ def get_or_create_user_record(request_user):
             password_hash="django_managed",  # placeholder
             date_registered=timezone.now().date(),
             registered=True,
-            user_type="user",
+            user_type="client",
             fitness_goal="",
             town="",
             state="",
