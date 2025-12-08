@@ -560,8 +560,33 @@ def create_workout_session(request):
     if goal_id:
         try:
             g = goals.objects.get(goal_id=goal_id, user_id=user_record)
+
+            # Convert session_date to date object
+            if isinstance(new_session.session_date, str):
+                session_date = datetime.strptime(new_session.session_date, "%Y-%m-%d").date()
+            else:
+                session_date = new_session.session_date
+
+            # Convert start_time to time object
+            if new_session.start_time:
+                if isinstance(new_session.start_time, str):
+                    start_time = datetime.strptime(new_session.start_time, "%H:%M").time()
+                else:
+                    start_time = new_session.start_time
+            else:
+                start_time = None
+                        
+            if new_session.start_time:
+                # Use session_date + start_time
+                session_dt = datetime.combine(session_date, start_time)
+            else:
+                # Default to current full datetime
+                now_dt = timezone.now()
+                # Convert to naive for MySQL
+                session_dt = timezone.make_naive(now_dt, timezone.get_current_timezone())
+            
             workout_goal_link.objects.create(
-                user_id=user_record, goal=g, session=new_session
+                user_id=user_record, goal=g, session=new_session, created_at=session_dt
             )
         except goals.DoesNotExist:
             pass
