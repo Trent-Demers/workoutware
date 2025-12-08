@@ -102,7 +102,7 @@ class exercise(models.Model):
 
     exercise_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    type = models.CharField(max_length=50)
+    type = models.CharField(max_length=50, db_column="exercise_type")
     subtype = models.CharField(max_length=50, blank=True, null=True)
     equipment = models.CharField(max_length=50, blank=True, null=True)
     difficulty = models.CharField(max_length=50, blank=True, null=True)

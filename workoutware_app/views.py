@@ -72,27 +72,28 @@ from .progress_utils import rebuild_progress_for_user
 
 def get_or_create_user_record(request_user):
     """
-    Ensure that each Django user has a matching `user_info` record.
-
-    Args:
-        request_user (User): Django authenticated user.
-
-    Returns:
-        user_info: Existing or newly created profile entry.
+    Ensures the authenticated Django user also exists in user_info table.
+    Inserts all required fields to satisfy MySQL constraints.
     """
     try:
         return user_info.objects.get(username=request_user.username)
+
     except user_info.DoesNotExist:
-        # Create new profile from Django user data
         return user_info.objects.create(
-            username=request_user.username,
             first_name=request_user.first_name or "",
             last_name=request_user.last_name or "",
             email=request_user.email,
-            password_hash="django_auth",
+            username=request_user.username,
+            password_hash="django_managed",  # placeholder
+            date_registered=timezone.now().date(),
             registered=True,
-            date_registered=date.today(),
+            user_type="user",
+            fitness_goal="",
+            town="",
+            state="",
+            country=""
         )
+
 
 
 def calculate_workout_streak(user_id):
