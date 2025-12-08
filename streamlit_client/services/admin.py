@@ -48,7 +48,7 @@ def list_exercises() -> List[Dict[str, Any]]:
     """Exercise library table."""
     return fetch_all(
         """
-        SELECT exercise_id, name, type AS exercise_type, subtype, equipment, difficulty, description
+        SELECT exercise_id, name, exercise_type, subtype, equipment, difficulty, description
         FROM exercise
         ORDER BY name ASC
         """

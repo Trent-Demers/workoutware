@@ -13,7 +13,7 @@ def list_exercise_catalog() -> List[Dict[str, Any]]:
     """Return all exercises for dropdowns."""
     return fetch_all(
         """
-        SELECT exercise_id, name, type AS exercise_type, subtype, equipment, difficulty
+        SELECT exercise_id, name, exercise_type, subtype, equipment, difficulty
         FROM exercise
         ORDER BY name ASC
         """

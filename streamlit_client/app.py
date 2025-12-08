@@ -178,15 +178,26 @@ def _render_session_detail(user: Dict[str, Any], session_id: int) -> None:
     exercises = detail.get("exercises", [])
 
     # Add exercise form
+    catalog = workouts.list_exercise_catalog()
+    exercise_options = {}
+    ex_label = None
+    target_sets = 3
+    target_reps = 8
+    submitted = False
+    
     with st.form(f"add_exercise_{session_id}"):
         st.markdown("**Add Exercise**")
-        catalog = workouts.list_exercise_catalog()
-        exercise_options = {f"{ex['name']} ({ex.get('exercise_type') or 'Strength'})": ex["exercise_id"] for ex in catalog}
-        ex_label = st.selectbox("Exercise", list(exercise_options.keys()))
+        if not catalog:
+            st.warning("No exercises available. Please add exercises via the Admin page.")
+        else:
+            exercise_options = {f"{ex['name']} ({ex.get('exercise_type') or 'Strength'})": ex["exercise_id"] for ex in catalog}
+            option_keys = list(exercise_options.keys())
+            ex_label = st.selectbox("Exercise", option_keys, index=0 if option_keys else None)
         target_sets = st.number_input("Target Sets", min_value=1, max_value=10, value=3)
         target_reps = st.number_input("Target Reps", min_value=1, max_value=30, value=8)
         submitted = st.form_submit_button("Add Exercise")
-    if submitted:
+    
+    if submitted and catalog and ex_label and ex_label in exercise_options:
         order = len(exercises) + 1
         workouts.add_exercise_to_session(session_id, exercise_options[ex_label], order, target_sets, target_reps)
         _set_flash("Exercise added.")
