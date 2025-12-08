@@ -9,7 +9,7 @@ import re
 import secrets
 from typing import Any, Dict, Optional, Tuple
 
-from ..db import execute, fetch_one
+from ..db import execute, fetch_one, fetch_all
 
 ITERATIONS = 200_000
 PASSWORD_MIN_LENGTH = 8
@@ -120,3 +120,30 @@ def create_user(username: str, email: str, password: str) -> Tuple[bool, Optiona
         "email": email,
         "user_type": "member",
     }, ""
+
+
+def list_users() -> list[Dict[str, Any]]:
+    """Return all users for quick switching in Streamlit."""
+    rows = fetch_all(
+        """
+        SELECT
+            user_id,
+            username,
+            email,
+            user_type,
+            fitness_goal
+        FROM user_info
+        ORDER BY date_registered DESC, user_id DESC
+        """
+    )
+    # Ensure consistent keys with authenticate
+    return [
+        {
+            "user_id": row["user_id"],
+            "username": row["username"],
+            "email": row.get("email"),
+            "user_type": row.get("user_type") or "member",
+            "fitness_goal": row.get("fitness_goal"),
+        }
+        for row in rows
+    ]

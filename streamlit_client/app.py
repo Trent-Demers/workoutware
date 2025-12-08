@@ -6,7 +6,7 @@ Run with:
 """
 
 from datetime import date
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import os
 import sys
 
@@ -50,59 +50,39 @@ def _consume_flash() -> None:
 
 
 # ------------------------------------------------------------------------------
-# AUTH
+# USER HANDLING
 # ------------------------------------------------------------------------------
-
-def render_auth() -> None:
-    """Login/signup page."""
-    st.title("Workoutware")
-    st.caption("Log workouts, track PRs, and crush your goals.")
-
-    tab_login, tab_signup = st.tabs(["Login", "Sign Up"])
-
-    with tab_login:
-        with st.form("login_form"):
-            username = st.text_input("Username or Email")
-            password = st.text_input("Password", type="password")
-            submit = st.form_submit_button("Log In")
-        if submit:
-            ok, user, err = auth.authenticate(username, password)
-            if ok and user:
-                st.session_state["user"] = user
-                st.session_state["page"] = "dashboard"
-                _set_flash("Welcome back!")
-                st.rerun()
-            else:
-                st.error(err or "Unable to login.")
-
-    with tab_signup:
-        with st.form("signup_form"):
-            new_username = st.text_input("Username")
-            email = st.text_input("Email")
-            new_password = st.text_input("Password", type="password")
-            confirm = st.text_input("Confirm Password", type="password")
-            submit_signup = st.form_submit_button("Create Account")
-        if submit_signup:
-            if new_password != confirm:
-                st.error("Passwords do not match.")
-            else:
-                ok, user, err = auth.create_user(new_username, email, new_password)
-                if ok and user:
-                    st.session_state["user"] = user
-                    st.session_state["page"] = "dashboard"
-                    _set_flash("Account created. You're in!")
-                    st.rerun()
-                else:
-                    st.error(err or "Unable to sign up.")
+def _normalize_user(user_row: Dict[str, Any]) -> Dict[str, Any]:
+    """Coerce user rows into a consistent shape for session state."""
+    return {
+        "user_id": user_row["user_id"],
+        "username": user_row["username"],
+        "email": user_row.get("email"),
+        "user_type": user_row.get("user_type") or "member",
+        "fitness_goal": user_row.get("fitness_goal"),
+    }
 
 
 # ------------------------------------------------------------------------------
 # NAVIGATION
 # ------------------------------------------------------------------------------
 
-def render_nav(user: Dict[str, Any]) -> None:
+def render_nav(user: Dict[str, Any], users: List[Dict[str, Any]]) -> None:
     with st.sidebar:
-        st.header(f"Hello, {user['username']}")
+        st.header("Active User")
+        options = [f"{u['username']} (id {u['user_id']})" for u in users]
+        current_label = f"{user['username']} (id {user['user_id']})"
+        try:
+            current_index = options.index(current_label)
+        except ValueError:
+            current_index = 0
+        selected_label = st.selectbox("Switch user", options, index=current_index)
+        selected_user = users[options.index(selected_label)]
+        if selected_user["user_id"] != user["user_id"]:
+            st.session_state["user"] = _normalize_user(selected_user)
+            st.rerun()
+
+        st.markdown("---")
         if st.button("Dashboard", use_container_width=True):
             st.session_state["page"] = "dashboard"
         if st.button("Log Workout", use_container_width=True):
@@ -118,12 +98,6 @@ def render_nav(user: Dict[str, Any]) -> None:
         if user.get("user_type") == "admin":
             if st.button("Admin", use_container_width=True):
                 st.session_state["page"] = "admin"
-        st.markdown("---")
-        if st.button("Log Out", use_container_width=True, type="secondary"):
-            st.session_state["user"] = None
-            st.session_state["selected_session_id"] = None
-            st.session_state["page"] = "auth"
-            st.rerun()
 
 
 # ------------------------------------------------------------------------------
@@ -571,13 +545,17 @@ def main():
     apply_theme()
     _init_state()
 
-    user = st.session_state.get("user")
-    if not user:
-        st.session_state["page"] = "auth"
-        render_auth()
+    users = auth.list_users()
+    if not users:
+        st.error("No users found in the database. Please seed user_info or create a user via Django/admin.")
         return
 
-    render_nav(user)
+    if not st.session_state.get("user"):
+        st.session_state["user"] = _normalize_user(users[0])
+
+    user = st.session_state["user"]
+
+    render_nav(user, users)
     page = st.session_state.get("page", "dashboard")
 
     if page == "dashboard":
