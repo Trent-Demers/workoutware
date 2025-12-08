@@ -970,7 +970,7 @@ def view_progress(request):
     rebuild_progress_for_user(uid)
 
     # Progress rows
-    progress_rows = progress.objects.filter(user_id=uid).select_related(
+    progress_rows = progress.objects.filter(user_id=uid, period_type="week").select_related(
         "exercise_id"
     ).order_by("-date")[:20]
 
@@ -979,33 +979,30 @@ def view_progress(request):
         user_id=uid
     ).order_by("-timestamp")[:10]
 
-    # Top exercises by training volume
-    with connection.cursor() as cursor:
-        cursor.execute(
-            """
-            SELECT e.exercise_id, e.name,
-                   SUM(s.weight * s.reps) AS total_volume
-            FROM exercise e
-            JOIN session_exercises se ON e.exercise_id = se.exercise_id
-            JOIN sets s ON se.session_exercise_id = s.session_exercise_id
-            JOIN workout_sessions ws ON se.session_id = ws.session_id
-            WHERE ws.user_id = %s
-              AND s.weight IS NOT NULL
-              AND ws.is_template = 0
-            GROUP BY e.exercise_id, e.name
-            ORDER BY total_volume DESC
-            LIMIT 5
-            """,
-            [uid],
-        )
-        top_exercises = cursor.fetchall()
 
-    # Weekly trends for each top exercise
+    # --- Top exercises by training volume ---
+    # All weekly progress rows for this user
+    weekly_qs = progress.objects.filter(user_id=uid, period_type="week")
+
+    # Top 5 exercises by total weekly volume (aggregated)
+    top_exercises = (
+        weekly_qs
+        .values("exercise_id", "exercise_id__name")
+        .annotate(total_volume=Sum("total_volume"))
+        .order_by("-total_volume")[:5]
+    )
+
     exercise_trends = {}
-    for ex_id, name, _ in top_exercises:
-        rows = progress.objects.filter(
-            user_id=uid, exercise_id=ex_id, period_type="weekly"
-        ).order_by("date")[:8]
+
+    for row in top_exercises:
+        ex_id = row["exercise_id"]
+        name = row["exercise_id__name"]
+
+        rows = (
+            weekly_qs
+            .filter(exercise_id=ex_id)
+            .order_by("date")[:8]
+        )
 
         exercise_trends[name] = {
             "dates": [p.date.strftime("%m/%d") for p in rows],
