@@ -356,7 +356,7 @@ def home(request):
     # Active goals
     active_goals = goals.objects.filter(user_id=user_record, status="active").select_related(
         "exercise_id"
-    )
+    ).order_by("-start_date")
 
     # Update goal progress
     for g in active_goals:
@@ -369,6 +369,7 @@ def home(request):
                 .first()
             )
             g.current_value = latest.pb_weight if latest else 0
+            g.save(update_fields=["current_value"])
 
     # Weekly workout count
     week_start = date.today() - timedelta(days=date.today().weekday())
@@ -1126,6 +1127,21 @@ def manage_goals(request):
     all_goals = goals.objects.filter(
         user_id=uid
     ).select_related("exercise_id").order_by("-start_date")
+
+    for g in all_goals:
+        if g.exercise_id:
+            latest = (
+                user_pb.objects.filter(
+                    user_id=uid, exercise_id=g.exercise_id, pr_type="max_weight"
+                )
+                .order_by("-pb_date")
+                .first()
+            )
+            g.current_value = latest.pb_weight if latest else 0
+        else:
+            g.current_value = 0
+        
+        g.save(update_fields=["current_value"])
 
     exercises_list = exercise.objects.all()
 
