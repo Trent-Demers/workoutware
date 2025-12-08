@@ -5,851 +5,539 @@ USE workoutware;
 --
 
 INSERT INTO user_info (
-    username, first_name, last_name, address, town, state, country,
-    email, phone_number, password_hash, date_of_birth, height,
-    date_registered, date_unregistered, registered, fitness_goal, user_type
-) VALUES
-('jdoe', 'John', 'Doe', '123 Elm St', 'Boston', 'MA', 'USA', 'john.doe@example.com', '555-111-2222',
- SHA2('password123',256), '1990-05-10', 180.34, '2025-01-10', NULL, 1, 'Weight Loss', 'client'),
-
-('esmith', 'Emily', 'Smith', '77 Pine Ave', 'Chicago', 'IL', 'USA', 'emily.smith@example.com', '555-333-4444',
- SHA2('trainhard',256), '1995-08-22', 165.10, '2025-01-11', NULL, 1, 'Muscle Gain', 'client'),
-
-('mjohnson', 'Michael', 'Johnson', '45 River Rd', 'Austin', 'TX', 'USA', 'mike.j@example.com', '555-222-5555',
- SHA2('fitlife',256), '1988-12-01', 178.00, '2025-01-11', NULL, 1, 'Endurance', 'client'),
-
-('sbrown', 'Sophia', 'Brown', NULL, 'Seattle', 'WA', 'USA', 'sophia.b@example.com', '555-999-0000',
- SHA2('health123',256), '1997-03-14', 170.20, '2025-01-12', NULL, 1, 'Flexibility', 'client'),
-
-('cwilson', 'Chris', 'Wilson', '150 Main St', 'Denver', 'CO', 'USA', 'chris.w@example.com', '555-444-7777',
- SHA2('adminpass',256), '1985-11-02', 175.50, '2025-01-09', NULL, 1, 'Overall Fitness', 'admin'),
-
-('ajones', 'Ava', 'Jones', NULL, 'Phoenix', 'AZ', 'USA', 'ava.jones@example.com', '555-666-1111',
- SHA2('fitness',256), '1993-04-18', NULL, '2025-01-13', NULL, 1, 'Toning', 'client'),
-
-('wmartin', 'William', 'Martin', '88 Hill St', 'Miami', 'FL', 'USA', 'will.martin@example.com', NULL,
- SHA2('stronger',256), '1991-07-09', 182.30, '2025-01-13', NULL, 1, 'Strength', 'client'),
-
-('llee', 'Lily', 'Lee', '20 Ocean Dr', 'San Diego', 'CA', 'USA', 'lily.lee@example.com', '555-101-3030',
- SHA2('cardiofit',256), '1998-06-21', 160.75, '2025-01-14', NULL, 1, 'Cardio', 'client'),
-
-('dclark', 'Daniel', 'Clark', '45 Palm Way', 'Tampa', 'FL', 'USA', 'dan.clark@example.com', NULL,
- SHA2('password!',256), '1994-01-25', 185.60, '2025-01-14', NULL, 1, 'Endurance', 'client'),
-
-('nharris', 'Noah', 'Harris', '12 Brook Ln', 'Atlanta', 'GA', 'USA', 'noah.h@example.com', '555-654-9087',
- SHA2('betterme',256), '1999-11-01', NULL, '2025-01-15', NULL, 1, 'Weight Loss', 'client'),
-
-('ogreen', 'Olivia', 'Green', '77 Maple St', 'Dallas', 'TX', 'USA', 'olivia.g@example.com', '555-121-3141',
- SHA2('wellness',256), '1996-03-08', 168.55, '2025-01-15', NULL, 1, 'Flexibility', 'client'),
-
-('pphillips', 'Paul', 'Phillips', NULL, 'Detroit', 'MI', 'USA', 'paul.p@example.com', '555-321-7654',
- SHA2('gainmuscle',256), '1989-05-30', 179.20, '2025-01-15', NULL, 1, 'Muscle Gain', 'client'),
-
-('zreid', 'Zoe', 'Reid', '9 Cedar St', 'Portland', 'OR', 'USA', 'zoe.reid@example.com', NULL,
- SHA2('runfast',256), '2000-09-10', 158.90, '2025-01-16', NULL, 1, 'Running', 'client'),
-
-('gturner', 'George', 'Turner', '66 Vine St', 'Cleveland', 'OH', 'USA', 'george.t@example.com', '555-852-8528',
- SHA2('recovery',256), '1987-12-11', 174.10, '2025-01-16', NULL, 1, 'Rehabilitation', 'client'),
-
-('bwalker', 'Bella', 'Walker', NULL, 'Boston', 'MA', 'USA', 'bella.w@example.com', '555-159-7533',
- SHA2('yogamind',256), '1999-10-20', 165.00, '2025-01-16', NULL, 1, 'Flexibility', 'client'),
-
-('tking', 'Thomas', 'King', '32 Cliff Dr', 'New York', 'NY', 'USA', 'thomas.king@example.com', '555-888-1212',
- SHA2('adminsecure',256), '1982-02-18', 180.50, '2025-01-08', NULL, 1, 'Administration', 'admin'),
-
-('nhernandez', 'Natalie', 'Hernandez', '54 River Dr', 'Houston', 'TX', 'USA', 'natalie.h@example.com', NULL,
- SHA2('burnfat',256), '1996-12-02', 170.30, '2025-01-17', NULL, 1, 'Weight Loss', 'client'),
-
-('cscott', 'Caleb', 'Scott', NULL, 'Charlotte', 'NC', 'USA', 'caleb.scott@example.com', '555-212-3434',
- SHA2('getfit',256), '1997-04-27', NULL, '2025-01-17', NULL, 1, 'General Fitness', 'client'),
-
-('lyoung', 'Layla', 'Young', '99 Spring St', 'Philadelphia', 'PA', 'USA', 'layla.y@example.com', NULL,
- SHA2('healthfirst',256), '1998-03-17', 161.20, '2025-01-17', NULL, 1, 'Cardio', 'client'),
-
-('jroberts', 'James', 'Roberts', NULL, 'San Jose', 'CA', 'USA', 'james.r@example.com', NULL,
- SHA2('gostrength',256), '1990-10-30', 188.40, '2025-01-18', NULL, 1, 'Strength', 'client'),
-
-('rhall', 'Ruby', 'Hall', '14 Lake Dr', 'Orlando', 'FL', 'USA', 'ruby.h@example.com', '555-888-2323',
- SHA2('zenfocus',256), '1995-06-02', 169.00, '2025-01-18', NULL, 1, 'Mental Wellness', 'client'),
-
-('hlopez', 'Henry', 'Lopez', '75 North St', 'Cincinnati', 'OH', 'USA', 'henry.l@example.com', NULL,
- SHA2('runbetter',256), '1988-08-12', 183.33, '2025-01-18', NULL, 1, 'Running', 'client'),
-
-('wwhite', 'Willa', 'White', NULL, 'Nashville', 'TN', 'USA', 'willa.w@example.com', '555-444-6666',
- SHA2('pilatescore',256), '1997-01-13', 159.50, '2025-01-18', NULL, 1, 'Core Strength', 'client'),
-
-('gking', 'Gabriel', 'King', '85 Ivy Rd', 'Minneapolis', 'MN', 'USA', 'gabe.king@example.com', '555-300-1200',
- SHA2('powerup',256), '1994-05-11', 180.10, '2025-01-19', NULL, 1, 'Powerlifting', 'client'),
-
-('isanders', 'Isla', 'Sanders', NULL, 'Salt Lake City', 'UT', 'USA', 'isla.s@example.com', '555-700-9999',
- SHA2('stretchgood',256), '1998-11-17', NULL, '2025-01-19', NULL, 1, 'Mobility', 'client'),
-
-('nward', 'Nathan', 'Ward', '12 Elm Dr', 'Denver', 'CO', 'USA', 'nate.w@example.com', NULL,
- SHA2('toneup',256), '1991-03-20', 177.90, '2025-01-19', NULL, 1, 'Toning', 'client'),
-
-('jsanchez', 'Julia', 'Sanchez', '52 Grove St', 'Sacramento', 'CA', 'USA', 'julia.s@example.com', '555-456-7890',
- SHA2('cardiogo',256), '1997-09-29', 170.00, '2025-01-19', NULL, 1, 'Cardio', 'client'),
-
-('rjenkins', 'Ryan', 'Jenkins', '100 Beach Blvd', 'San Diego', 'CA', 'USA', 'ryan.j@example.com', NULL,
- SHA2('buildmuscle',256), '1989-07-07', 185.10, '2025-01-20', NULL, 1, 'Muscle Gain', 'client'),
-
-('cporter', 'Chloe', 'Porter', NULL, 'Baltimore', 'MD', 'USA', 'chloe.p@example.com', NULL,
- SHA2('stretchit',256), '2001-12-28', 162.00, '2025-01-20', NULL, 1, 'Flexibility', 'client'),
-
-('agarcia', 'Aiden', 'Garcia', '39 Pine Cir', 'Las Vegas', 'NV', 'USA', 'aiden.g@example.com', '555-110-2200',
- SHA2('admin1234',256), '1983-01-01', 181.75, '2025-01-05', NULL, 1, 'System Management', 'admin'),
-
-('mmorris', 'Mia', 'Morris', '150 Forest Rd', 'Buffalo', 'NY', 'USA', 'mia.m@example.com', '555-808-7070',
- SHA2('burncalories',256), '1996-04-14', 164.40, '2025-01-20', NULL, 1, 'Weight Loss', 'client'),
-
-('mgray', 'Miles', 'Gray', '62 Sunset Dr', 'Columbus', 'OH', 'USA', 'miles.g@example.com', NULL,
- SHA2('corestable',256), '1993-10-22', NULL, '2025-01-21', NULL, 1, 'Core Strength', 'client'),
-
-('swood', 'Scarlett', 'Wood', NULL, 'Raleigh', 'NC', 'USA', 'scarlett.w@example.com', '555-140-5600',
- SHA2('feelstrong',256), '1995-06-30', NULL, '2025-01-21', NULL, 1, 'Strength', 'client'),
-
-('hprice', 'Hudson', 'Price', '91 Willow St', 'Richmond', 'VA', 'USA', 'hudson.p@example.com', NULL,
- SHA2('betterform',256), '1992-08-23', 180.90, '2025-01-21', NULL, 1, 'General Fitness', 'client'),
-
-('pelias', 'Penelope', 'Elias', '10 Birch Ln', 'Boise', 'ID', 'USA', 'pen.elias@example.com', '555-100-2020',
- SHA2('flowyoga',256), '1999-05-19', 159.00, '2025-01-21', NULL, 1, 'Yoga', 'client'),
-
-('rmitchell', 'Ryder', 'Mitchell', NULL, 'Louisville', 'KY', 'USA', 'ryder.m@example.com', '555-222-1133',
- SHA2('powertrain',256), '1991-03-09', 188.80, '2025-01-22', NULL, 1, 'Strength', 'client'),
-
-('acarson', 'Aria', 'Carson', '28 Garden Rd', 'Fresno', 'CA', 'USA', 'aria.c@example.com', NULL,
- SHA2('learnstretch',256), '2000-08-11', NULL, '2025-01-22', NULL, 1, 'Mobility', 'client'),
-
-('jjordan', 'Jack', 'Jordan', NULL, 'Tulsa', 'OK', 'USA', 'jack.jordan@example.com', '555-778-9900',
- SHA2('swimfast',256), '1994-02-24', 179.70, '2025-01-22', NULL, 1, 'Swimming', 'client'),
-
-('hroberts', 'Hailey', 'Roberts', '57 Cherry Rd', 'Cincinnati', 'OH', 'USA', 'hailey.r@example.com', NULL,
- SHA2('feelgood',256), '1996-09-07', NULL, '2025-01-22', NULL, 1, 'Health', 'client'),
-
-('jmartinez', 'Julian', 'Martinez', '40 Valley Rd', 'Austin', 'TX', 'USA', 'julian.m@example.com', '555-600-3300',
- SHA2('bulkup',256), '1992-05-14', 182.40, '2025-01-23', NULL, 1, 'Bodybuilding', 'client'),
-
-('grogers', 'Grace', 'Rogers', NULL, 'Milwaukee', 'WI', 'USA', 'grace.r@example.com', NULL,
- SHA2('yogacalm',256), '1997-03-03', 164.20, '2025-01-23', NULL, 1, 'Flexibility', 'client'),
-
-('klopez', 'Kai', 'Lopez', '87 Bay St', 'Seattle', 'WA', 'USA', 'kai.lopez@example.com', '555-303-4040',
- SHA2('balance',256), '1998-11-21', NULL, '2025-01-23', NULL, 1, 'Balance Training', 'client'),
-
-('carmstrong', 'Carter', 'Armstrong', '19 Park Pl', 'Chicago', 'IL', 'USA', 'carter.a@example.com', NULL,
- SHA2('cardiohealth',256), '1995-08-05', 178.10, '2025-01-23', NULL, 1, 'Cardio Health', 'client'),
-
-('delson', 'Delilah', 'Elson', '31 Pine Rd', 'Boston', 'MA', 'USA', 'delilah.e@example.com', '555-929-1111',
- SHA2('pilateslife',256), '2001-12-31', 160.00, '2025-01-24', NULL, 1, 'Pilates', 'client'),
-
-('phunt', 'Parker', 'Hunt', NULL, 'Houston', 'TX', 'USA', 'parker.h@example.com', '555-777-0007',
- SHA2('crossfitnow',256), '1989-09-19', 185.20, '2025-01-24', NULL, 1, 'CrossFit', 'client'),
-
-('ssharp', 'Stella', 'Sharp', NULL, 'Phoenix', 'AZ', 'USA', 'stella.s@example.com', '555-314-3142',
- SHA2('stepcount',256), '1999-06-23', NULL, '2025-01-24', NULL, 1, 'Steps Tracking', 'client'),
-
-('evasquez', 'Evan', 'Vasquez', '61 Oak Ln', 'New York', 'NY', 'USA', 'evan.v@example.com', NULL,
- SHA2('admin99',256), '1984-11-08', 183.10, '2025-01-06', NULL, 1, 'System Administration', 'admin');
-
-
-INSERT INTO auth_user (
-    password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES
-
-('pbkdf2_sha256$1000000$EOEjMPIoDXcuLDybHImacV$GD/uXRhoVx0CvIxommalrmAxDxT1Jr9+KOE4YZReyzE=', '2025-01-10', 0, 'jdoe', 'John', 'Doe', 'john.doe@example.com', 0, 1, '2025-01-10'),
-
-('pbkdf2_sha256$1000000$PpeWFRkCc4zxH2YPelcjJg$tvFyk23deoWUkoiWo82WbI0pz/P6r1QSUcaQyqeTguA=', '2025-01-11', 0, 'esmith', 'Emily', 'Smith', 'emily.smith@example.com', 0, 1, '2025-01-11'),
-
-('pbkdf2_sha256$1000000$Cxv4cgqyqVT3VjMUOmgJnW$FI5PtwytMIxI/qKJgFzJd4Xa33GTPvajw8nxpuRu1MA=', '2025-01-11', 0, 'mjohnson', 'Michael', 'Johnson', 'mike.j@example.com', 0, 1, '2025-01-11'),
-
-('pbkdf2_sha256$1000000$ToZ5SGWrd5g3jjuQTQGwxE$BDHInilAeSJI4VhlkpeL5iB/npMGjlcXm6A90tyV8zo=', '2025-01-12', 0, 'sbrown', 'Sophia', 'Brown', 'sophia.b@example.com', 0, 1, '2025-01-12'),
-
-('pbkdf2_sha256$1000000$dlNZVYj5ACkrdHQHS4qDkV$++JTb/iHSSH6FquZYC5p14Uq53PZTIydUEC3qXoTxII=', '2025-01-09', 1, 'cwilson', 'Chris', 'Wilson', 'chris.w@example.com', 1, 1, '2025-01-09'),
-
-('pbkdf2_sha256$1000000$wqBa7GBZMkVInlGLrJLFwL$PlTZ207X8VbeJut4Wn2Q8GEvaiAETbPi47tEFIjZHfo=', '2025-01-13', 0, 'ajones', 'Ava', 'Jones', 'ava.jones@example.com', 0, 1, '2025-01-13'),
-
-('pbkdf2_sha256$1000000$phU1IPL30Bjg9U8Vrlftjc$Z3kwH4CXD0QFCCA0+idqNITciylcT5SDK3sUEyvAO7E=', '2025-01-13', 0, 'wmartin', 'William', 'Martin', 'will.martin@example.com', 0, 1, '2025-01-13'),
-
-('pbkdf2_sha256$1000000$MP9P6qIAKVPCUpF2aYyryw$jSUIyt4dtghXDhLJ7XDjuCc9HsZPbz+VKh2czf2upRQ=', '2025-01-14', 0, 'llee', 'Lily', 'Lee', 'lily.lee@example.com', 0, 1, '2025-01-14'),
-
-('pbkdf2_sha256$1000000$DkK2cfKd4i0iH39MrhpDQc$n0yMH6eB0fXjO0z215KDESJWCOkxrZF2LG8fVacyfjY=', '2025-01-14', 0, 'dclark', 'Daniel', 'Clark', 'dan.clark@example.com', 0, 1, '2025-01-14'),
-
-('pbkdf2_sha256$1000000$ddPkzlPch1pBXMtxUYR5PP$+CpH0YHUnUv7KSWrvzGALMZAlYZbzxmWDqfksOvS/gc=', '2025-01-15', 0, 'nharris', 'Noah', 'Harris', 'noah.h@example.com', 0, 1, '2025-01-15'),
-
-('pbkdf2_sha256$1000000$bmNGOhlKgKX99Oeq9lJtES$B8/UHO+hxnIjJQr55tDzqxXTmP9eS51zQo+n1tnfZ9c=', '2025-01-15', 0, 'ogreen', 'Olivia', 'Green', 'olivia.g@example.com', 0, 1, '2025-01-15'),
-
-('pbkdf2_sha256$1000000$2aWZtmCdajYcH4GF0WHBAz$wqLYuedEyOl09ao6PXptcNkYWHtL04v9R0TwCB/IMpk=', '2025-01-15', 0, 'pphillips', 'Paul', 'Phillips', 'paul.p@example.com', 0, 1, '2025-01-15'),
-
-('pbkdf2_sha256$1000000$TvLdMMg9aFw2OYXCInzFCi$AxesIUzP2yG9XWBKo6GYmjXp1k/MguN2S98Rr/Sx2u8=', '2025-01-16', 0, 'zreid', 'Zoe', 'Reid', 'zoe.reid@example.com', 0, 1, '2025-01-16'),
-
-('pbkdf2_sha256$1000000$yNarVnyRy74DovEXK4Gbeo$cAgPdv5O6f1vPdDGncTRLd+L5TGVQyszQRsD9VWAR6k=', '2025-01-16', 0, 'gturner', 'George', 'Turner', 'george.t@example.com', 0, 1, '2025-01-16'),
-
-('pbkdf2_sha256$1000000$IhorMpmJINSQoxl1a3DVyv$pPvYNgYgWFTS3lPu3EkHFKqD7euWh3oNQlJLKFCvkIw=', '2025-01-16', 0, 'bwalker', 'Bella', 'Walker', 'bella.w@example.com', 0, 1, '2025-01-16'),
-
-('pbkdf2_sha256$1000000$pgdJG8hG9bMiX1SXDn8KJr$QH7J6ylMntV72n9ewnLxnqNTwOe8qG+8RFquOJXv6C8=', '2025-01-08', 1, 'tking', 'Thomas', 'King', 'thomas.king@example.com', 1, 1, '2025-01-08'),
-
-('pbkdf2_sha256$1000000$PRjv1P9SlMSWQ23UPonSm6$cJBmF+X3Sbik2xvZ3JVEK09bDcD80eJnOYJWyjrMWoo=', '2025-01-17', 0, 'nhernandez', 'Natalie', 'Hernandez', 'natalie.h@example.com', 0, 1, '2025-01-17'),
-
-('pbkdf2_sha256$1000000$QvJ3EF2G9GlzzevqMrq92h$l++abxU3JRWukCKbGbsOtOeJWl3foyxGcWpFWB1sPCo=', '2025-01-17', 0, 'cscott', 'Caleb', 'Scott', 'caleb.scott@example.com', 0, 1, '2025-01-17'),
-
-('pbkdf2_sha256$1000000$IqjEB3eKrBwZIbvh0eVZJk$HPrnxJf+sQmuOvdiKqdWVu2eklDj5/citzUBuUk+G1Q=', '2025-01-17', 0, 'lyoung', 'Layla', 'Young', 'layla.y@example.com', 0, 1, '2025-01-17'),
-
-('pbkdf2_sha256$1000000$Yaf0198VjJ4DGmwcjVbh3p$+9WjfIMCy6SA+G+VVvy72Y5dsbS4mZCbwJIO9gNMEX8=', '2025-01-18', 0, 'jroberts', 'James', 'Roberts', 'james.r@example.com', 0, 1, '2025-01-18'),
-
-('pbkdf2_sha256$1000000$R1zOkFIKmG4IOijeDH5Gkv$FoPOTjC076La1HIjKvzmrRsjvgsVuPYohqrQjBo/Om0=', '2025-01-18', 0, 'rhall', 'Ruby', 'Hall', 'ruby.h@example.com', 0, 1, '2025-01-18'),
-
-('pbkdf2_sha256$1000000$LNpPcpkvzF26Gl0uMLJMJ8$j3lTRaQxV/JRj4mciMvWaJfJBNKKRpYtSEEXTf8VS5Y=', '2025-01-18', 0, 'hlopez', 'Henry', 'Lopez', 'henry.l@example.com', 0, 1, '2025-01-18'),
-
-('pbkdf2_sha256$1000000$s7n7eqEwmgryjm1Fi9bEUX$r8G9Flomo0cFAyse6lUbCuX/Aj7otGK7kaYHCpHe8cA=', '2025-01-18', 0, 'wwhite', 'Willa', 'White', 'willa.w@example.com', 0, 1, '2025-01-18'),
-
-('pbkdf2_sha256$1000000$K69dnOOtnGPq47zeLuhMKb$+yn8R8X/HNn/KFHjMZO1oi62x/DwboHhMJZqlvbsRD4=', '2025-01-19', 0, 'gking', 'Gabriel', 'King', 'gabe.king@example.com', 0, 1, '2025-01-19'),
-
-('pbkdf2_sha256$1000000$sx3x51XH7Y0sNreXZpN6jb$/GgJfQ2rMCiGgiT9szIGVxX40GPRC6yKXKgoGj90W88=', '2025-01-19', 0, 'isanders', 'Isla', 'Sanders', 'isla.s@example.com', 0, 1, '2025-01-19'),
-
-('pbkdf2_sha256$1000000$ObbZLCJjnHukc0ugCJjYvS$zHmdMXuJ+fHhmU4fSvqMgse+ZLS1eJfMyy5kyJ9hlbU=', '2025-01-19', 0, 'nward', 'Nathan', 'Ward', 'nate.w@example.com', 0, 1, '2025-01-19'),
-
-('pbkdf2_sha256$1000000$tkSDnCogcoDHF3C55AAtaJ$TSKDdhZlrRyCOAB9KVr1pHpA3EX+LFmGNsCZ/xiP4Ws=', '2025-01-19', 0, 'jsanchez', 'Julia', 'Sanchez', 'julia.s@example.com', 0, 1, '2025-01-19'),
-
-('pbkdf2_sha256$1000000$UOGUCLcqRfK7vJ0TxL8o3d$CZlSqVBiMzKyfUKSNPRt0TAEC5yiUOfqRnTvbizK970=', '2025-01-20', 0, 'rjenkins', 'Ryan', 'Jenkins', 'ryan.j@example.com', 0, 1, '2025-01-20'),
-
-('pbkdf2_sha256$1000000$POdPzwwCVg2YBvzFDKnMdt$t049iLld5/5aj9Q5lndUEh/AdrHwpZma29xywytaDgg=', '2025-01-20', 0, 'cporter', 'Chloe', 'Porter', 'chloe.p@example.com', 0, 1, '2025-01-20'),
-
-('pbkdf2_sha256$1000000$IqPD1ESf5qFpub2qC3CoRD$g9wDtolS0DrYCNxtQgPH6TgA3xHZwkKfu/W2+AIUhM4=', '2025-01-05', 1, 'agarcia', 'Aiden', 'Garcia', 'aiden.g@example.com', 1, 1, '2025-01-05'),
-
-('pbkdf2_sha256$1000000$brBqXfnTLstvj02XfdgQHx$9KoJMta7QU7AHVRug/WFjHbZdlPUDLmNinTU1dbXT4c=', '2025-01-20', 0, 'mmorris', 'Mia', 'Morris', 'mia.m@example.com', 0, 1, '2025-01-20'),
-
-('pbkdf2_sha256$1000000$0peoIXCeNyDlRkSTSt5zw9$7QsuSFmpvu1OIP8lPW3FQ+ajDW9bW8LwoK73YjMaEw4=', '2025-01-21', 0, 'mgray', 'Miles', 'Gray', 'miles.g@example.com', 0, 1, '2025-01-21'),
-
-('pbkdf2_sha256$1000000$3csuYvkgkXIqLG9oW4uAv8$oFUMRj073dxMoWDnhM+d7oqlKQeFGy5AEMGNc4BTZfI=', '2025-01-21', 0, 'swood', 'Scarlett', 'Wood', 'scarlett.w@example.com', 0, 1, '2025-01-21'),
-
-('pbkdf2_sha256$1000000$ZqqwVkChbQUWRGeVENUeXL$5me1DmKItsonWT88l0lNp4bHjzlkKBkOOSD1PT/PToY=', '2025-01-21', 0, 'hprice', 'Hudson', 'Price', 'hudson.p@example.com', 0, 1, '2025-01-21'),
-
-('pbkdf2_sha256$1000000$Ey8hsBNeECfi8LBMUK3E4D$Wd7tT43JfwuNe77aky1vk3LLE9jm87WHvYXBrfErKlI=', '2025-01-21', 0, 'pelias', 'Penelope', 'Elias', 'pen.elias@example.com', 0, 1, '2025-01-21'),
-
-('pbkdf2_sha256$1000000$4bzMXc5uKpR2EBrhdebkVR$A+8132bSLstYfb5iJLDjPmiZEhD9u96MRtwK2Z9bPd4=', '2025-01-22', 0, 'rmitchell', 'Ryder', 'Mitchell', 'ryder.m@example.com', 0, 1, '2025-01-22'),
-
-('pbkdf2_sha256$1000000$KMgnazChdDqXYV0xRjA8qp$Kdno2pFDSGB+STO4rmvLUM53ijngbwymmKxpwvOIOTo=', '2025-01-22', 0, 'acarson', 'Aria', 'Carson', 'aria.c@example.com', 0, 1, '2025-01-22'),
-
-('pbkdf2_sha256$1000000$wpaVBVD9pfZctRT8TXdsAu$dpBkvhWGGoTO+SbKML64KSDkMkKr3/63dZr+1IsB99E=', '2025-01-22', 0, 'jjordan', 'Jack', 'Jordan', 'jack.jordan@example.com', 0, 1, '2025-01-22'),
-
-('pbkdf2_sha256$1000000$cBZB6bi6eI52lXRKHJwNFb$DQRqf8ZXpXK+Q2UgBhZA1cBbcV22wz3m1DCn/sxEb1k=', '2025-01-22', 0, 'hroberts', 'Hailey', 'Roberts', 'hailey.r@example.com', 0, 1, '2025-01-22'),
-
-('pbkdf2_sha256$1000000$jimggAkVBOVtXt6jfyMBJm$iQhFuzZwZBoJV7IcCAvI+W4XYxZTMy1axjy64yvEFUI=', '2025-01-23', 0, 'jmartinez', 'Julian', 'Martinez', 'julian.m@example.com', 0, 1, '2025-01-23'),
-
-('pbkdf2_sha256$1000000$qS5JbtLYWApEq8aOq12kjP$uSEvYQ6fcDO9UC9cURAPIotG0lSkwJC0TMV212/d6xo=', '2025-01-23', 0, 'grogers', 'Grace', 'Rogers', 'grace.r@example.com', 0, 1, '2025-01-23'),
-
-('pbkdf2_sha256$1000000$9rEtduvObRvdIp5j5atUbj$CZEHitBZByWAIL0zd2K5Ey8x0QDNJODWiBXB6BdKbXQ=', '2025-01-23', 0, 'klopez', 'Kai', 'Lopez', 'kai.lopez@example.com', 0, 1, '2025-01-23'),
-
-('pbkdf2_sha256$1000000$j0rCd0yHzinc3j48YeuweT$L2kkB/fng56cAF6o0hEZng9U1kwSpDG4d6xRtoCuqg8=', '2025-01-23', 0, 'carmstrong', 'Carter', 'Armstrong', 'carter.a@example.com', 0, 1, '2025-01-23'),
-
-('pbkdf2_sha256$1000000$yajWWbF3e0FcqCsyHBJ95i$x45XoIZlIXGpZFSm4sKm29Z4nSue3oa1miXKmRCbWj8=', '2025-01-24', 0, 'delson', 'Delilah', 'Elson', 'delilah.e@example.com', 0, 1, '2025-01-24'),
-
-('pbkdf2_sha256$1000000$QvPWf8Vh7TINswb9CSRd0x$bXW6e9cbaUn6bJmBPcJaNq+2OMElZaWEcx5E3uU9odI=', '2025-01-24', 0, 'phunt', 'Parker', 'Hunt', 'parker.h@example.com', 0, 1, '2025-01-24'),
-
-('pbkdf2_sha256$1000000$hM6lgN6INLoGu9FdoWNXqw$FFNr0bM7RTmWLpXLffvlXlRKqp08++B5LhkaV8IiLXc=', '2025-01-24', 0, 'ssharp', 'Stella', 'Sharp', 'stella.s@example.com', 0, 1, '2025-01-24'); 
-
+  user_id, username, first_name, last_name, address, town, state, country,
+  email, phone_number, password_hash, date_of_birth, height,
+  date_registered, date_unregistered, registered, fitness_goal, user_type
+	) VALUES
+(25, 'kroberts', 'Kevin', 'Roberts', '124 Maple St', 'Springfield', 'IL', 'USA',
+ 'kevin.roberts@example.com', '3125559825', 'f3a9c5bd901ae9bd54c8f23e1c39f2aa', '1988-04-12',
+ 178.20, '2024-11-22', NULL, 1, 'Lose Weight', 'client'),
+(26, 'mthompson', 'Maria', 'Thompson', '88 Oakridge Ave', 'Riverside', 'CA', 'USA',
+ 'maria.t@example.com', NULL, 'a72b9d1540e45cfad1182fcd093af87c', '1991-09-03',
+ 165.10, '2023-07-14', NULL, 1, 'Maintain Weight', 'client'),
+(27, 'jnguyen', 'James', 'Nguyen', NULL, 'Portland', 'OR', 'USA',
+ 'j.nguyen@example.com', '5032224411', 'bbf4ea8e17fbd5ac9120e32aa491ddbe', NULL,
+ NULL, '2024-01-08', NULL, 1, NULL, 'admin'),
+(28, 'smitchell', 'Sarah', 'Mitchell', '47 Pine View Rd', 'Madison', 'WI', 'USA',
+ 'sarah.mitchell@example.com', '6085559032', 'c44ddad3c09a1fbe3e1a4e53fa22bd09', '1993-11-19',
+ 169.40, '2024-05-29', NULL, 1, 'Gain Muscle', 'client'),
+(29, 'wturner', 'William', 'Turner', '220 Harbor Dr', 'Charleston', 'SC', 'USA',
+ 'wturner@example.com', NULL, '140e382bbacdee6542cc8179f99a42cd', '1986-02-25',
+ 182.00, '2022-08-11', NULL, 0, NULL, 'client'),
+(30, 'jlee', 'Jessica', 'Lee', '12 Rosewood Ln', 'Tacoma', 'WA', 'USA',
+ 'jessica.lee@example.com', '2065557440', '4b82fe8d4cbdacf322ddab003efd0182', '1995-01-30',
+ 159.70, '2024-09-10', NULL, 1, 'Endurance', 'client'),
+(31, 'rchavez', 'Rafael', 'Chavez', NULL, NULL, NULL, 'USA',
+ 'rafael.chavez@example.net', '9154331288', 'da123b33c9477a7e4cc15824a059d393', '1992-07-07',
+ 175.00, '2023-04-21', NULL, 1, NULL, 'client'),
+(32, 'aowens', 'Amy', 'Owens', '320 Hillcrest Dr', 'Boulder', 'CO', 'USA',
+ 'amy.owens@example.com', NULL, '88d22dc037993c34f9aa1245c6e3d1b7', '1990-06-17',
+ NULL, '2024-02-13', NULL, 1, 'Lose Weight', 'client'),
+(33, 'cward', 'Christopher', 'Ward', '95 Birch Rd', 'Salem', 'MA', 'USA',
+ 'chris.ward@example.com', '6175502288', 'dcb11ef482c37baca039fe44a8e1fe5d', NULL,
+ 181.50, '2022-12-19', '2024-06-01', 0, NULL, 'client'),
+(34, 'lgray', 'Lauren', 'Gray', NULL, 'Atlanta', 'GA', 'USA',
+ 'lauren.gray@example.org', NULL, 'f119c62e7e43a33c7dee811efbb6a931', '1994-08-28',
+ 168.00, '2024-10-01', NULL, 1, 'Flexibility', 'client'),
+(35, 'pdiaz', 'Paul', 'Diaz', '77 Cypress St', 'Miami', 'FL', 'USA',
+ 'paul.diaz@example.com', '3054441299', 'c0d997ab44fbef1223a741d98d0fdd73', NULL,
+ 177.33, '2023-03-11', NULL, 1, NULL, 'client'),
+(36, 'mramirez', 'Monica', 'Ramirez', '410 Fox Hollow Ct', 'Phoenix', 'AZ', 'USA',
+ 'monica.ramirez@example.com', '4803225512', 'e9120d54c8891bdbf45dd22f82e5bc01', '1997-10-05',
+ NULL, '2024-03-24', NULL, 1, 'Gain Muscle', 'client'),
+(37, 'sdonaldson', 'Samuel', 'Donaldson', NULL, 'Denver', 'CO', 'USA',
+ 'sam.donaldson@example.com', '7205128834', '6c1e0fb3a41dd9222e1f7229bbcbab0f', '1998-05-09',
+ 183.20, '2023-09-15', NULL, 1, 'Endurance', 'client'),
+(38, 'kpatel', 'Kiran', 'Patel', '249 Elm Ave', 'Edison', 'NJ', 'USA',
+ 'kpatel@example.net', NULL, '9c84b1de287dac33a9fffab52d32c0b1', '1990-12-18',
+ NULL, '2022-11-20', NULL, 1, NULL, 'admin'),
+(39, 'obrewer', 'Olivia', 'Brewer', '11 Sunset Way', 'Tempe', 'AZ', 'USA',
+ 'olivia.brewer@example.com', '4802289922', '5690bb9c8bb248aee2e14bbcd90adc33', '1989-03-14',
+ 162.00, '2024-04-01', NULL, 1, 'Lose Weight', 'client'),
+(40, 'hyoung', 'Henry', 'Young', NULL, NULL, NULL, 'USA',
+ 'henry.young@example.com', NULL, 'a9cee49f1a33cba447a0dd2e59c0c3cc', NULL,
+ NULL, '2024-10-31', '2024-12-15', 0, NULL, 'client'),
+(41, 'jcarter', 'Julia', 'Carter', '208 Meadow Ln', 'Fargo', 'ND', 'USA',
+ 'julia.carter@example.com', '7015501128', '4cd2fa1d0aa3db8c98c144c0f0178220', '1996-04-23',
+ 166.50, '2023-05-07', NULL, 1, 'Maintain Weight', 'client'),
+(42, 'bdaniels', 'Brandon', 'Daniels', '500 Crestwood Dr', 'Lexington', 'KY', 'USA',
+ 'brandon.d@example.com', NULL, 'ee92adbcff41cd3cf28c90b4f366cc4a', '1993-07-15',
+ 180.40, '2024-06-17', NULL, 1, 'Strength', 'client'),
+(43, 'jrogers', 'Jane', 'Rogers', NULL, 'Boise', 'ID', 'USA',
+ 'jane.rogers@example.com', '2082224993', '511acb9bcbad8a3344cd12c7f916bcab', NULL,
+ NULL, '2023-10-03', NULL, 1, NULL, 'client'),
+(44, 'agarcia', 'Alex', 'Garcia', '90 Meadow Ridge', 'San Antonio', 'TX', 'USA',
+ 'alex.garcia@example.net', NULL, '40fd5acdb1ddc0cba4bf1fd510e6d38b', '1992-11-11',
+ 174.90, '2024-08-22', NULL, 1, 'Gain Muscle', 'client'),
+(45, 'bcoleman', 'Brian', 'Coleman', '65 Forest Cir', 'Columbus', 'OH', 'USA',
+ 'brian.coleman@example.com', '6145228733', '2ec9dfa3adbd22f090d5a1dbf68acdd3', NULL,
+ NULL, '2022-05-30', '2023-01-12', 0, NULL, 'client'),
+(46, 'ldavis', 'Lily', 'Davis', '130 Riverbend Ln', 'Raleigh', 'NC', 'USA',
+ 'lily.davis@example.com', NULL, 'f7cc31ab001ce2abb9472b78d45d05a1', '1999-02-17',
+ 158.60, '2024-12-05', NULL, 1, 'Flexibility', 'client'),
+(47, 'hkim', 'Hannah', 'Kim', '77 Lakeview Blvd', 'Seattle', 'WA', 'USA',
+ 'hannah.kim@example.com', '2069917720', '0ba91df33c93ab42811c6ed4fa4ac49a', NULL,
+ 164.20, '2023-09-02', NULL, 1, NULL, 'client'),
+(48, 'atorres', 'Antonio', 'Torres', NULL, NULL, 'NM', 'USA',
+ 'antonio.torres@example.com', NULL, 'af12edbc33bb1c932cad9e4a4480fbda', '1987-05-05',
+ NULL, '2024-11-15', NULL, 1, 'Endurance', 'client'),
+(49, 'vmorgan', 'Vanessa', 'Morgan', '51 Willow Brook', 'Nashville', 'TN', 'USA',
+	 'vanessa.morgan@example.com', '6158223301', '0cc2cadadb03f19a887cdf9a51caf9b2', '1994-06-29',
+	 170.80, '2023-02-18', NULL, 1, 'Lose Weight', 'admin');
+
+
+INSERT INTO auth_user (password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES
+('pbkdf2_sha256$260000$a1$ffe8123aa90e3e991b8c4bc3dfb91872','2025-01-05 10:15:21',0,'kroberts','Kevin','Roberts','kevin.roberts@example.com',0,1,'2024-11-22 09:13:00'),
+('pbkdf2_sha256$260000$a2$d902ac3b19ff12aa8fc129bd342b17f1','2025-01-07 08:44:09',0,'mthompson','Maria','Thompson','maria.t@example.com',0,1,'2023-07-14 13:22:00'),
+('pbkdf2_sha256$260000$a3$7bc1d29eeaa112451ff00b31b0c3fa55','2025-01-09 16:11:47',1,'jnguyen','James','Nguyen','j.nguyen@example.com',1,1,'2024-01-08 15:18:00'),
+('pbkdf2_sha256$260000$a4$fa1d334c1bca2219ac09bb2aa71b62fc','2025-01-04 11:55:33',0,'smitchell','Sarah','Mitchell','sarah.mitchell@example.com',0,1,'2024-05-29 10:00:00'),
+('pbkdf2_sha256$260000$a5$2e71f1bd9cc88934512aa7e4ce12c681','2025-01-02 09:12:05',0,'wturner','William','Turner','wturner@example.com',0,1,'2022-08-11 14:32:00'),
+('pbkdf2_sha256$260000$a6$c44fa22198bd87f19ba0ee77a912dcee','2025-01-08 19:02:44',0,'jlee','Jessica','Lee','jessica.lee@example.com',0,1,'2024-09-10 09:00:00'),
+('pbkdf2_sha256$260000$a7$5591c31dcefc11ccd219a1bbcf92ae10','2025-01-06 07:10:21',0,'rchavez','Rafael','Chavez','rafael.chavez@example.net',0,1,'2023-04-21 12:55:00'),
+('pbkdf2_sha256$260000$a8$afb19df003aa9287cbb24d21f33fb233','2025-01-03 14:00:57',0,'aowens','Amy','Owens','amy.owens@example.com',0,1,'2024-02-13 17:21:00'),
+('pbkdf2_sha256$260000$a9$df93cdafba77b122991cce09f2ba11ce','2025-01-10 12:43:16',0,'cward','Christopher','Ward','chris.ward@example.com',0,1,'2022-12-19 09:41:00'),
+('pbkdf2_sha256$260000$a10$aad118c3900e1ca33a2f07831ca0ae11','2025-01-05 16:55:19',0,'lgray','Lauren','Gray','lauren.gray@example.org',0,1,'2024-10-01 08:00:00'),
+('pbkdf2_sha256$260000$a11$77ecbb0f8112399d1aab478009d122ee','2025-01-07 11:47:33',0,'pdiaz','Paul','Diaz','paul.diaz@example.com',0,1,'2023-03-11 10:15:00'),
+('pbkdf2_sha256$260000$a12$f23bcd1190ccaad771ea129cb33e7121','2025-01-09 09:22:51',0,'mramirez','Monica','Ramirez','monica.ramirez@example.com',0,1,'2024-03-24 15:33:00'),
+('pbkdf2_sha256$260000$a13$19fc0ee3aa998db113acd221a0bd4341','2025-01-08 13:40:17',0,'sdonaldson','Samuel','Donaldson','sam.donaldson@example.com',0,1,'2023-09-15 09:47:00'),
+('pbkdf2_sha256$260000$a14$bb1d33f9acf1290ce48adde2211fa433','2025-01-04 17:30:09',1,'kpatel','Kiran','Patel','kpatel@example.net',1,1,'2022-11-20 11:55:00'),
+('pbkdf2_sha256$260000$a15$dee1129cc0eaa4310bbd99821cd8d12e','2025-01-06 10:29:44',0,'obrewer','Olivia','Brewer','olivia.brewer@example.com',0,1,'2024-04-01 10:20:00'),
+('pbkdf2_sha256$260000$a16$aa8e19ffc33d92cbb1aa0ff61930b991','2025-01-03 08:22:11',0,'hyoung','Henry','Young','henry.young@example.com',0,1,'2024-10-31 18:41:00'),
+('pbkdf2_sha256$260000$a17$0d1bcbcdcaa82113a0dc771baa33219f','2025-01-05 14:18:01',0,'jcarter','Julia','Carter','julia.carter@example.com',0,1,'2023-05-07 13:29:00'),
+('pbkdf2_sha256$260000$a18$1caa938bc11d52ff1909bb2e30cd12ff','2025-01-10 09:41:54',0,'bdaniels','Brandon','Daniels','brandon.d@example.com',0,1,'2024-06-17 07:40:00'),
+('pbkdf2_sha256$260000$a19$fe123d991099bbaa1ccbb99233f0accc','2025-01-02 15:09:22',0,'jrogers','Jane','Rogers','jane.rogers@example.com',0,1,'2023-10-03 09:55:00'),
+('pbkdf2_sha256$260000$a20$9b1eca1cc0da93ee1200aaf3921177fb','2025-01-07 19:22:15',0,'agarcia','Alex','Garcia','alex.garcia@example.net',0,1,'2024-08-22 12:00:00'),
+('pbkdf2_sha256$260000$a21$bbf31ccae310099d11bcaa23d12ef33c','2025-01-03 11:44:39',0,'bcoleman','Brian','Coleman','brian.coleman@example.com',0,1,'2022-05-30 16:20:00'),
+('pbkdf2_sha256$260000$a22$cdbb8130199acccc22dd9931aaef09bc','2025-01-08 15:50:14',0,'ldavis','Lily','Davis','lily.davis@example.com',0,1,'2024-12-05 09:12:00'),
+('pbkdf2_sha256$260000$a23$dcfee7190cbb11ed33aa998201cd3700','2025-01-09 18:02:57',0,'hkim','Hannah','Kim','hannah.kim@example.com',0,1,'2023-09-02 08:33:00'),
+('pbkdf2_sha256$260000$a24$f2130bce12ee09cc41bb129cb3de2210','2025-01-04 12:29:01',0,'atorres','Antonio','Torres','antonio.torres@example.com',0,1,'2024-11-15 19:55:00'),
+('pbkdf2_sha256$260000$a25$a1bf33aa9981ddcc00ff1932a0eec19d','2025-01-10 14:37:48',1,'vmorgan','Vanessa','Morgan','vanessa.morgan@example.com',1,1,'2023-02-18 15:16:00');
 
  --
  -- EXERCISE TEST DATA
  --
  
- INSERT INTO exercise (
-    name, type, subtype, equipment, difficulty, description, demo_link
-) VALUES
-('Push-Up', 'Strength', 'Upper Body', 'None', 2, 'Bodyweight chest and tricep push movement.', 'https://youtu.be/_l3ySVKYVJ8'),
-('Squat', 'Strength', 'Lower Body', 'None', 2, 'Knee-dominant lower body movement targeting quads.', 'https://youtu.be/aclHkVaku9U'),
-('Deadlift', 'Strength', 'Full Body', 'Barbell', 4, 'Hip hinge movement building posterior strength.', 'https://youtu.be/op9kVnSso6Q'),
-('Lunges', 'Strength', 'Lower Body', 'None', 2, 'Single-leg exercise improving balance and leg strength.', 'https://youtu.be/QOVaHwm-Q6U'),
-('Bench Press', 'Strength', 'Upper Body', 'Barbell', 4, 'Pressing exercise focusing on chest and triceps.', 'https://youtu.be/rT7DgCr-3pg'),
-('Pull-Up', 'Strength', 'Back', 'Pull-Up Bar', 4, 'Vertical pulling for upper back and lats.', NULL),
-('Bicep Curl', 'Strength', 'Arms', 'Dumbbells', 1, 'Isolation movement for biceps.', 'https://youtu.be/in7PaeYlhrM'),
-('Shoulder Press', 'Strength', 'Upper Body', 'Dumbbells', 3, 'Overhead pressing targeting deltoids.', NULL),
-('Tricep Dips', 'Strength', 'Arms', 'Dip Bar', 3, 'Bodyweight dip for triceps.', 'https://youtu.be/2z8JmcrW-As'),
-('Plank', 'Core', 'Isometric', 'None', 1, 'Core stability exercise.', 'https://youtu.be/pSHjTRCQxIw'),
-('Mountain Climbers', 'Cardio', 'HIIT', 'None', 2, 'High-intensity core/cardio.', 'https://youtu.be/3Z0_GdRL7Z4'),
-('Burpees', 'Cardio', 'HIIT', 'None', 4, 'Full body explosive cardio movement.', 'https://youtu.be/dZgVxmf6jkA'),
-('Jump Rope', 'Cardio', 'Endurance', 'Jump Rope', 2, 'Cardio exercise improving coordination.', NULL),
-('Running', 'Cardio', 'Endurance', 'None', NULL, 'Outdoor or treadmill running for endurance.', NULL),
-('Cycling', 'Cardio', 'Endurance', 'Bike', 2, 'Low impact cardio with moderate intensity.', NULL),
-('Rowing Machine', 'Cardio', 'Full Body', 'Rowing Machine', 3, 'Cardio rowing with strength stimulus.', 'https://youtu.be/8Q-3VW1jgIg'),
-('Stair Climber', 'Cardio', 'Lower Body', 'Stair Machine', 3, 'Climbing simulation for legs and heart health.', NULL),
-('Elliptical Trainer', 'Cardio', 'Low Impact', 'Elliptical', NULL, 'Smooth cardio exercise reducing joint strain.', NULL),
-('Box Jumps', 'Cardio', 'Plyometrics', 'Box', 4, 'Explosive lower body exercise enhancing power.', 'https://youtu.be/52r_Ul5k03g'),
-('Jumping Jacks', 'Cardio', 'Warm-Up', 'None', 1, 'Simple aerobic warm-up movement.', NULL),
-('Lat Pulldown', 'Strength', 'Back', 'Machine', 2, 'Targets lats and upper back.', 'https://youtu.be/1P4ZFqI9pJ8'),
-('Leg Press', 'Strength', 'Lower Body', 'Machine', 3, 'Strengthens legs using a pressing machine.', NULL),
-('Calf Raise', 'Strength', 'Lower Body', 'None', 1, 'Strengthens calves with ankle movement.', NULL),
-('Hip Thrust', 'Strength', 'Glutes', 'Barbell', 3, 'Glute-focused hip hinge movement.', 'https://youtu.be/LM8XHLYJoYs'),
-('Chest Fly', 'Strength', 'Upper Body', 'Dumbbells', 2, 'Isolation exercise for chest.', NULL),
-('Bent-Over Row', 'Strength', 'Back', 'Barbell', 4, 'Pulling exercise strengthening posterior chain.', 'https://youtu.be/kBWAon7ItDw'),
-('Russian Twists', 'Core', 'Rotational', 'None', 2, 'Core rotation exercise improving obliques.', 'https://youtu.be/wkD8rjkodUI'),
-('Crunches', 'Core', 'Abs', 'None', 1, 'Ab isolation exercise.', NULL),
-('Leg Raises', 'Core', 'Abs', 'None', 2, 'Lower ab focused bodyweight movement.', NULL),
-('Superman Hold', 'Core', 'Back Stability', 'None', 1, 'Strengthens lower back extensor muscles.', NULL),
-('Yoga Sun Salutation', 'Yoga', 'Flow', 'Mat', NULL, 'Flow sequence improving flexibility and calmness.', 'https://youtu.be/6IUyY9Dyr5w'),
-('Warrior Pose II', 'Yoga', 'Strength', 'Mat', 1, 'Stability and lower body strength posture.', NULL),
-('Downward Dog', 'Yoga', 'Flexibility', 'Mat', 1, 'Stretching of posterior chain.', 'https://youtu.be/0FxBh2fRbdU'),
-('Child''s Pose', 'Yoga', 'Recovery', 'Mat', NULL, 'Relaxing stretch for the back and hips.', NULL),
-('Tree Pose', 'Yoga', 'Balance', 'Mat', 1, 'Balance-focused single-leg posture.', NULL),
-('Bridge Pose', 'Yoga', 'Strength', 'Mat', 1, 'Glute activation and spinal extension posture.', NULL),
-('Seated Forward Fold', 'Yoga', 'Flexibility', 'Mat', NULL, 'Hamstring stretch improving mobility.', NULL),
-('Cat-Cow', 'Yoga', 'Mobility', 'Mat', 1, 'Spinal mobility flow.', 'https://youtu.be/kqnua4rHVVA'),
-('Pigeon Pose', 'Yoga', 'Flexibility', 'Mat', 1, 'Hip opener increasing mobility.', NULL),
-('Cobra Pose', 'Yoga', 'Mobility', 'Mat', 1, 'Spinal extension pose.', NULL),
-('Pilates Hundred', 'Pilates', 'Core', 'Mat', 2, 'Pilates core breathing exercise.', NULL),
-('Side Leg Lift', 'Pilates', 'Lower Body', 'Mat', 1, 'Strengthens outer glutes.', NULL),
-('Bird Dog', 'Mobility', 'Core Stability', 'Mat', 1, 'Spinal alignment and core activation.', 'https://youtu.be/v7AYKMP6rOE'),
-('Wall Sit', 'Strength', 'Isometric', 'None', 2, 'Lower-body static endurance exercise.', NULL),
-('Farmer\'s Carry', 'Strength', 'Grip', 'Dumbbells', 3, 'Loaded carry improving grip and stability.', NULL),
-('Kettlebell Swing', 'Strength', 'Hip Hinge', 'Kettlebell', 3, 'Explosive hip drive movement.', 'https://youtu.be/6u6C_9Vml_A'),
-('Medicine Ball Slam', 'Strength', 'Power', 'Medicine Ball', 3, 'Explosive upper-body power exercise.', NULL),
-('Glute Kickback', 'Strength', 'Glutes', 'Cable Machine', 2, 'Glute isolation movement.', NULL),
-('Side Plank', 'Core', 'Isometric', 'None', 2, 'Oblique stability exercise.', 'https://youtu.be/KAy4z6ehgNw'),
-('Hamstring Curl Machine', 'Strength', 'Lower Body', 'Machine', 2, 'Hamstring isolation exercise.', NULL);
+ INSERT INTO exercise (exercise_id, name, type, subtype, equipment, difficulty, description, demo_link) VALUES
+(1,'Push-Up','Strength','Upper Body','None',2,'A bodyweight exercise targeting chest, shoulders, and triceps.','https://example.com/demo/pushup'),
+(2,'Squat','Strength','Lower Body','None',2,'A foundational lower-body movement building strength in legs and glutes.','https://example.com/demo/squat'),
+(3,'Deadlift','Strength','Full Body','Barbell',4,'A compound lift developing posterior chain strength.','https://example.com/demo/deadlift'),
+(4,'Bench Press','Strength','Upper Body','Barbell',3,'Classic chest exercise improving pushing power.','https://example.com/demo/benchpress'),
+(5,'Overhead Press','Strength','Upper Body','Dumbbells',3,'Pressing movement that strengthens shoulders and arms.','https://example.com/demo/ohp'),
+(6,'Pull-Up','Strength','Upper Body','Pull-Up Bar',4,'Vertical pulling movement targeting back and biceps.','https://example.com/demo/pullup'),
+(7,'Lunge','Strength','Lower Body','None',2,'Single-leg exercise improving stability and leg strength.','https://example.com/demo/lunge'),
+(8,'Plank','Core','Endurance','None',1,'Isometric core exercise improving trunk stability.','https://example.com/demo/plank'),
+(9,'Mountain Climbers','Cardio','Endurance','None',2,'Fast-paced core and cardio movement.','https://example.com/demo/mountainclimbers'),
+(10,'Burpee','HIIT','Full Body','None',4,'Explosive full-body conditioning exercise.','https://example.com/demo/burpee'),
+(11,'Russian Twist','Core','Rotation','None',2,'Rotational exercise strengthening obliques.','https://example.com/demo/russiantwist'),
+(12,'Bicycle Crunch','Core','Endurance','None',2,'Core exercise engaging abs and obliques.','https://example.com/demo/bicyclecrunch'),
+(13,'Leg Press','Strength','Lower Body','Machine',3,'Machine-based leg strengthening exercise.','https://example.com/demo/legpress'),
+(14,'Leg Curl','Strength','Lower Body','Machine',2,'Hamstring isolation movement.','https://example.com/demo/legcurl'),
+(15,'Leg Extension','Strength','Lower Body','Machine',2,'Quadriceps-focused isolation exercise.','https://example.com/demo/legextension'),
+(16,'Lat Pulldown','Strength','Upper Body','Machine',3,'Back exercise mimicking the pull-up pattern.','https://example.com/demo/latpulldown'),
+(17,'Seated Row','Strength','Upper Body','Cable Machine',3,'Horizontal pulling exercise targeting back and arms.','https://example.com/demo/seatedrow'),
+(18,'Tricep Dip','Strength','Upper Body','Dip Bars',3,'Bodyweight exercise strengthening triceps and chest.','https://example.com/demo/tricepdip'),
+(19,'Bicep Curl','Strength','Upper Body','Dumbbells',1,'Arm isolation exercise for biceps.','https://example.com/demo/bicepcurl'),
+(20,'Hammer Curl','Strength','Upper Body','Dumbbells',2,'Variation of bicep curl targeting brachialis.','https://example.com/demo/hammercurl'),
+(21,'Shoulder Fly','Strength','Upper Body','Dumbbells',2,'Shoulder isolation movement for deltoids.','https://example.com/demo/shoulderfly'),
+(22,'Side Plank','Core','Stability','None',2,'Isometric oblique exercise improving lateral stability.','https://example.com/demo/sideplank'),
+(23,'Hip Thrust','Strength','Lower Body','Barbell',3,'Glute-focused movement improving hip strength.','https://example.com/demo/hipthrust'),
+(24,'Glute Bridge','Strength','Lower Body','None',1,'Glute activation exercise using bodyweight.','https://example.com/demo/glutebridge'),
+(25,'Calf Raise','Strength','Lower Body','Machine',1,'Simple movement strengthening calf muscles.','https://example.com/demo/calfraise'),
+(26,'Box Jump','Plyometric','Power','Box',4,'Explosive jumping exercise improving athleticism.','https://example.com/demo/boxjump'),
+(27,'Jump Rope','Cardio','Endurance','Jump Rope',2,'High-intensity cardiovascular exercise.','https://example.com/demo/jumprope'),
+(28,'Rowing Machine','Cardio','Endurance','Rowing Machine',3,'Full-body cardio workout simulating rowing.','https://example.com/demo/rowing'),
+(29,'Treadmill Run','Cardio','Endurance','Treadmill',2,'Running exercise performed indoors on a treadmill.','https://example.com/demo/treadmill'),
+(30,'Stair Climb','Cardio','Endurance','Stair Machine',2,'Cardio movement strengthening legs and lungs.','https://example.com/demo/stairclimb'),
+(31,'Flutter Kicks','Core','Endurance','None',2,'Lower abdominal exercise performed on the floor.','https://example.com/demo/flutterkicks'),
+(32,'Superman Hold','Core','Stability','None',1,'Posterior chain exercise improving back endurance.','https://example.com/demo/superman'),
+(33,'Farmer Carry','Strength','Full Body','Dumbbells',3,'Loaded carry improving grip, core, and full-body strength.','https://example.com/demo/farmercarry'),
+(34,'Kettlebell Swing','Strength','Power','Kettlebell',3,'Explosive hip-hinge exercise training power and conditioning.','https://example.com/demo/kbswing'),
+(35,'Turkish Get-Up','Strength','Full Body','Kettlebell',5,'Complex movement requiring strength, mobility, and coordination.','https://example.com/demo/tgu'),
+(36,'Wall Sit','Strength','Endurance','None',1,'Isometric leg exercise increasing lower-body endurance.','https://example.com/demo/wallsit'),
+(37,'Bird Dog','Stability','Core Stability','None',1,'Controlled movement improving core stability and balance.','https://example.com/demo/birddog'),
+(38,'Cable Woodchop','Core','Rotation','Cable Machine',3,'Rotational movement targeting obliques and hips.','https://example.com/demo/woodchop'),
+(39,'Chest Fly','Strength','Upper Body','Cable Machine',2,'Chest isolation movement performed with cables or dumbbells.','https://example.com/demo/chestfly'),
+(40,'Incline Press','Strength','Upper Body','Dumbbells',3,'Press variation targeting upper chest.','https://example.com/demo/inclinepress'),
+(41,'Reverse Lunge','Strength','Lower Body','None',2,'Single-leg movement reducing knee load and improving stability.','https://example.com/demo/reverselunge'),
+(42,'High Knees','Cardio','Endurance','None',2,'Stationary running drill improving speed and conditioning.','https://example.com/demo/highknees'),
+(43,'Jump Squat','Plyometric','Power','None',3,'Explosive squat variation developing lower-body power.','https://example.com/demo/jumpsquat'),
+(44,'Bent Over Row','Strength','Upper Body','Barbell',3,'Pulling movement building back strength.','https://example.com/demo/bentoverrow'),
+(45,'Arnold Press','Strength','Upper Body','Dumbbells',3,'Shoulder press variation increasing range of motion.','https://example.com/demo/arnoldpress'),
+(46,'Tricep Kickback','Strength','Upper Body','Dumbbells',1,'Tricep isolation movement performed bent over.','https://example.com/demo/tricepkickback'),
+(47,'Face Pull','Strength','Upper Body','Cable Machine',2,'Rear delt and upper back strengthening exercise.','https://example.com/demo/facepull'),
+(48,'Side Shuffle','Cardio','Agility','None',2,'Lateral footwork drill improving speed and coordination.','https://example.com/demo/sideshuffle'),
+(49,'Pike Push-Up','Strength','Upper Body','None',4,'Bodyweight progression emphasizing shoulder strength.','https://example.com/demo/pikepushup'),
+(50,'Hollow Hold','Core','Stability','None',3,'Isometric abdominal exercise for overall core tension.','https://example.com/demo/hollowhold');
 
 -- 
 -- TARGET TEST DATA
 --
 
-INSERT INTO target (
-    target_name, target_group, target_function
-) VALUES
-('Chest', 'Upper Body', 'Push movement and shoulder horizontal adduction'),
-('Back', 'Upper Body', 'Pulling movements and posture support'),
-('Shoulders', 'Upper Body', 'Overhead pressing and shoulder stabilization'),
-('Biceps', 'Arms', 'Elbow flexion'),
-('Triceps', 'Arms', 'Elbow extension'),
-('Forearms', 'Arms', 'Grip strength and wrist movement'),
-('Quadriceps', 'Lower Body', 'Knee extension'),
-('Hamstrings', 'Lower Body', 'Knee flexion and hip extension'),
-('Glutes', 'Lower Body', 'Hip extension and pelvic stability'),
-('Calves', 'Lower Body', 'Ankle plantar flexion'),
-('Lower Back', 'Core', 'Spine extension and stabilization'),
-('Abdominals', 'Core', 'Spine flexion and trunk stability'),
-('Obliques', 'Core', 'Trunk rotation and lateral flexion'),
-('Hips', 'Lower Body', 'Hip stability and mobility'),
-('Spinal Erectors', 'Core', 'Postural control and lumbar extension'),
-('Rotator Cuff', 'Upper Body', 'Shoulder joint stabilization'),
-('Traps', 'Upper Body', 'Scapular elevation and upper back support'),
-('Lats', 'Upper Body', 'Shoulder extension and back strength'),
-('Pectorals', 'Upper Body', 'Upper body pushing'),
-('Neck', 'Upper Body', NULL),
-('Cardiovascular System', 'Full Body', 'Aerobic and endurance conditioning'),
-('Full Body', 'Full Body', 'Multi-joint compound movement'),
-('Hip Flexors', 'Lower Body', 'Hip flexion'),
-('Adductors', 'Lower Body', 'Leg adduction'),
-('Abductors', 'Lower Body', 'Hip abduction'),
-('Core Stability', 'Core', 'Stabilization of the spine during movement'),
-('Balance/Proprioception', 'Mobility', 'Body control and balance'),
-('Flexibility', 'Mobility', 'Muscle and joint range of motion'),
-('Shoulder Girdle', 'Upper Body', NULL),
-('Glute Medius', 'Lower Body', 'Hip abduction and stability');
-
-INSERT INTO workout_sessions (
-    user_id, session_name, session_date, start_time, end_time,
-    duration_minutes, bodyweight, completed, is_template
-) VALUES
-(5, 'Intro Full-Body Workout', '2025-01-01', '08:00:00', '09:00:00', 60, 85.0, 1, 0),
-(5, 'Upper Body Strength', '2025-01-03', '08:15:00', '09:05:00', 50, 84.8, 1, 0),
-(5, 'Cardio Day - Treadmill', '2025-01-05', '07:50:00', '08:35:00', 45, 84.6, 1, 0),
-(5, 'Lower Body Focus', '2025-01-07', '18:10:00', '19:00:00', 50, 84.4, 1, 0),
-(5, 'HIIT Circuit', '2025-01-09', '17:40:00', '18:20:00', 40, 84.3, 1, 0),
-(5, 'Push Day', '2025-01-11', '08:05:00', '09:00:00', 55, 84.1, 1, 0),
-(5, 'Pull Day', '2025-01-13', '07:55:00', '08:50:00', 55, 84.0, 1, 0),
-(5, 'Leg Strength', '2025-01-15', '18:10:00', '19:00:00', 50, 83.8, 1, 0),
-(5, 'Steady-State Cardio', '2025-01-17', '07:45:00', '08:30:00', 45, 83.7, 1, 0),
-(5, 'Mobility + Core', '2025-01-19', NULL, NULL, 30, 83.6, 1, 0),
-(5, 'Full Body Power', '2025-01-21', '18:20:00', '19:10:00', 50, 83.5, 1, 0),
-(5, 'Rowing Day', '2025-01-23', '08:10:00', '09:00:00', 50, 83.4, 1, 0),
-(5, 'Upper Body Strength', '2025-01-25', '07:55:00', '08:50:00', 55, 83.3, 1, 0),
-(5, 'HIIT + Core', '2025-01-27', '18:00:00', '18:40:00', 40, 83.2, 1, 0),
-(5, 'Light Cardio Recovery', '2025-01-29', NULL, NULL, 35, 83.1, 0, 0),
-(5, 'Evening Bike Ride',        '2025-02-02', '18:30:00', NULL,       NULL,    83.0, 0, 0),
-(5, 'Quick Stretch Session',    '2025-02-05', '07:10:00', '07:20:00', 10,      NULL, 0, 0),
-(5, 'Back and Biceps',          '2025-02-07', NULL,       NULL,       NULL,    82.9, 0, 0),
-(5, 'Cardio Attempt',           '2025-02-09', '08:00:00', '08:10:00', 10,      82.9, 0, 0),
-(5, 'Leg Day (Cut Short)',      '2025-02-11', '18:00:00', '18:25:00', 25,      82.8, 0, 0),
-(5, 'Mobility Recovery',        '2025-02-13', NULL,       NULL,       20,      82.8, 0, 0),
-(5, 'Rowing Warm-up Only',      '2025-02-15', '08:15:00', '08:27:00', 12,      82.7, 0, 0),
-(5, 'Arms and Abs',             '2025-02-17', '19:30:00', NULL,       NULL,    82.7, 0, 0),
-(5, 'HIIT Plan Unfinished',     '2025-02-19', '07:50:00', '08:05:00', 15,      NULL, 0, 0),
-(5, 'Light Walk',               '2025-02-21', NULL,       NULL,       30,      82.6, 0, 0);
-
-INSERT INTO session_exercises (session_id, exercise_id, exercise_order, target_sets, target_reps, completed) VALUES
--- Session 11
-(11, 12, 1, 3, 10, 1),
-(11, 18, 2, 4, 12, 1),
-(11, 25, 3, 3, 8, 1),
-
--- Session 12
-(12, 16, 1, 3, 12, 1),
-(12, 21, 2, 4, 10, 1),
-(12, 33, 3, 4, 15, 1),
-(12, 40, 4, 3, 8, 1),
-
--- Session 13
-(13, 14, 1, 4, 10, 1),
-(13, 27, 2, 3, 12, 1),
-(13, 36, 3, 4, 10, 1),
-
--- Session 14
-(14, 19, 1, 3, 15, 1),
-(14, 29, 2, 4, 10, 1),
-(14, 42, 3, 4, 12, 1),
-(14, 49, 4, 3, 8, 1),
-
--- Session 15
-(15, 20, 1, 3, 12, 1),
-(15, 26, 2, 4, 15, 1),
-(15, 38, 3, 3, 10, 1),
-
--- Session 16
-(16, 23, 1, 3, 10, 1),
-(16, 32, 2, 4, 12, 1),
-(16, 45, 3, 3, 10, 1),
-(16, 57, 4, 4, 8, 1),
-
--- Session 17
-(17, 24, 1, 4, 10, 1),
-(17, 31, 2, 3, 15, 1),
-(17, 41, 3, 4, 12, 1),
-
--- Session 18
-(18, 22, 1, 4, 12, 1),
-(18, 30, 2, 3, 10, 1),
-(18, 48, 3, 4, 15, 1),
-(18, 61, 4, 3, 8, 1),
-
--- Session 19
-(19, 28, 1, 3, 12, 1),
-(19, 33, 2, 3, 10, 1),
-(19, 50, 3, 4, 10, 1),
-
--- Session 20
-(20, 34, 1, 4, 8, 1),
-(20, 43, 2, 4, 12, 1),
-(20, 56, 3, 3, 10, 1),
-
--- Session 21
-(21, 35, 1, 3, 15, 1),
-(21, 44, 2, 4, 10, 1),
-(21, 52, 3, 3, 12, 1),
-(21, 59, 4, 4, 10, 1),
-
--- Session 22
-(22, 37, 1, 3, 12, 1),
-(22, 46, 2, 3, 10, 1),
-(22, 51, 3, 4, 15, 1),
-
--- Session 23
-(23, 39, 1, 3, 10, 1),
-(23, 47, 2, 4, 12, 1),
-(23, 55, 3, 3, 8, 1),
-(23, 60, 4, 4, 10, 1),
-
--- Session 24
-(24, 41, 1, 4, 10, 1),
-(24, 54, 2, 3, 12, 1),
-(24, 58, 3, 4, 8, 1),
-
--- Session 25
-(25, 42, 1, 3, 10, 1),
-(25, 49, 2, 4, 12, 1),
-(25, 53, 3, 4, 15, 1),
-(25, 61, 4, 3, 8, 1),
-
--- Session 26
-(26, 45, 1, 4, 12, 1),
-(26, 51, 2, 3, 10, 1),
-(26, 57, 3, 4, 15, 1),
-
--- Session 27
-(27, 46, 1, 3, 10, 1),
-(27, 52, 2, 3, 12, 1),
-(27, 60, 3, 4, 8, 1),
-
--- Session 28
-(28, 47, 1, 4, 10, 1),
-(28, 55, 2, 4, 12, 1),
-(28, 58, 3, 3, 10, 1),
-
--- Session 29
-(29, 48, 1, 3, 12, 1),
-(29, 53, 2, 3, 8, 1),
-(29, 59, 3, 4, 10, 1),
-(29, 61, 4, 3, 10, 1),
-
--- Session 30
-(30, 50, 1, 3, 10, 1),
-(30, 54, 2, 4, 12, 1),
-(30, 56, 3, 4, 10, 1),
-
--- Session 31
-(31, 37, 1, 3, 12, 1),
-(31, 44, 2, 4, 10, 1),
-(31, 57, 3, 3, 8, 1),
-
--- Session 32
-(32, 38, 1, 3, 10, 1),
-(32, 46, 2, 3, 12, 1),
-(32, 51, 3, 4, 10, 1),
-(32, 60, 4, 4, 12, 1),
-
--- Session 33
-(33, 39, 1, 4, 10, 1),
-(33, 48, 2, 3, 8, 1),
-(33, 55, 3, 3, 12, 1),
-
--- Session 34
-(34, 40, 1, 3, 12, 1),
-(34, 49, 2, 4, 15, 1),
-(34, 58, 3, 4, 10, 1),
-(34, 61, 4, 4, 12, 1),
-
--- Session 35
-(35, 41, 1, 3, 10, 1),
-(35, 52, 2, 4, 12, 1),
-(35, 59, 3, 3, 10, 1);
-
-INSERT INTO sets (session_exercise_id, set_number, weight, reps, rpe, completed, is_warmup, completion_time) VALUES
--- Session 32 (session_exercise_id: 64–67)
-(64, 1, 95.00, 10, 7, 1, 1, '2025-01-26 10:05:00'),
-(64, 2, 115.00, 8, 8, 1, 0, '2025-01-26 10:09:00'),
-(64, 3, 115.00, 8, 8, 1, 0, '2025-01-26 10:13:00'),
-
-(65, 1, 0.00, 12, 6, 1, 1, '2025-01-26 10:17:00'),
-(65, 2, 20.00, 12, 7, 1, 0, '2025-01-26 10:21:00'),
-(65, 3, 20.00, 12, 7, 1, 0, '2025-01-26 10:25:00'),
-
-(66, 1, 135.00, 10, 7, 1, 1, '2025-01-26 10:29:00'),
-(66, 2, 185.00, 8, 8, 1, 0, '2025-01-26 10:33:00'),
-(66, 3, 185.00, 8, 8, 1, 0, '2025-01-26 10:37:00'),
-
-(67, 1, 50.00, 12, 6, 1, 1, '2025-01-26 10:41:00'),
-(67, 2, 70.00, 10, 7, 1, 0, '2025-01-26 10:45:00'),
-(67, 3, 70.00, 10, 7, 1, 0, '2025-01-26 10:49:00'),
-
--- Session 33 (session_exercise_id: 68–70)
-(68, 1, 45.00, 10, 7, 1, 1, '2025-01-28 09:05:00'),
-(68, 2, 65.00, 8, 8, 1, 0, '2025-01-28 09:09:00'),
-(68, 3, 65.00, 8, 8, 1, 0, '2025-01-28 09:13:00'),
-
-(69, 1, 110.00, 12, 7, 1, 1, '2025-01-28 09:17:00'),
-(69, 2, 155.00, 10, 8, 1, 0, '2025-01-28 09:21:00'),
-(69, 3, 155.00, 10, 8, 1, 0, '2025-01-28 09:25:00'),
-
-(70, 1, 25.00, 12, 6, 1, 1, '2025-01-28 09:29:00'),
-(70, 2, 45.00, 10, 7, 1, 0, '2025-01-28 09:33:00'),
-(70, 3, 45.00, 10, 7, 1, 0, '2025-01-28 09:37:00'),
-
--- Session 34 (session_exercise_id: 71–74)
-(71, 1, 95.00, 10, 7, 1, 1, '2025-01-30 18:05:00'),
-(71, 2, 135.00, 8, 8, 1, 0, '2025-01-30 18:09:00'),
-(71, 3, 135.00, 8, 8, 1, 0, '2025-01-30 18:13:00'),
-
-(72, 1, 0.00, 15, 6, 1, 1, '2025-01-30 18:17:00'),
-(72, 2, 25.00, 12, 7, 1, 0, '2025-01-30 18:21:00'),
-(72, 3, 25.00, 12, 7, 1, 0, '2025-01-30 18:25:00'),
-
-(73, 1, 135.00, 10, 7, 1, 1, '2025-01-30 18:29:00'),
-(73, 2, 185.00, 8, 8, 1, 0, '2025-01-30 18:33:00'),
-(73, 3, 185.00, 8, 8, 1, 0, '2025-01-30 18:37:00'),
-
-(74, 1, 50.00, 12, 7, 1, 1, '2025-01-30 18:41:00'),
-(74, 2, 70.00, 10, 8, 1, 0, '2025-01-30 18:45:00'),
-(74, 3, 70.00, 10, 8, 1, 0, '2025-01-30 18:49:00'),
-
--- Session 35 (session_exercise_id: 75–77)
-(75, 1, 65.00, 12, 7, 1, 1, '2025-02-01 17:05:00'),
-(75, 2, 95.00, 10, 8, 1, 0, '2025-02-01 17:09:00'),
-(75, 3, 95.00, 10, 8, 1, 0, '2025-02-01 17:13:00'),
-
-(76, 1, 0.00, 15, 6, 1, 1, '2025-02-01 17:17:00'),
-(76, 2, 20.00, 12, 7, 1, 0, '2025-02-01 17:21:00'),
-(76, 3, 20.00, 12, 7, 1, 0, '2025-02-01 17:25:00'),
-
-(77, 1, 135.00, 10, 7, 1, 1, '2025-02-01 17:29:00'),
-(77, 2, 155.00, 8, 8, 1, 0, '2025-02-01 17:33:00'),
-(77, 3, 155.00, 8, 8, 1, 0, '2025-02-01 17:37:00');
-
-INSERT INTO user_pb (
-    user_id, exercise_id, pr_type, pb_weight, pb_reps, pb_time, pb_date, previous_pr, notes
-) VALUES
--- Bench Press PR
-(5, 15, 'Weight x Reps', 185.00, 5, NULL, '2025-02-01', NULL, 'Solid lockout, slight pause on chest'),
-
--- Squat PR
-(5, 18, 'Weight x Reps', 225.00, 5, NULL, '2025-01-28', NULL, 'Depth improved, belt used'),
-
--- Deadlift PR
-(5, 21, 'Weight x 1', 315.00, 1, NULL, '2025-01-30', NULL, 'Grip held strong, slight hitch'),
-
--- Shoulder Press PR
-(5, 14, 'Weight x Reps', 105.00, 3, NULL, '2025-02-03', NULL, 'Strict form'),
-
--- Barbell Row PR
-(5, 19, 'Weight x Reps', 165.00, 6, NULL, '2025-01-25', NULL, 'Maintained back angle well'),
-
--- Pull-up Reps PR (no weight)
-(5, 25, 'Max Reps', NULL, 10, NULL, '2025-01-26', NULL, 'Last two reps were tough'),
-
--- Plank Hold Time PR
-(5, 34, 'Time', NULL, NULL, '00:02:15', '2025-01-29', NULL, 'Goal: reach 3 minutes'),
-
--- Running 1 Mile Time PR (cardio)
-(5, 50, 'Time', NULL, NULL, '00:07:45', '2025-01-24', NULL, 'Good pace, slight incline'),
-
--- Barbell Hip Thrust PR
-(5, 23, 'Weight x Reps', 245.00, 6, NULL, '2025-02-03', NULL, 'Glutes activated well'),
-
--- Leg Press PR
-(5, 30, 'Weight x Reps', 410.00, 10, NULL, '2025-01-20', NULL, 'Focused on full ROM');
-
-INSERT INTO user_stats_log (
-    user_id, date, weight, neck, waist, hips, body_fat_percentage, notes
-) VALUES
-(5, '2025-01-01', 180.50, 15.00, 34.50, 38.00, 18.50, 'Starting out the new year, feeling motivated'),
-(5, '2025-01-08', 179.80, 15.00, 34.20, 37.90, 18.30, 'Workout consistency improving'),
-(5, '2025-01-15', 179.20, NULL, 34.00, 37.80, NULL, 'Did not measure neck/body fat this week'),
-(5, '2025-01-22', 178.90, 14.90, 33.90, 37.70, 18.10, NULL),
-(5, '2025-01-29', 178.40, 14.90, 33.80, 37.60, 18.00, 'Waist measurement trending down'),
-(5, '2025-02-05', 177.90, 14.90, 33.70, 37.50, 17.90, NULL),
-(5, '2025-02-12', 177.60, NULL, 33.60, 37.40, 17.80, 'Feeling stronger in the gym'),
-(5, '2025-02-19', 177.20, 14.80, NULL, 37.40, 17.70, 'Skipped waist measurement'),
-(5, '2025-02-26', 176.80, 14.80, 33.40, 37.30, 17.60, 'Energy levels high'),
-(5, '2025-03-05', 176.50, 14.80, 33.30, 37.20, NULL, 'Almost at target weight goal');
-
-INSERT INTO workout_plan (
-    user_id, plan_description, plan_type, number_of_days
-) VALUES
--- General strength training plan
-(5, 'A full-body strength program focused on compound lifts and progressive overload.', 'Strength', 3),
-
--- Hypertrophy (muscle growth) plan
-(5, 'Split training program targeting each muscle group twice per week with moderate to high volume.', 'Hypertrophy', 5),
-
--- Weight loss/cardio-focused plan
-(5, 'Combination of moderate lifting with high-intensity interval cardio sessions.', 'Weight Loss', 4),
-
--- Beginner-friendly functional fitness plan
-(5, 'Functional movement workouts incorporating stability, balance, and flexibility work.', 'Functional Fitness', 3),
-
--- Athletic conditioning plan
-(5, 'Performance-based training incorporating agility drills and power exercises.', 'Conditioning', 4);
-
-INSERT INTO daily_workout_plan (workout_plan_id, day, wk_day, session_id) VALUES
--- Plan 4
-(4, 1, 'Monday', 11),
-(4, 2, 'Wednesday', 12),
-(4, 3, 'Friday', 13),
-(4, 4, 'Saturday', 14),
-
--- Plan 5
-(5, 1, 'Monday', 15),
-(5, 2, 'Tuesday', 16),
-(5, 3, 'Thursday', 17),
-(5, 4, 'Friday', 18),
-(5, 5, 'Sunday', 19),
-
--- Plan 6
-(6, 1, 'Monday', 20),
-(6, 2, 'Tuesday', 21),
-(6, 3, 'Thursday', 22),
-(6, 4, 'Friday', 23),
-(6, 5, 'Sunday', 24),
-
--- Plan 7
-(7, 1, 'Monday', 25),
-(7, 2, 'Wednesday', 26),
-(7, 3, 'Friday', 27),
-(7, 4, 'Saturday', 28),
-
--- Plan 8
-(8, 1, 'Monday', 29),
-(8, 2, 'Tuesday', 30),
-(8, 3, 'Thursday', 31),
-(8, 4, 'Friday', 32),
-(8, 5, 'Sunday', 33),
-(8, 6, 'Saturday', 34),
-(8, 7, 'Sunday', 35);
-
-
-INSERT INTO exercise_target_association (exercise_id, target_id, intensity) VALUES
--- Exercises 12–20 (example: upper body compound)
-(12, 11, 'Primary'),  -- Chest
-(12, 17, 'Secondary'), -- Traps
-(12, 18, 'Secondary'), -- Lats
-(13, 14, 'Primary'),  -- Shoulders
-(13, 16, 'Secondary'), -- Triceps
-(14, 15, 'Primary'),  -- Biceps
-(14, 16, 'Secondary'), -- Triceps
-(15, 17, 'Primary'),  -- Back
-(15, 18, 'Secondary'), -- Lats
-(16, 19, 'Primary'),  -- Quadriceps
-(16, 20, 'Secondary'), -- Hamstrings
-(17, 21, 'Primary'),  -- Glutes
-(17, 19, 'Secondary'), -- Quadriceps
-(18, 22, 'Primary'),  -- Calves
-(19, 23, 'Primary'),  -- Lower Back
-(20, 24, 'Primary'),  -- Abdominals
-
--- Exercises 21–30 (example: lower body and core)
-(21, 19, 'Primary'),  -- Quadriceps
-(21, 21, 'Secondary'), -- Glutes
-(22, 20, 'Primary'),  -- Hamstrings
-(22, 21, 'Secondary'), -- Glutes
-(23, 21, 'Primary'),  -- Glutes
-(23, 19, 'Secondary'), -- Quadriceps
-(24, 24, 'Primary'),  -- Abdominals
-(24, 25, 'Secondary'), -- Obliques
-(25, 24, 'Primary'),  -- Abdominals
-(25, 25, 'Secondary'), -- Obliques
-(26, 26, 'Primary'),  -- Hips
-(26, 21, 'Secondary'), -- Glutes
-(27, 27, 'Primary'),  -- Spinal Erectors
-(28, 28, 'Primary'),  -- Rotator Cuff
-(29, 29, 'Primary'),  -- Traps
-(30, 18, 'Primary'),  -- Lats
-
--- Exercises 31–40 (mix of upper, lower, and cardio)
-(31, 11, 'Primary'),  -- Chest
-(32, 16, 'Primary'),  -- Triceps
-(33, 15, 'Primary'),  -- Biceps
-(34, 24, 'Primary'),  -- Abdominals
-(35, 25, 'Primary'),  -- Obliques
-(36, 26, 'Primary'),  -- Hips
-(37, 27, 'Primary'),  -- Spinal Erectors
-(38, 28, 'Primary'),  -- Rotator Cuff
-(39, 29, 'Primary'),  -- Traps
-(40, 18, 'Primary'),  -- Lats
-
--- Exercises 41–50
-(41, 11, 'Primary'),
-(42, 12, 'Primary'),
-(43, 14, 'Primary'),
-(44, 15, 'Primary'),
-(45, 16, 'Primary'),
-(46, 19, 'Primary'),
-(47, 20, 'Primary'),
-(48, 21, 'Primary'),
-(49, 22, 'Primary'),
-(50, 23, 'Primary'),
-
--- Exercises 51–61
-(51, 24, 'Primary'),
-(52, 25, 'Primary'),
-(53, 26, 'Primary'),
-(54, 27, 'Primary'),
-(55, 28, 'Primary'),
-(56, 29, 'Primary'),
-(57, 11, 'Primary'),
-(58, 12, 'Primary'),
-(59, 14, 'Primary'),
-(60, 15, 'Primary'),
-(61, 16, 'Primary');
-
-INSERT INTO goals (
-    user_id, goal_type, goal_description, target_value, current_value, unit, exercise_id, start_date, target_date, status, completion_date
-) VALUES
--- Strength goal: Bench Press
-(5, 'Strength', 'Increase bench press max to 200 lbs', 200.00, 185.00, 'lbs', 15, '2025-01-01', '2025-03-01', 'active', NULL),
-
--- Strength goal: Squat
-(5, 'Strength', 'Squat 250 lbs for 5 reps', 250.00, 225.00, 'lbs', 18, '2025-01-01', '2025-03-15', 'active', NULL),
-
--- Strength goal: Deadlift
-(5, 'Strength', 'Deadlift 325 lbs for 1 rep', 325.00, 315.00, 'lbs', 21, '2025-01-01', '2025-03-20', 'active', NULL),
-
--- Cardio goal: 1-mile run time
-(5, 'Cardio', 'Run 1 mile under 7:30 minutes', 7.50, 7.82, 'minutes', 50, '2025-01-01', '2025-02-28', 'active', NULL),
-
--- Bodyweight goal
-(5, 'Body Composition', 'Reduce body weight to 175 lbs', 175.00, 180.50, 'lbs', NULL, '2025-01-01', '2025-03-01', 'active', NULL),
-
--- Body fat percentage goal
-(5, 'Body Composition', 'Lower body fat to 16%', 16.00, 18.50, '%', NULL, '2025-01-01', '2025-03-15', 'active', NULL),
-
--- Strength goal: Plank hold
-(5, 'Core Strength', 'Hold plank for 3 minutes', 180.00, 135.00, 'seconds', 34, '2025-01-01', '2025-02-28', 'active', NULL),
-
--- Flexibility goal
-(5, 'Flexibility', 'Touch toes without bending knees', 1.00, 0.00, 'boolean', NULL, '2025-01-01', '2025-03-01', 'active', NULL),
-
--- Functional strength goal: Pull-ups
-(5, 'Strength', 'Perform 12 strict pull-ups', 12.00, 10.00, 'reps', 25, '2025-01-01', '2025-02-28', 'active', NULL),
-
--- Hip strength goal: Hip Thrust
-(5, 'Strength', 'Hip thrust 260 lbs for 6 reps', 260.00, 245.00, 'lbs', 23, '2025-01-01', '2025-03-01', 'active', NULL);
-
-INSERT INTO progress (
-    user_id, exercise_id, date, period_type, max_weight, avg_weight, total_volume, workout_count
-) VALUES
--- Week 1
-(5, 15, '2025-01-01', 'week', 175.00, 165.00, 4950.00, 3),
-(5, 18, '2025-01-01', 'week', 215.00, 205.00, 6150.00, 3),
-(5, 21, '2025-01-01', 'week', 300.00, 290.00, 8700.00, 3),
-(5, 14, '2025-01-01', 'week', 100.00, 95.00, 1140.00, 3),
-(5, 19, '2025-01-01', 'week', 155.00, 150.00, 3000.00, 2),
-(5, 25, '2025-01-01', 'week', NULL, NULL, NULL, 4),
-(5, 34, '2025-01-01', 'week', NULL, NULL, NULL, 4),
-(5, 23, '2025-01-01', 'week', 230.00, 220.00, 4400.00, 3),
-(5, 30, '2025-01-01', 'week', 400.00, 390.00, 11700.00, 3),
-(5, 33, '2025-01-01', 'week', 32.50, 30.00, 900.00, 3),
-
--- Week 2
-(5, 15, '2025-01-08', 'week', 178.00, 168.00, 5040.00, 3),
-(5, 18, '2025-01-08', 'week', 218.00, 208.00, 6240.00, 3),
-(5, 21, '2025-01-08', 'week', 305.00, 295.00, 8850.00, 3),
-(5, 14, '2025-01-08', 'week', 102.00, 97.00, 1161.00, 3),
-(5, 19, '2025-01-08', 'week', 158.00, 152.00, 3040.00, 2),
-(5, 25, '2025-01-08', 'week', NULL, NULL, NULL, 4),
-(5, 34, '2025-01-08', 'week', NULL, NULL, NULL, 4),
-(5, 23, '2025-01-08', 'week', 235.00, 225.00, 4500.00, 3),
-(5, 30, '2025-01-08', 'week', 405.00, 395.00, 11850.00, 3),
-(5, 33, '2025-01-08', 'week', 33.00, 31.00, 930.00, 3),
-
--- Week 3
-(5, 15, '2025-01-15', 'week', 180.00, 170.00, 5100.00, 3),
-(5, 18, '2025-01-15', 'week', 220.00, 210.00, 6300.00, 3),
-(5, 21, '2025-01-15', 'week', 310.00, 300.00, 9000.00, 3),
-(5, 14, '2025-01-15', 'week', 104.00, 98.00, 1176.00, 3),
-(5, 19, '2025-01-15', 'week', 160.00, 153.00, 3060.00, 2),
-(5, 25, '2025-01-15', 'week', NULL, NULL, NULL, 4),
-(5, 34, '2025-01-15', 'week', NULL, NULL, NULL, 4),
-(5, 23, '2025-01-15', 'week', 238.00, 228.00, 4560.00, 3),
-(5, 30, '2025-01-15', 'week', 410.00, 400.00, 12000.00, 3),
-(5, 33, '2025-01-15', 'week', 33.50, 31.50, 945.00, 3),
-
--- Week 4
-(5, 15, '2025-01-22', 'week', 182.00, 172.00, 5160.00, 3),
-(5, 18, '2025-01-22', 'week', 223.00, 212.00, 6360.00, 3),
-(5, 21, '2025-01-22', 'week', 315.00, 305.00, 9150.00, 3),
-(5, 14, '2025-01-22', 'week', 105.00, 100.00, 1200.00, 3),
-(5, 19, '2025-01-22', 'week', 162.00, 155.00, 3100.00, 2),
-(5, 25, '2025-01-22', 'week', NULL, NULL, NULL, 4),
-(5, 34, '2025-01-22', 'week', NULL, NULL, NULL, 4),
-(5, 23, '2025-01-22', 'week', 240.00, 230.00, 4600.00, 3),
-(5, 30, '2025-01-22', 'week', 415.00, 405.00, 12150.00, 3),
-(5, 33, '2025-01-22', 'week', 34.00, 32.00, 960.00, 3),
-
--- Week 5
-(5, 15, '2025-01-29', 'week', 185.00, 175.00, 5250.00, 3),
-(5, 18, '2025-01-29', 'week', 225.00, 215.00, 6450.00, 3),
-(5, 21, '2025-01-29', 'week', 320.00, 310.00, 9300.00, 3),
-(5, 14, '2025-01-29', 'week', 106.00, 101.00, 1212.00, 3),
-(5, 19, '2025-01-29', 'week', 165.00, 157.00, 3140.00, 2),
-(5, 25, '2025-01-29', 'week', NULL, NULL, NULL, 4),
-(5, 34, '2025-01-29', 'week', NULL, NULL, NULL, 4),
-(5, 23, '2025-01-29', 'week', 243.00, 233.00, 4690.00, 3),
-(5, 30, '2025-01-29', 'week', 420.00, 410.00, 12300.00, 3),
-(5, 33, '2025-01-29', 'week', 34.50, 32.50, 975.00, 3),
-
--- Week 6
-(5, 15, '2025-02-05', 'week', 187.00, 177.00, 5310.00, 3),
-(5, 18, '2025-02-05', 'week', 228.00, 218.00, 6540.00, 3),
-(5, 21, '2025-02-05', 'week', 325.00, 315.00, 9450.00, 3),
-(5, 14, '2025-02-05', 'week', 107.00, 102.00, 1224.00, 3),
-(5, 19, '2025-02-05', 'week', 167.00, 159.00, 3180.00, 2),
-(5, 25, '2025-02-05', 'week', NULL, NULL, NULL, 4),
-(5, 34, '2025-02-05', 'week', NULL, NULL, NULL, 4),
-(5, 23, '2025-02-05', 'week', 245.00, 235.00, 4710.00, 3),
-(5, 30, '2025-02-05', 'week', 425.00, 415.00, 12450.00, 3),
-(5, 33, '2025-02-05', 'week', 35.00, 33.00, 990.00, 3);
+INSERT INTO target (target_id, target_name, target_group, target_function) VALUES
+(1,'Chest','Upper Body','Horizontal pushing and shoulder adduction'),
+(2,'Back','Upper Body','Pulling, spinal extension, and scapular retraction'),
+(3,'Quadriceps','Lower Body','Knee extension and leg stabilization'),
+(4,'Hamstrings','Lower Body','Knee flexion and hip extension'),
+(5,'Glutes','Lower Body','Hip extension, abduction, and pelvic stabilization'),
+(6,'Abdominals','Core','Trunk flexion and core stabilization'),
+(7,'Obliques','Core','Trunk rotation and lateral flexion'),
+(8,'Calves','Lower Body','Ankle plantar flexion and balance support'),
+(9,'Shoulders','Upper Body','Arm elevation and rotational stability'),
+(10,'Biceps','Upper Body','Elbow flexion'),
+(11,'Triceps','Upper Body','Elbow extension'),
+(12,'Forearms','Upper Body','Grip strength and wrist stabilization'),
+(13,'Hip Flexors','Lower Body','Hip flexion and lower-limb mobility'),
+(14,'Lower Back','Core','Spinal extension and posture support'),
+(15,'Adductors','Lower Body','Hip adduction and pelvic stabilization'),
+(16,'Abductors','Lower Body','Hip abduction and lateral stability'),
+(17,'Upper Back','Upper Body','Scapular retraction and posture control'),
+(18,'Neck','Upper Body','Cervical flexion, extension, and rotation'),
+(19,'Rotator Cuff','Upper Body','Shoulder stabilization and rotation'),
+(20,'Core Stabilizers','Core','Deep trunk stabilization and posture control'),
+(21,'Glute Medius','Lower Body','Hip abduction and pelvic alignment'),
+(22,'Hip External Rotators','Lower Body','External rotation and pelvic control'),
+(23,'Serratus Anterior','Upper Body','Scapular protraction and rib stability'),
+(24,'Lats','Upper Body','Shoulder extension and adduction'),
+(25,'Tibialis Anterior','Lower Body','Ankle dorsiflexion and gait control');
+
+INSERT INTO workout_sessions (session_id, user_id, session_name, session_date, start_time, end_time, duration_minutes, bodyweight, completed, is_template) VALUES
+(1,5,'Upper Body Strength','2025-11-26','17:15:00','18:10:00',55,80.10,1,0),
+(2,5,'Lower Body Strength','2025-11-28','09:45:00','10:50:00',65,80.05,1,0),
+(3,5,'Upper Body Hypertrophy','2025-11-30','18:00:00','19:05:00',65,80.00,1,0),
+(4,5,'Core + Mobility','2025-12-01','06:40:00','07:15:00',35,79.95,1,0),
+(5,5,'Upper Body Push Day','2025-12-02','17:00:00','17:50:00',50,79.90,1,0),
+(6,5,'Cardio Endurance','2025-12-03','07:10:00','07:55:00',45,80.00,1,0),
+(7,5,'Upper Body Pull Day','2025-12-05','18:20:00','19:10:00',50,80.15,1,0),
+(8,5,'Leg Power','2025-12-06','10:10:00','11:00:00',50,80.20,1,0),
+(9,5,'Active Recovery','2025-12-07','14:00:00','14:25:00',25,80.05,1,0),
+(10,5,'Full Body Conditioning','2025-12-08','17:25:00','18:05:00',40,80.10,1,0),
+(11,5,'Upper Body Mixed Strength','2025-12-09','17:10:00','18:00:00',50,80.10,1,0),
+(12,5,'Strength Template A','2025-11-01',NULL,NULL,NULL,NULL,0,1),
+(13,5,'Strength Template B','2025-11-01',NULL,NULL,NULL,NULL,0,1),
+(14,5,'Conditioning Template','2025-11-01',NULL,NULL,NULL,NULL,0,1),
+(15,5,'Mobility Template','2025-11-01',NULL,NULL,NULL,NULL,0,1);
+
+INSERT INTO session_exercises (session_exercise_id, session_id, exercise_id, exercise_order, target_sets, target_reps, completed) VALUES
+(1,1,1,1,4,12,1),
+(2,1,4,2,4,10,1),
+(3,1,6,3,3,8,1),
+(4,1,10,4,3,12,1),
+(5,3,1,1,4,10,1),
+(6,3,5,2,3,8,1),
+(7,3,4,3,4,10,1),
+(8,5,4,1,4,12,1),
+(9,5,5,2,3,10,1),
+(10,5,6,3,3,8,1),
+(11,7,1,1,4,12,1),
+(12,7,6,2,3,10,1),
+(13,7,19,3,3,12,1),
+(14,11,1,1,4,10,1),
+(15,11,4,2,4,8,1),
+(16,11,5,3,3,10,1),
+(17,11,10,4,3,12,1);
+
+INSERT INTO sets (set_id, session_exercise_id, set_number, weight, reps, rpe, completed, is_warmup, completion_time) VALUES
+(1,1,1,40.00,12,7,1,0,'2025-11-26 17:15:00'),
+(2,1,2,45.00,12,8,1,0,'2025-11-26 17:25:00'),
+(3,1,3,50.00,12,8,1,0,'2025-11-26 17:35:00'),
+(4,1,4,55.00,12,9,1,0,'2025-11-26 17:45:00'),
+(5,2,1,60.00,10,7,1,0,'2025-11-26 17:55:00'),
+(6,2,2,65.00,10,8,1,0,'2025-11-26 18:05:00'),
+(7,2,3,70.00,10,8,1,0,'2025-11-26 18:15:00'),
+(8,3,1,42.00,10,7,1,0,'2025-11-30 18:00:00'),
+(9,3,2,47.00,10,8,1,0,'2025-11-30 18:10:00'),
+(10,3,3,52.00,10,8,1,0,'2025-11-30 18:20:00'),
+(11,4,1,50.00,12,7,1,0,'2025-12-02 17:00:00'),
+(12,4,2,55.00,12,8,1,0,'2025-12-02 17:10:00'),
+(13,4,3,60.00,12,8,1,0,'2025-12-02 17:20:00'),
+(14,5,1,45.00,12,7,1,0,'2025-12-05 18:20:00'),
+(15,5,2,50.00,12,8,1,0,'2025-12-05 18:30:00'),
+(16,5,3,55.00,12,9,1,0,'2025-12-05 18:40:00'),
+(17,6,1,42.00,10,7,1,0,'2025-12-09 17:10:00'),
+(18,6,2,47.00,10,8,1,0,'2025-12-09 17:20:00'),
+(19,6,3,52.00,10,8,1,0,'2025-12-09 17:30:00'),
+(20,6,4,57.00,10,9,1,0,'2025-12-09 17:40:00'),
+(21,7,1,40.00,12,7,1,0,'2025-12-09 18:20:00'),
+(22,7,2,45.00,12,8,1,0,'2025-12-09 18:30:00'),
+(23,7,3,50.00,12,8,1,0,'2025-12-09 18:40:00'),
+(24,8,1,50.00,12,7,1,0,'2025-12-02 17:10:00'),
+(25,8,2,55.00,12,8,1,0,'2025-12-02 17:20:00'),
+(26,8,3,60.00,12,9,1,0,'2025-12-02 17:30:00'),
+(27,9,1,42.00,10,7,1,0,'2025-12-05 18:50:00'),
+(28,9,2,47.00,10,8,1,0,'2025-12-05 19:00:00'),
+(29,9,3,52.00,10,8,1,0,'2025-12-05 19:10:00'),
+(30,10,1,40.00,12,7,1,0,'2025-12-09 17:10:00'),
+(31,10,2,45.00,12,8,1,0,'2025-12-09 17:20:00'),
+(32,10,3,50.00,12,8,1,0,'2025-12-09 17:30:00'),
+(33,10,4,55.00,12,9,1,0,'2025-12-09 17:40:00'),
+(34,11,1,42.00,10,7,1,0,'2025-12-09 17:10:00'),
+(35,11,2,47.00,10,8,1,0,'2025-12-09 17:20:00'),
+(36,11,3,52.00,10,8,1,0,'2025-12-09 17:30:00'),
+(37,12,1,40.00,12,7,1,0,'2025-12-09 17:10:00'),
+(38,12,2,45.00,12,8,1,0,'2025-12-09 17:20:00'),
+(39,12,3,50.00,12,8,1,0,'2025-12-09 17:30:00'),
+(40,13,1,42.00,10,7,1,0,'2025-12-09 17:40:00'),
+(41,13,2,47.00,10,8,1,0,'2025-12-09 17:50:00'),
+(42,13,3,52.00,10,8,1,0,'2025-12-09 18:00:00'),
+(43,14,1,40.00,12,7,1,0,'2025-12-09 18:10:00'),
+(44,14,2,45.00,12,8,1,0,'2025-12-09 18:20:00'),
+(45,14,3,50.00,12,8,1,0,'2025-12-09 18:30:00'),
+(46,15,1,50.00,12,7,1,0,'2025-12-09 18:40:00'),
+(47,15,2,55.00,12,8,1,0,'2025-12-09 18:50:00'),
+(48,15,3,60.00,12,9,1,0,'2025-12-09 19:00:00'),
+(49,16,1,42.00,10,7,1,0,'2025-12-09 19:10:00'),
+(50,16,2,47.00,10,8,1,0,'2025-12-09 19:20:00'),
+(51,16,3,52.00,10,8,1,0,'2025-12-09 19:30:00'),
+(52,16,4,57.00,10,9,1,0,'2025-12-09 19:40:00'),
+(53,17,1,40.00,12,7,1,0,'2025-12-09 19:50:00'),
+(54,17,2,45.00,12,8,1,0,'2025-12-09 20:00:00'),
+(55,17,3,50.00,12,8,1,0,'2025-12-09 20:10:00'),
+(56,17,4,55.00,12,9,1,0,'2025-12-09 20:20:00');
+
+INSERT INTO user_pb (pr_id, user_id, exercise_id, pr_type, pb_weight, pb_reps, pb_time, pb_date, previous_pr, notes) VALUES
+(1,5,1,'weight',50.00,12,NULL,'2025-11-30',45.00,'Push-Up PR from Upper Body sessions'),
+(2,5,4,'weight',70.00,10,NULL,'2025-11-26',65.00,'Bench Press PR achieved in session 2'),
+(3,5,5,'weight',60.00,12,NULL,'2025-12-02',55.00,'Overhead Press PR set in session 4'),
+(4,5,6,'weight',57.00,10,NULL,'2025-12-09',52.00,'Pull-Up weighted PR reached in session 16'),
+(5,5,10,'weight',55.00,12,NULL,'2025-12-09',50.00,'Bicep Curl PR in session 17'),
+(6,5,19,'weight',52.00,12,NULL,'2025-12-09',47.00,'Tricep Kickback PR in session 13');
+
+INSERT INTO user_stats_log (log_id, user_id, date, weight, neck, waist, hips, body_fat_percentage, notes) VALUES
+(1,5,'2025-08-01',180.0,15.0,34.0,38.0,21.0,'Starting weekly measurements'),
+(2,5,'2025-08-08',179.5,14.9,33.8,37.8,20.8,'Slight drop after consistent workouts'),
+(3,5,'2025-08-15',180.2,15.1,34.1,38.2,20.9,'Small increase, water retention'),
+(4,5,'2025-08-22',179.0,14.8,33.7,37.6,20.5,'Good fat loss week'),
+(5,5,'2025-08-29',178.5,14.7,33.5,37.4,20.3,'Steady progress'),
+(6,5,'2025-09-05',179.0,14.8,33.6,37.5,20.4,'Slight rebound, still trending down'),
+(7,5,'2025-09-12',177.8,14.6,33.3,37.2,20.1,'Strong week, good adherence'),
+(8,5,'2025-09-19',177.5,14.6,33.2,37.0,20.0,'Weight continues to decrease'),
+(9,5,'2025-09-26',178.0,14.7,33.4,37.1,20.1,'Small fluctuation due to hydration'),
+(10,5,'2025-10-03',176.8,14.5,33.0,36.8,19.8,'Downward trend continues'),
+(11,5,'2025-10-10',177.2,14.6,33.2,36.9,19.9,'Slight rebound, consistent training'),
+(12,5,'2025-10-17',176.0,14.5,32.9,36.7,19.7,'Progressing nicely'),
+(13,5,'2025-10-24',175.5,14.4,32.7,36.5,19.5,'Good fat loss week'),
+(14,5,'2025-10-31',176.0,14.5,32.8,36.6,19.6,'Minor fluctuation, still trending down'),
+(15,5,'2025-11-07',174.8,14.3,32.5,36.3,19.3,'Steady improvement'),
+(16,5,'2025-11-14',175.2,14.4,32.6,36.4,19.4,'Slight rebound'),
+(17,5,'2025-11-21',174.5,14.3,32.4,36.2,19.2,'Back on track'),
+(18,5,'2025-11-28',174.0,14.2,32.2,36.0,19.0,'Good downward trend'),
+(19,5,'2025-12-05',173.5,14.2,32.0,35.8,18.9,'Consistent fat loss');
+
+INSERT INTO workout_plan (plan_id, user_id, plan_description, plan_type, number_of_days) VALUES
+(1,5,'Full body strength program focusing on compound lifts: squat, deadlift, bench press. Includes accessory work for upper and lower body.','Strength',4),
+(2,5,'Upper/lower split for hypertrophy. Upper body days include push and pull exercises, lower body days focus on legs and glutes.','Hypertrophy',5),
+(3,5,'Cardio and endurance plan including running, rowing, and bodyweight circuits. Low weight, high reps for conditioning.','Endurance',3),
+(4,5,'Push/pull/legs cycle emphasizing progressive overload. Includes core strengthening and mobility exercises.','Strength/Hypertrophy',6),
+(5,5,'Maintenance plan combining light strength training and moderate cardio to maintain fitness levels.','Maintenance',3);
+
+INSERT INTO exercise_target_association (association_id, exercise_id, target_id, intensity) VALUES
+(1,1,1,'high'),
+(2,1,2,'medium'),
+(3,1,3,'medium'),
+(4,2,4,'high'),
+(5,2,5,'medium'),
+(6,2,6,'low'),
+(7,3,7,'high'),
+(8,3,8,'medium'),
+(9,3,9,'low'),
+(10,4,10,'high'),
+(11,4,11,'medium'),
+(12,4,12,'medium'),
+(13,5,13,'high'),
+(14,5,14,'medium'),
+(15,5,15,'low'),
+(16,6,16,'high'),
+(17,6,17,'medium'),
+(18,6,18,'low'),
+(19,7,19,'high'),
+(20,7,20,'medium'),
+(21,7,21,'medium'),
+(22,8,22,'high'),
+(23,8,23,'medium'),
+(24,8,24,'low'),
+(25,9,25,'high'),
+(26,9,1,'medium'),
+(27,9,2,'low'),
+(28,10,3,'high'),
+(29,10,4,'medium'),
+(30,10,5,'medium'),
+(31,11,6,'high'),
+(32,11,7,'medium'),
+(33,11,8,'low'),
+(34,12,9,'high'),
+(35,12,10,'medium'),
+(36,12,11,'low'),
+(37,13,12,'high'),
+(38,13,13,'medium'),
+(39,13,14,'low'),
+(40,14,15,'high'),
+(41,14,16,'medium'),
+(42,14,17,'low'),
+(43,15,18,'high'),
+(44,15,19,'medium'),
+(45,15,20,'low'),
+(46,16,21,'high'),
+(47,16,22,'medium'),
+(48,16,23,'low'),
+(49,17,24,'high'),
+(50,17,25,'medium'),
+(51,17,1,'low'),
+(52,18,2,'high'),
+(53,18,3,'medium'),
+(54,18,4,'low'),
+(55,19,5,'high'),
+(56,19,6,'medium'),
+(57,19,7,'low'),
+(58,20,8,'high'),
+(59,20,9,'medium'),
+(60,20,10,'low'),
+(61,21,11,'high'),
+(62,21,12,'medium'),
+(63,21,13,'low'),
+(64,22,14,'high'),
+(65,22,15,'medium'),
+(66,22,16,'low'),
+(67,23,17,'high'),
+(68,23,18,'medium'),
+(69,23,19,'low'),
+(70,24,20,'high'),
+(71,24,21,'medium'),
+(72,24,22,'low'),
+(73,25,23,'high'),
+(74,25,24,'medium'),
+(75,25,25,'low'),
+(76,26,1,'high'),
+(77,26,2,'medium'),
+(78,26,3,'low'),
+(79,27,4,'high'),
+(80,27,5,'medium'),
+(81,27,6,'low'),
+(82,28,7,'high'),
+(83,28,8,'medium'),
+(84,28,9,'low'),
+(85,29,10,'high'),
+(86,29,11,'medium'),
+(87,29,12,'low'),
+(88,30,13,'high'),
+(89,30,14,'medium'),
+(90,30,15,'low'),
+(91,31,16,'high'),
+(92,31,17,'medium'),
+(93,31,18,'low'),
+(94,32,19,'high'),
+(95,32,20,'medium'),
+(96,32,21,'low'),
+(97,33,22,'high'),
+(98,33,23,'medium'),
+(99,33,24,'low'),
+(100,34,25,'high'),
+(101,34,1,'medium'),
+(102,34,2,'low'),
+(103,35,3,'high'),
+(104,35,4,'medium'),
+(105,35,5,'low'),
+(106,36,6,'high'),
+(107,36,7,'medium'),
+(108,36,8,'low'),
+(109,37,9,'high'),
+(110,37,10,'medium'),
+(111,37,11,'low'),
+(112,38,12,'high'),
+(113,38,13,'medium'),
+(114,38,14,'low'),
+(115,39,15,'high'),
+(116,39,16,'medium'),
+(117,39,17,'low'),
+(118,40,18,'high'),
+(119,40,19,'medium'),
+(120,40,20,'low'),
+(121,41,21,'high'),
+(122,41,22,'medium'),
+(123,41,23,'low'),
+(124,42,24,'high'),
+(125,42,25,'medium'),
+(126,42,1,'low'),
+(127,43,2,'high'),
+(128,43,3,'medium'),
+(129,43,4,'low'),
+(130,44,5,'high'),
+(131,44,6,'medium'),
+(132,44,7,'low'),
+(133,45,8,'high'),
+(134,45,9,'medium'),
+(135,45,10,'low'),
+(136,46,11,'high'),
+(137,46,12,'medium'),
+(138,46,13,'low'),
+(139,47,14,'high'),
+(140,47,15,'medium'),
+(141,47,16,'low'),
+(142,48,17,'high'),
+(143,48,18,'medium'),
+(144,48,19,'low'),
+(145,49,20,'high'),
+(146,49,21,'medium'),
+(147,49,22,'low'),
+(148,50,23,'high'),
+(149,50,24,'medium'),
+(150,50,25,'low');
+
+INSERT INTO goals (goal_id, user_id, goal_type, goal_description, target_value, current_value, unit, exercise_id, start_date, target_date, status, completion_date) VALUES
+(1,5,'Push-Up Strength','Increase max push-ups','50.00','35.00','reps',1,'2025-09-01','2025-12-01','active',NULL),
+(2,5,'Bench Press Strength','Increase bench press max weight','200.00','175.00','lbs',4,'2025-09-02','2025-12-02','active',NULL),
+(3,5,'Overhead Press Strength','Increase overhead press max weight','150.00','130.00','lbs',5,'2025-09-03','2025-12-03','active',NULL),
+(4,5,'Pull-Up Endurance','Increase number of pull-ups','12.00','8.00','reps',6,'2025-09-05','2025-12-05','active',NULL),
+(5,5,'Lat Pulldown Strength','Increase lat pulldown max','160.00','140.00','lbs',16,'2025-09-06','2025-12-06','active',NULL);
+
+INSERT INTO progress (progress_id, user_id, exercise_id, date, period_type, max_weight, avg_weight, total_volume, workout_count) VALUES
+(1,5,1,'2025-11-01','weekly',NULL,NULL,1050.00,3),
+(2,5,1,'2025-11-08','weekly',NULL,NULL,1120.00,3),
+(3,5,1,'2025-11-15','weekly',NULL,NULL,1180.00,3),
+(4,5,4,'2025-11-01','weekly',175.00,150.00,5600.00,2),
+(5,5,4,'2025-11-08','weekly',180.00,155.00,6000.00,2),
+(6,5,4,'2025-11-15','weekly',185.00,160.00,6400.00,2),
+(7,5,5,'2025-11-01','weekly',130.00,115.00,3450.00,2),
+(8,5,5,'2025-11-08','weekly',135.00,120.00,3600.00,2),
+(9,5,5,'2025-11-15','weekly',140.00,125.00,3750.00,2),
+(10,5,6,'2025-11-01','weekly',NULL,NULL,320.00,2),
+(11,5,6,'2025-11-08','weekly',NULL,NULL,350.00,2),
+(12,5,6,'2025-11-15','weekly',NULL,NULL,380.00,2),
+(13,5,16,'2025-11-01','weekly',140.00,120.00,4200.00,2),
+(14,5,16,'2025-11-08','weekly',145.00,125.00,4500.00,2),
+(15,5,16,'2025-11-15','weekly',150.00,130.00,4800.00,2),
+(16,5,17,'2025-11-01','weekly',140.00,120.00,4200.00,2),
+(17,5,17,'2025-11-08','weekly',145.00,125.00,4500.00,2),
+(18,5,17,'2025-11-15','weekly',150.00,130.00,4800.00,2),
+(19,5,18,'2025-11-01','weekly',NULL,NULL,600.00,2),
+(20,5,18,'2025-11-08','weekly',NULL,NULL,650.00,2),
+(21,5,18,'2025-11-15','weekly',NULL,NULL,700.00,2),
+(22,5,19,'2025-11-01','weekly',40.00,35.00,1400.00,2),
+(23,5,19,'2025-11-08','weekly',42.00,37.00,1480.00,2),
+(24,5,19,'2025-11-15','weekly',45.00,40.00,1600.00,2),
+(25,5,20,'2025-11-01','weekly',35.00,28.00,980.00,2),
+(26,5,20,'2025-11-08','weekly',37.00,30.00,1050.00,2),
+(27,5,20,'2025-11-15','weekly',40.00,32.00,1120.00,2),
+(28,5,21,'2025-11-01','weekly',25.00,20.00,500.00,2),
+(29,5,21,'2025-11-08','weekly',27.00,22.00,550.00,2),
+(30,5,21,'2025-11-15','weekly',30.00,25.00,600.00,2),
+(31,5,39,'2025-11-01','weekly',60.00,50.00,1800.00,2),
+(32,5,39,'2025-11-08','weekly',62.00,52.00,1900.00,2),
+(33,5,39,'2025-11-15','weekly',65.00,55.00,2000.00,2),
+(34,5,40,'2025-11-01','weekly',160.00,140.00,4800.00,2),
+(35,5,40,'2025-11-08','weekly',165.00,145.00,5000.00,2),
+(36,5,40,'2025-11-15','weekly',170.00,150.00,5200.00,2),
+(37,5,44,'2025-11-01','weekly',160.00,140.00,4800.00,2),
+(38,5,44,'2025-11-08','weekly',165.00,145.00,5000.00,2),
+(39,5,44,'2025-11-15','weekly',170.00,150.00,5200.00,2),
+(40,5,45,'2025-11-01','weekly',120.00,100.00,2400.00,2),
+(41,5,45,'2025-11-08','weekly',125.00,105.00,2600.00,2),
+(42,5,45,'2025-11-15','weekly',130.00,110.00,2800.00,2),
+(43,5,46,'2025-11-01','weekly',20.00,15.00,300.00,2),
+(44,5,46,'2025-11-08','weekly',22.00,17.00,340.00,2),
+(45,5,46,'2025-11-15','weekly',25.00,20.00,380.00,2),
+(46,5,47,'2025-11-01','weekly',50.00,45.00,1350.00,2),
+(47,5,47,'2025-11-08','weekly',52.00,47.00,1450.00,2),
+(48,5,47,'2025-11-15','weekly',55.00,50.00,1550.00,2),
+(49,5,49,'2025-11-01','weekly',15.00,10.00,300.00,2),
+(50,5,49,'2025-11-08','weekly',18.00,12.00,360.00,2),
+(51,5,49,'2025-11-15','weekly',20.00,15.00,400.00,2);
