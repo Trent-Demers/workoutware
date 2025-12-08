@@ -30,33 +30,16 @@ recommendations that can be directly rendered in templates.
 from collections import defaultdict
 from datetime import timedelta
 
-This module analyzes a user's historical training data to generate
-personalized exercise recommendations in two major categories:
+from django.utils import timezone
 
-1. **Weight Increase Recommendations**
-   - Identifies exercises where the user's max weight has stalled.
-   - Suggests specific next-step weight targets based on progress trends.
-
-2. **Neglected Muscle Group Detection**
-   - Analyzes the frequency of training sessions per muscle group.
-   - Identifies muscles the user has not trained enough recently.
-
-These recommendations are displayed in the Progress Dashboard.
-The logic here is lightweight and rule-based but structured such that
-future versions can integrate ML or deep-learning models.
-
-Dependencies:
-    - Django ORM
-    - `progress` model (aggregated statistics)
-    - `exercise` model (muscle group classification)
-
-All functions in this module are pure functions:
-They take a `user_id` and return structured dictionaries with
-recommendations that can be directly rendered in templates.
-"""
-
-from django.db import connection
-from datetime import date, timedelta
+from .models import (
+    sets,
+    session_exercises,
+    workout_sessions,
+    exercise,
+    exercise_target_association,
+    target,
+)
 
 
 # ------------------------------------------------------------------------------
@@ -108,83 +91,19 @@ def get_weight_increase_recommendations(user_id):
             completed=True,
             is_warmup=False,
         )
-        rows = cursor.fetchall()
-
-    return [
-        {
-            "exercise_id": r[0],
-            "exercise_name": r[1],
-            "max_weight": float(r[2]) if r[2] else None,
-            "previous_max_weight": float(r[3]) if r[3] else None,
-            "date": r[4],
-        }
-        for r in rows
-    ]
-
-
-def _fetch_muscle_group_usage(user_id, weeks=4):
-    """
-    Compute how often the user has trained each muscle group in the past X weeks.
-
-    Args:
-        user_id (int)
-        weeks (int): Time window for analysis.
-
-    Returns:
-        dict: {muscle_group_name: session_count}
-    """
-    start_date = date.today() - timedelta(weeks=weeks)
-
-    with connection.cursor() as cursor:
-        cursor.execute(
-            """
-            SELECT e.subtype AS muscle_group,
-                   COUNT(*) AS frequency
-            FROM workout_sessions ws
-            JOIN session_exercises se ON ws.session_id = se.session_id
-            JOIN exercise e ON se.exercise_id = e.exercise_id
-            WHERE ws.user_id = %s
-              AND ws.completed = 1
-              AND ws.session_date >= %s
-            GROUP BY e.subtype
-            """,
-            [user_id, start_date],
+        .select_related(
+            "session_exercise_id",
+            "session_exercise_id__exercise_id",
+            "session_exercise_id__session_id",
         )
-        rows = cursor.fetchall()
+        .order_by("-completion_time")
+    )
 
     # Group sets by session_exercise
     by_session_exercise = defaultdict(list)
     for s in recent_sets:
         by_session_exercise[s.session_exercise_id_id].append(s)
 
-
-# ------------------------------------------------------------------------------
-# PUBLIC RECOMMENDATION FUNCTIONS
-# ------------------------------------------------------------------------------
-
-def recommend_weight_increases(user_id):
-    """
-    Analyze progress history to identify exercises where the user might
-    increase weight based on stalled or slow progress.
-
-    Logic:
-        - If max weight has not increased for 2+ weeks → suggest adding 2.5–5 lbs.
-        - If recent max_weight > previous → no suggestion needed.
-        - If user has no data → skip.
-
-    Args:
-        user_id (int)
-
-    Returns:
-        list of dict:
-            Each item has:
-                - exercise_name
-                - current_weight
-                - previous_weight
-                - recommended_weight
-                - reason
-    """
-    progress_history = _fetch_recent_progress(user_id)
     recommendations = []
 
     for se_id, se_sets in by_session_exercise.items():
@@ -366,16 +285,6 @@ def get_workout_recommendations(user_id):
     weight_recs = get_weight_increase_recommendations(user_id)
     neglected_recs = get_neglected_muscle_group_recommendations(user_id)
 
-    Args:
-        user_id (int)
-
-    Returns:
-        dict:
-            {
-                "weight_increase": [...],
-                "neglected_muscle_groups": [...]
-            }
-    """
     return {
         "weight_increase": weight_recs,
         "neglected_muscle_groups": neglected_recs,

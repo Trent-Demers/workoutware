@@ -26,27 +26,14 @@ from django.db import transaction
 from django.db.models import F, Max, Avg, Sum, Count, DecimalField, ExpressionWrapper
 from django.db.models.functions import TruncWeek, TruncDate, TruncMonth, TruncQuarter, TruncYear
 
-This module is responsible for computing aggregate training statistics such as:
-- Maximum weight lifted per exercise
-- Total training volume (weight × reps)
-- Weekly and daily performance summaries
-
-These statistics are stored in the `progress` model and displayed throughout
-the WorkoutWare application, especially in the Progress Dashboard.
-
-The progress records act as a lightweight analytics engine, allowing fast
-queries for trends and recommendations without repeatedly scanning the raw logs.
-
-This module is typically called:
-    - When a new set is logged
-    - When viewing the progress dashboard
-    - When rebuilding the entire progress table (e.g., admin/debug)
-"""
-
-from datetime import date, timedelta
-
-from django.db import connection
-from workoutware_app.models import progress, workout_sessions, session_exercises, sets
+from .models import (
+    sets,
+    progress,
+    workout_sessions,
+    session_exercises,
+    exercise,
+    user_info,
+)
 
 
 # ------------------------------------------------------------------------------
@@ -75,35 +62,22 @@ def _base_set_queryset_for_user(user_id):
     Returns:
         QuerySet: Filtered sets with select_related optimizations.
     """
-    with connection.cursor() as cursor:
-        cursor.execute(
-            """
-            SELECT ws.session_date,
-                   se.exercise_id,
-                   s.weight,
-                   s.reps
-            FROM workout_sessions ws
-            JOIN session_exercises se ON ws.session_id = se.session_id
-            JOIN sets s ON s.session_exercise_id = se.session_exercise_id
-            WHERE ws.user_id = %s
-              AND ws.completed = 1
-              AND ws.is_template = 0
-              AND s.weight IS NOT NULL
-            ORDER BY ws.session_date ASC
-            """,
-            [user_id],
+    return (
+        sets.objects
+        .filter(
+            session_exercise_id__session_id__user_id=user_id,
+            session_exercise_id__session_id__is_template=False,
+            session_exercise_id__session_id__completed=True,
+            completed=True,
+            is_warmup=False,
+            weight__isnull=False,
         )
-        rows = cursor.fetchall()
-
-    return [
-        {
-            "session_date": row[0],
-            "exercise_id": row[1],
-            "weight": float(row[2]),
-            "reps": row[3],
-        }
-        for row in rows
-    ]
+        .select_related(
+            "session_exercise_id",
+            "session_exercise_id__exercise_id",
+            "session_exercise_id__session_id",
+        )
+    )
 
 
 def _aggregate_sets_by_period(queryset, period_type):
