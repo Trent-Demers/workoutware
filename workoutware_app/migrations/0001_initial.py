@@ -22,20 +22,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="exercise",
             fields=[
-                ("exercise_id", models.AutoField(primary_key=True, serialize=False)),
-                ("name", models.CharField(max_length=100)),
-                ("exercise_type", models.CharField(max_length=50)),
-                ("subtype", models.CharField(blank=True, max_length=50, null=True)),
-                ("equipment", models.CharField(blank=True, max_length=50, null=True)),
-                ("difficulty", models.CharField(blank=True, max_length=50, null=True)),
-                ("description", models.TextField(blank=True, null=True)),
-                ("demo_link", models.URLField(blank=True, null=True)),
-                (
-                    "image",
-                    models.ImageField(
-                        blank=True, null=True, upload_to="exercise_images/"
-                    ),
-                ),
+                ('validation_id', models.AutoField(primary_key=True, serialize=False)),
+                ('input_weight', models.DecimalField(decimal_places=2, max_digits=6)),
+                ('expected_max', models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True)),
+                ('flagged_as', models.CharField(blank=True, max_length=20, null=True)),
+                ('user_action', models.CharField(blank=True, max_length=20, null=True)),
+                ('timestamp', models.DateTimeField(blank=True, null=True)),
             ],
             options={
                 "db_table": "exercise",
@@ -58,34 +50,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="user_info",
             fields=[
-                ("user_id", models.IntegerField(primary_key=True, serialize=False)),
-                ("first_name", models.CharField(max_length=50)),
-                ("last_name", models.CharField(max_length=50)),
-                ("address", models.CharField(blank=True, max_length=50, null=True)),
-                ("town", models.CharField(blank=True, max_length=50, null=True)),
-                ("state", models.CharField(blank=True, max_length=50, null=True)),
-                ("country", models.CharField(blank=True, max_length=50, null=True)),
-                ("email", models.CharField(max_length=50)),
-                (
-                    "phone_number",
-                    models.CharField(blank=True, max_length=50, null=True),
-                ),
-                ("password_hash", models.CharField(max_length=100)),
-                ("date_of_birth", models.DateField(blank=True, null=True)),
-                (
-                    "height",
-                    models.DecimalField(
-                        blank=True, decimal_places=2, max_digits=5, null=True
-                    ),
-                ),
-                ("date_registered", models.DateField(blank=True, null=True)),
-                ("date_unregistered", models.DateField(blank=True, null=True)),
-                ("registered", models.BooleanField(default=True)),
-                (
-                    "fitness_goal",
-                    models.CharField(blank=True, max_length=50, null=True),
-                ),
-                ("user_type", models.CharField(blank=True, max_length=50, null=True)),
+                ('association_id', models.AutoField(primary_key=True, serialize=False)),
+                ('intensity', models.CharField(max_length=20)),
             ],
             options={
                 "db_table": "user_info",
@@ -153,24 +119,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="exercise_target_association",
             fields=[
-                ("association_id", models.AutoField(primary_key=True, serialize=False)),
-                ("intensity", models.CharField(blank=True, max_length=20)),
-                (
-                    "exercise_id",
-                    models.ForeignKey(
-                        db_column="exercise_id",
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workoutware_app.exercise",
-                    ),
-                ),
-                (
-                    "target_id",
-                    models.ForeignKey(
-                        db_column="target_id",
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workoutware_app.target",
-                    ),
-                ),
+                ('session_exercise_id', models.AutoField(primary_key=True, serialize=False)),
+                ('exercise_order', models.IntegerField()),
+                ('target_sets', models.IntegerField(blank=True, null=True)),
+                ('target_reps', models.IntegerField(blank=True, null=True)),
+                ('completed', models.BooleanField(default=True)),
             ],
             options={
                 "db_table": "exercise_target_association",
@@ -227,39 +180,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="goals",
             fields=[
-                ("goal_id", models.AutoField(primary_key=True, serialize=False)),
-                ("goal_type", models.CharField(max_length=100)),
-                ("goal_description", models.TextField(blank=True, null=True)),
-                ("target_value", models.DecimalField(decimal_places=2, max_digits=8)),
-                (
-                    "current_value",
-                    models.DecimalField(
-                        blank=True, decimal_places=2, max_digits=8, null=True
-                    ),
-                ),
-                ("unit", models.CharField(max_length=20)),
-                ("start_date", models.DateField()),
-                ("target_date", models.DateField(blank=True, null=True)),
-                ("status", models.CharField(default="active", max_length=50)),
-                ("completion_date", models.DateField(blank=True, null=True)),
-                (
-                    "exercise_id",
-                    models.ForeignKey(
-                        blank=True,
-                        db_column="exercise_id",
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        to="workoutware_app.exercise",
-                    ),
-                ),
-                (
-                    "user_id",
-                    models.ForeignKey(
-                        db_column="user_id",
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workoutware_app.user_info",
-                    ),
-                ),
+                ('target_id', models.AutoField(primary_key=True, serialize=False)),
+                ('target_name', models.CharField(max_length=50)),
+                ('target_group', models.CharField(blank=True, max_length=50, null=True)),
+                ('target_function', models.CharField(blank=True, max_length=100, null=True)),
             ],
             options={
                 "db_table": "goals",
@@ -269,43 +193,24 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="data_validation",
             fields=[
-                ("validation_id", models.AutoField(primary_key=True, serialize=False)),
-                ("input_weight", models.DecimalField(decimal_places=2, max_digits=6)),
-                (
-                    "expected_max",
-                    models.DecimalField(
-                        blank=True, decimal_places=2, max_digits=6, null=True
-                    ),
-                ),
-                ("flagged_as", models.CharField(blank=True, max_length=20, null=True)),
-                ("user_action", models.CharField(blank=True, max_length=20, null=True)),
-                ("timestamp", models.DateTimeField(auto_now_add=True)),
-                (
-                    "exercise_id",
-                    models.ForeignKey(
-                        db_column="exercise_id",
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workoutware_app.exercise",
-                    ),
-                ),
-                (
-                    "set_id",
-                    models.ForeignKey(
-                        blank=True,
-                        db_column="set_id",
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        to="workoutware_app.sets",
-                    ),
-                ),
-                (
-                    "user_id",
-                    models.ForeignKey(
-                        db_column="user_id",
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workoutware_app.user_info",
-                    ),
-                ),
+                ('user_id', models.AutoField(primary_key=True, serialize=False)),
+                ('username', models.CharField(max_length=50)),
+                ('first_name', models.CharField(max_length=50)),
+                ('last_name', models.CharField(max_length=50)),
+                ('address', models.CharField(blank=True, max_length=50, null=True)),
+                ('town', models.CharField(blank=True, max_length=50, null=True)),
+                ('state', models.CharField(blank=True, max_length=50, null=True)),
+                ('country', models.CharField(blank=True, max_length=50, null=True)),
+                ('email', models.CharField(max_length=50)),
+                ('phone_number', models.CharField(blank=True, max_length=50, null=True)),
+                ('password_hash', models.CharField(max_length=100)),
+                ('date_of_birth', models.DateField(blank=True, null=True)),
+                ('height', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True)),
+                ('date_registered', models.DateField(blank=True, null=True)),
+                ('date_unregistered', models.DateField(blank=True, null=True)),
+                ('registered', models.BooleanField(blank=True, null=True)),
+                ('fitness_goal', models.CharField(blank=True, max_length=50, null=True)),
+                ('user_type', models.CharField(blank=True, max_length=50, null=True)),
             ],
             options={
                 "db_table": "data_validation",
@@ -381,31 +286,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="workout_sessions",
             fields=[
-                ("session_id", models.AutoField(primary_key=True, serialize=False)),
-                (
-                    "session_name",
-                    models.CharField(blank=True, max_length=100, null=True),
-                ),
-                ("session_date", models.DateField()),
-                ("start_time", models.TimeField(blank=True, null=True)),
-                ("end_time", models.TimeField(blank=True, null=True)),
-                ("duration_minutes", models.IntegerField(blank=True, null=True)),
-                (
-                    "bodyweight",
-                    models.DecimalField(
-                        blank=True, decimal_places=2, max_digits=5, null=True
-                    ),
-                ),
-                ("completed", models.BooleanField(default=False)),
-                ("is_template", models.BooleanField(default=False)),
-                (
-                    "user_id",
-                    models.ForeignKey(
-                        db_column="user_id",
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workoutware_app.user_info",
-                    ),
-                ),
+                ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('created_at', models.DateTimeField()),
             ],
             options={
                 "db_table": "workout_sessions",
@@ -447,61 +329,47 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="user_pb",
             fields=[
-                ("pr_id", models.AutoField(primary_key=True, serialize=False)),
-                ("pr_type", models.CharField(max_length=20)),
-                (
-                    "pb_weight",
-                    models.DecimalField(
-                        blank=True, decimal_places=2, max_digits=6, null=True
-                    ),
-                ),
-                ("pb_reps", models.IntegerField(blank=True, null=True)),
-                ("pb_time", models.TimeField(blank=True, null=True)),
-                ("pb_date", models.DateField()),
-                (
-                    "previous_pr",
-                    models.DecimalField(
-                        blank=True, decimal_places=2, max_digits=6, null=True
-                    ),
-                ),
-                ("notes", models.TextField(blank=True, null=True)),
-                (
-                    "exercise_id",
-                    models.ForeignKey(
-                        db_column="exercise_id",
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workoutware_app.exercise",
-                    ),
-                ),
-                (
-                    "user_id",
-                    models.ForeignKey(
-                        db_column="user_id",
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workoutware_app.user_info",
-                    ),
-                ),
-                (
-                    "session",
-                    models.ForeignKey(
-                        db_column="session_id",
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workoutware_app.workout_sessions",
-                    ),
-                ),
+                ('session_id', models.AutoField(primary_key=True, serialize=False)),
+                ('session_name', models.CharField(blank=True, max_length=100, null=True)),
+                ('session_date', models.DateField()),
+                ('start_time', models.TimeField(blank=True, null=True)),
+                ('end_time', models.TimeField(blank=True, null=True)),
+                ('duration_minutes', models.IntegerField(blank=True, null=True)),
+                ('bodyweight', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True)),
+                ('completed', models.BooleanField(default=True)),
+                ('is_template', models.BooleanField(default=False)),
             ],
             options={
                 "db_table": "user_pb",
                 "managed": False,
             },
         ),
-        migrations.AddField(
-            model_name="session_exercises",
-            name="session_id",
-            field=models.ForeignKey(
-                db_column="session_id",
-                on_delete=django.db.models.deletion.CASCADE,
-                to="workoutware_app.workout_sessions",
-            ),
+        migrations.CreateModel(
+            name='daily_workout_plan',
+            fields=[
+                ('daily_plan_id', models.AutoField(primary_key=True, serialize=False)),
+                ('day', models.IntegerField()),
+                ('wk_day', models.CharField(blank=True, max_length=50, null=True)),
+            ],
+            options={
+                'db_table': 'daily_workout_plan',
+                'managed': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='exercise_history_summary',
+            fields=[
+                ('summary_id', models.AutoField(primary_key=True, serialize=False)),
+                ('total_workouts', models.IntegerField(default=0)),
+                ('total_sets', models.IntegerField(default=0)),
+                ('total_reps', models.IntegerField(default=0)),
+                ('lifetime_volume', models.DecimalField(decimal_places=2, default=0.0, max_digits=12)),
+                ('current_pr', models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True)),
+                ('last_workout_date', models.DateField(blank=True, null=True)),
+            ],
+            options={
+                'db_table': 'exercise_history_summary',
+                'managed': False,
+            },
         ),
     ]

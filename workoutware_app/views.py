@@ -81,11 +81,12 @@ def get_or_create_user_record(request_user):
         user_info: Existing or newly created profile entry.
     """
     try:
-        return user_info.objects.get(email=request_user.email)
+        return user_info.objects.get(username=request_user.username)
     except user_info.DoesNotExist:
         # Create new profile from Django user data
         return user_info.objects.create(
-            first_name=request_user.first_name or request_user.username,
+            username=request_user.username,
+            first_name=request_user.first_name or "",
             last_name=request_user.last_name or "",
             email=request_user.email,
             password_hash="django_auth",
@@ -144,7 +145,7 @@ def get_exercise_suggestions(user_id):
     return exercise.objects.exclude(exercise_id__in=recent).order_by("?")[:5]
 
 
-def check_and_record_pr(user_id, exercise_id, weight, reps, set_obj, session):
+def check_and_record_pr(user_id, exercise_id, weight, reps, set_obj):
     """
     Determine whether a logged set creates a new personal record (PR)
     and store it if needed.
@@ -155,7 +156,6 @@ def check_and_record_pr(user_id, exercise_id, weight, reps, set_obj, session):
         weight (Decimal)
         reps (int)
         set_obj (sets): Newly saved set instance.
-        session (workout_session)
 
     Returns:
         (bool, Decimal or None): Whether a PR occurred, and previous PR.
@@ -173,7 +173,6 @@ def check_and_record_pr(user_id, exercise_id, weight, reps, set_obj, session):
     user_pb.objects.create(
         user_id=user_info.objects.get(user_id=user_id),
         exercise_id=exercise.objects.get(exercise_id=exercise_id),
-        session=session,
         pr_type="max_weight",
         pb_weight=weight,
         pb_reps=reps,
@@ -293,6 +292,7 @@ def home(request):
 
         # Recently registered users
         recent_users = user_info.objects.order_by("-date_registered")[:6]
+        exercises = exercise.objects.all()
 
         # Popular exercises by usage
         popular_exercises = exercise.objects.annotate(
@@ -311,6 +311,7 @@ def home(request):
                 "total_workouts": total_workouts,
                 "active_today": active_today,
                 "recent_users": recent_users,
+                "exercises": exercises,
                 "popular_exercises": popular_exercises,
             },
         )
@@ -403,40 +404,34 @@ def home(request):
 @login_required
 def add_exercise(request):
     """
-    Render form for adding a new exercise to the global catalog.
-    If POST:
-        - Validate inputs
-        - Save new exercise with image
-        - Show success message
+    Admin-only: Add a new exercise to the global catalog.
 
     Returns:
-        HttpResponse
+        Redirect to homepage.
     """
-    if request.method == "POST":
-        name = request.POST.get("exercise_name")
-        ex_type = request.POST.get("exercise_type")
-        subtype = request.POST.get("exercise_subtype")
-        equipment = request.POST.get("exercise_equipment")
-        difficulty = request.POST.get("exercise_difficulty")
-        description = request.POST.get("exercise_description")
-        demo = request.POST.get("exercise_demo")
-        image = request.FILES.get("exercise_image")
+    if not request.user.is_superuser:
+        return redirect("/")
 
-        exercise.objects.create(
-            name=name,
-            type=ex_type,
-            subtype=subtype,
-            equipment=equipment,
-            difficulty=difficulty,
-            description=description,
-            demo_link=demo,
-            image=image,
-        )
+    name = request.POST.get("exercise_name")
+    type = request.POST.get("exercise_type")
+    subtype = request.POST.get("exercise_subtype")
+    equipment = request.POST.get("exercise_equipment")
+    difficulty = request.POST.get("exercise_difficulty")
+    description = request.POST.get("exercise_description")
+    demo = request.POST.get("exercise_demo")
 
-        messages.success(request, "Exercise added successfully!")
-        return redirect("add_exercise")
+    new_exercise = exercise.objects.create(
+        name=name,
+        type=type,
+        subtype=subtype,
+        equipment=equipment,
+        difficulty=difficulty,
+        description=description,
+        demo_link=demo,
+    )
 
-    return render(request, "add_exercise_form.html")
+    new_exercise.save()
+    return redirect("/")
 
 
 @login_required
@@ -894,8 +889,7 @@ def log_set(request, session_exercise_id):
             ex.exercise_id,
             weight,
             reps,
-            new_set,
-            session,
+            new_set
         )
 
     # Log validation
@@ -906,7 +900,7 @@ def log_set(request, session_exercise_id):
         input_weight=weight,
         expected_max=validation.get("expected_max"),
         flagged_as=validation["flag"],
-        timestamp=datetime.now(),
+        timestamp=datetime.now()
     )
 
     return render(
@@ -920,7 +914,7 @@ def log_set(request, session_exercise_id):
             "exercise_name": ex.name,
             "session_exercise_id": session_exercise_id,
             "session_id": session.session_id,
-        },
+        }
     )
 
 
@@ -1234,6 +1228,3 @@ def progress_view(request):
             "neglected_muscle_group_recs": recs["neglected_muscle_groups"],
         },
     )
-
-
-

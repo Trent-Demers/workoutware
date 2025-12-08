@@ -1,150 +1,102 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Sign Up - WorkoutWare</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        }
-        .signup-container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            max-width: 400px;
-            width: 100%;
-        }
-        h2 {
-            text-align: center;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin-top: 15px;
-            color: #333;
-            font-weight: bold;
-        }
-        input {
-            padding: 12px;
-            margin-top: 5px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .helptext {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 5px;
-        }
-        .errorlist {
-            list-style: none;
-            padding: 0;
-            margin: 5px 0;
-        }
-        .errorlist li {
-            color: #f44336;
-            font-size: 0.9em;
-            background-color: #ffebee;
-            padding: 8px;
-            border-radius: 4px;
-            margin-bottom: 5px;
-        }
-        button {
-            margin-top: 25px;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button:hover {
-            transform: translateY(-2px);
-        }
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-        }
-        .login-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    <div class="signup-container">
-        <h2>💪 Join WorkoutWare</h2>
-        <p class="subtitle">Start tracking your fitness journey!</p>
-        
-        <form method="post">
-            {% csrf_token %}
-            
-            <label for="id_username">Username:</label>
-            {{ form.username }}
-            {% if form.username.errors %}
-                <ul class="errorlist">
-                    {% for error in form.username.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            <span class="helptext">{{ form.username.help_text }}</span>
-            
-            <label for="id_password1">Password:</label>
-            {{ form.password1 }}
-            {% if form.password1.errors %}
-                <ul class="errorlist">
-                    {% for error in form.password1.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            <span class="helptext">{{ form.password1.help_text }}</span>
-            
-            <label for="id_password2">Confirm Password:</label>
-            {{ form.password2 }}
-            {% if form.password2.errors %}
-                <ul class="errorlist">
-                    {% for error in form.password2.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            
-            <button type="submit">Create Account</button>
-        </form>
-        
-        <div class="login-link">
-            Already have an account? <a href="{% url 'login' %}">Log in here</a>
-        </div>
-    </div>
-</body>
+ <head>
+  <link href="{% static 'stylesheets/workoutware.css' %}" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <meta charset="utf-8"/>
+  <title>
+   Sign Up - WorkoutWare
+  </title>
+  <style>
+   .helptext {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    margin-top: 5px;
+    display: block;
+   }
+   .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0;
+   }
+   .errorlist li {
+    color: var(--danger);
+    font-size: 0.9em;
+    background: rgba(255, 107, 107, 0.1);
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+   }
+</style>
+ </head>
+ <body>
+  <div class="signup-container fade-in">
+   <h2>
+    <i class="fas fa-user-plus"></i> Create Account
+   </h2>
+   <form method="post">
+    {% csrf_token %}
+    <label for="id_username">
+     <i class="fas fa-user"></i> Username
+    </label>
+    {{ form.username }}
+    {% if form.username.errors %}
+    <ul class="errorlist">
+     {% for error in form.username.errors %}
+     <li>{{ error }}</li>
+     {% endfor %}
+    </ul>
+    {% endif %}
+    <span class="helptext">{{ form.username.help_text }}</span>
+    
+    <label for="id_email">
+     <i class="fas fa-envelope"></i> Email
+    </label>
+    {{ form.email }}
+    {% if form.email.errors %}
+    <ul class="errorlist">
+     {% for error in form.email.errors %}
+     <li>{{ error }}</li>
+     {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <label for="id_password1">
+     <i class="fas fa-lock"></i> Password
+    </label>
+    {{ form.password1 }}
+    {% if form.password1.errors %}
+    <ul class="errorlist">
+     {% for error in form.password1.errors %}
+     <li>{{ error }}</li>
+     {% endfor %}
+    </ul>
+    {% endif %}
+    <span class="helptext">{{ form.password1.help_text }}</span>
+    
+    <label for="id_password2">
+     <i class="fas fa-lock"></i> Confirm Password
+    </label>
+    {{ form.password2 }}
+    {% if form.password2.errors %}
+    <ul class="errorlist">
+     {% for error in form.password2.errors %}
+     <li>{{ error }}</li>
+     {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <button type="submit">
+     <i class="fas fa-rocket"></i> Create Account
+    </button>
+   </form>
+   <div class="signup-link">
+    Already have an account?
+    <a href="{% url 'login' %}">
+     <i class="fas fa-sign-in-alt"></i> Log in here
+    </a>
+   </div>
+  </div>
+ </body>
 </html>

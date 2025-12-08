@@ -1,125 +1,235 @@
-<!--
-    Template: Manage Workout Session / Add Exercise
-
-    This page allows the user to:
-    - Add an exercise to an existing workout session.
-    - Log sets (weight, reps, RPE) for each exercise in the session.
-    - View all exercises and their logged or planned sets for the selected session.
-
-    Context variables expected:
-    - session: the WorkoutSession object (including session_name and is_template).
-    - exercises: list of Exercise objects to choose from.
-    - session_data: iterable where each item contains:
-        - session_exercise: the SessionExercises instance.
-        - sets: list of Set instances linked to that session_exercise.
--->
-
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Manage Workout Session</title>
-    <link rel="stylesheet" type="text/css" href="/static/stylesheets/workoutware.css">
-    <style>
-        body { background: #f4f6f9; font-family: Arial; }
-        .container { max-width: 900px; margin: 30px auto; background: white; padding: 20px; border-radius: 10px; }
-        h1 { text-align: center; margin-bottom: 20px; }
-        .exercise-block { margin-bottom: 20px; padding: 15px; background: #fafafa; border-radius: 8px; }
-        .sets-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .sets-table td, .sets-table th { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        .set-form { margin-top: 10px; }
-    </style>
-</head>
-
-<body>
-<div class="container">
-
-    <h1>
-        Add Exercise to Workout Session
-        {% if session.session_name %} ({{ session.session_name }}){% endif %}
-    </h1>
-
-    <!-- ADD EXERCISE FORM -->
-    <form method="POST" action="{% url 'add_exercise_to_session' session.session_id %}">
-        {% csrf_token %}
-        <label>Select Exercise:</label>
-        <select name="exercise_id" required>
-            {% for ex in exercises %}
-                <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
-            {% endfor %}
-        </select>
-
-        <label>Target Sets:</label>
-        <input type="number" name="target_sets" value="3">
-
-        <label>Target Reps:</label>
-        <input type="number" name="target_reps" value="10">
-
-        <button type="submit">Add Exercise</button>
-    </form>
-
-    <hr>
-
-    <h2>Exercises in This Workout Session</h2>
-
-    {% if session_data %}
+ <head>
+  <link href="{% static 'stylesheets/workoutware.css' %}" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <title>
+   Workout Session
+  </title>
+  <style>
+   .header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 20px 0;
+   }
+   .template-btn {
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+    border: none;
+    padding: 12px 24px;
+   }
+   .template-badge {
+    background: rgba(116, 185, 255, 0.2);
+    color: var(--info);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+   }
+   .exercise-block {
+    background: var(--bg-card);
+    padding: 25px;
+    border-radius: 16px;
+    margin: 20px 0;
+    border: 1px solid var(--border-color);
+   }
+   .exercise-block h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+   }
+   .set-form {
+    background: var(--bg-elevated);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 15px 0;
+   }
+   .set-form form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+   }
+   .set-form label {
+    margin: 0;
+    font-size: 0.85em;
+   }
+   .set-form input {
+    width: 100px;
+   }
+  </style>
+ </head>
+ <body>
+ <div class="container-wrapper">
+  <h1 class="fade-in">
+   <i class="fas fa-clipboard-list"></i> {{ session.session_name }}
+  </h1>
+  <p style="color: var(--text-muted); margin-top: -10px;">
+   <i class="far fa-calendar"></i> {{ session.session_date }}
+  </p>
+  <div class="header-actions fade-in">
+   <div class="nav-links">
+    <a href="{% url 'log_workout' %}">
+     <i class="fas fa-arrow-left"></i> Back to Log Workout
+    </a>
+    <a href="{% url 'progress' %}">
+     <i class="fas fa-chart-line"></i> View Progress
+    </a>
+   </div>
+   {% if not session.is_template %}
+   <form action="{% url 'save_as_template' session.session_id %}" method="post" style="margin: 0;">
+    {% csrf_token %}
+    <button class="template-btn" type="submit">
+     <i class="fas fa-save"></i> Save as Template
+    </button>
+   </form>
+   {% else %}
+   <span class="template-badge">
+    <i class="fas fa-file-alt"></i> This is a Template
+   </span>
+   {% endif %}
+  </div>
+  <hr/>
+  <h2 class="fade-in">
+   <i class="fas fa-plus-circle"></i> Add Exercise to Workout Session
+  </h2>
+  <form action="{% url 'add_exercise_to_session' session.session_id %}" class="form-container fade-in" method="post">
+   {% csrf_token %}
+   <label for="exercise_id">
+    <i class="fas fa-dumbbell"></i> Select Exercise
+   </label>
+   <select id="exercise_id" name="exercise_id" required="">
+    <option value="">
+     -- Choose Exercise --
+    </option>
+    {% for ex in exercises %}
+    <option value="{{ ex.exercise_id }}">
+     {{ ex.name }} ({{ ex.type }})
+    </option>
+    {% endfor %}
+   </select>
+   <label for="target_sets">
+    <i class="fas fa-layer-group"></i> Target Sets
+   </label>
+   <input id="target_sets" min="1" name="target_sets" type="number" value="3"/>
+   <label for="target_reps">
+    <i class="fas fa-repeat"></i> Target Reps
+   </label>
+   <input id="target_reps" min="1" name="target_reps" type="number" value="10"/>
+   <button type="submit">
+    <i class="fas fa-plus"></i> Add Exercise
+   </button>
+  </form>
+  <hr/>
+  <h2 class="fade-in">
+   <i class="fas fa-list-check"></i> Exercises in This Workout Session
+  </h2>
+  {% if session_data %}
         {% for item in session_data %}
-        <div class="exercise-block">
-
-            <h3>{{ forloop.counter }}. {{ item.session_exercise.exercise_id.name }}</h3>
-            <p>
-                Target: {{ item.session_exercise.target_sets }} sets × {{ item.session_exercise.target_reps }} reps
-            </p>
-
-            {% if not session.is_template %}
-            <!-- LOG NEXT SET -->
-            <form method="POST" action="{% url 'log_set' item.session_exercise.session_exercise_id %}" class="set-form">
-                {% csrf_token %}
-                <label>Weight (lbs):</label>
-                <input type="number" step="0.1" name="weight">
-
-                <label>Reps:</label>
-                <input type="number" name="reps">
-
-                <label>RPE:</label>
-                <input type="number" name="rpe" value="7">
-
-                <input type="hidden" name="set_number" value="{{ item.sets|length|add:1 }}">
-                <button type="submit">Log Set</button>
-            </form>
-            {% endif %}
-
-            <h4>
-                {% if session.is_template %}Planned Sets:{% else %}Completed Sets:{% endif %}
-            </h4>
-
-            {% if item.sets %}
-            <table class="sets-table">
-                <tr>
-                    <th>Set #</th>
-                    <th>Weight</th>
-                    <th>Reps</th>
-                    <th>RPE</th>
-                </tr>
-                {% for set in item.sets %}
-                <tr>
-                    <td>{{ set.set_number }}</td>
-                    <td>{% if set.weight %}{{ set.weight }}{% else %}Bodyweight{% endif %}</td>
-                    <td>{{ set.reps }}</td>
-                    <td>{{ set.rpe }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% else %}
-                <p>No sets logged yet.</p>
-            {% endif %}
-
-        </div>
-        {% endfor %}
+  <div class="exercise-block fade-in">
+   <h3>
+    <span style="background: var(--primary); color: white; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.9em;">
+     {{ forloop.counter }}
+    </span>
+    {{ item.session_exercise.exercise_id.name }}
+   </h3>
+   <p style="color: var(--text-secondary);">
+    <i class="fas fa-bullseye"></i> <strong>Target:</strong>
+    {{ item.session_exercise.target_sets }} sets × {{ item.session_exercise.target_reps }} reps
+   </p>
+   {% if not session.is_template %}
+   <div class="set-form">
+    <h4 style="margin-top: 0;">
+     <i class="fas fa-pen"></i> Log Next Set
+    </h4>
+    <form action="{% url 'log_set' item.session_exercise.session_exercise_id %}" method="post">
+     {% csrf_token %}
+     <input name="set_number" type="hidden" value="{{ item.sets.count|add:1 }}"/>
+     <div>
+      <label>
+       <i class="fas fa-weight-hanging"></i> Weight (lbs)
+      </label>
+      <input name="weight" placeholder="0 for bodyweight" required="" step="0.1" type="number"/>
+     </div>
+     <div>
+      <label>
+       <i class="fas fa-repeat"></i> Reps
+      </label>
+      <input min="1" name="reps" required="" type="number"/>
+     </div>
+     <div>
+      <label>
+       <i class="fas fa-gauge-high"></i> RPE (1-10)
+      </label>
+      <input max="10" min="1" name="rpe" type="number" value="7"/>
+     </div>
+     <button type="submit">
+      <i class="fas fa-check"></i> Log Set {{ item.sets.count|add:1 }}
+     </button>
+    </form>
+   </div>
+   {% endif %}
+   <h4>
+    <i class="fas fa-list"></i> {% if session.is_template %}Planned Sets{% else %}Completed Sets{% endif %}
+   </h4>
+   {% if item.sets %}
+   <table>
+    <thead>
+     <tr>
+      <th>
+       <i class="fas fa-hashtag"></i> Set
+      </th>
+      <th>
+       <i class="fas fa-weight-hanging"></i> Weight
+      </th>
+      <th>
+       <i class="fas fa-repeat"></i> Reps
+      </th>
+      <th>
+       <i class="fas fa-gauge-high"></i> RPE
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     {% for set in item.sets %}
+     <tr>
+      <td>
+       {{ set.set_number }}
+      </td>
+      <td>
+       {% if set.weight %}{{ set.weight }} lbs{% else %}Bodyweight{% endif %}
+      </td>
+      <td>
+       {{ set.reps }}
+      </td>
+      <td>
+       {{ set.rpe }}/10
+      </td>
+     </tr>
+     {% endfor %}
+    </tbody>
+   </table>
+   {% else %}
+   <p style="color: var(--text-muted);">
+    <i class="fas fa-info-circle"></i>
+    {% if session.is_template %}
+                            No sets defined in this template. Sets will be logged when using this template.
+                        {% else %}
+                            No sets logged yet for this exercise.
+                        {% endif %}
+   </p>
+   {% endif %}
+  </div>
+  {% endfor %}
     {% else %}
-        <p>No exercises added yet.</p>
-    {% endif %}
-
-</div>
+  <div class="empty-state fade-in">
+   <i class="fas fa-dumbbell"></i>
+   <p>No exercises added yet. Add one above!</p>
+  </div>
+  {% endif %}
+  </div>
 </body>
 </html>
-

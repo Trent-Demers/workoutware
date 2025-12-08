@@ -1,231 +1,224 @@
-<!--
-    Template: Manage Goals (Advanced Goal Tracking)
-
-    Purpose:
-    - Allow users to create new exercise-specific fitness goals.
-    - Display active goals with progress bars and time remaining.
-    - Display recently completed goals.
-    - Provide quick navigation to dashboard, progress tracking, and workout logging.
-
-    Context variables expected:
-    - exercises:
-        List of Exercise objects used to select which exercise a goal relates to.
-
-    - active_goals:
-        Queryset of user Goal objects where status = "active".
-        Each goal has:
-            • exercise_id (FK to Exercise)
-            • goal_type (string: 'max_weight', 'total_volume', 'workout_count')
-            • target_value (numeric)
-            • current_value (numeric or None)
-            • target_date (date)
-            • other internal attributes (status, timestamps)
-
-    - completed_goals:
-        List of goals marked completed recently.
-
-    Template features:
-    1. **Goal Creation Form**
-       - User chooses an exercise, goal type, numeric target, and target date.
-       - Posts to the current view using POST.
-
-    2. **Active Goals Section**
-       - Shows a goal card for each active goal.
-       - Progress bar uses custom template filters:
-            • goal.current_value|div:goal.target_value|mul:100
-         (These filters must be defined in your Django project.)
-       - Shows days remaining using Django's `timeuntil` filter.
-
-    3. **Completed Goals Section**
-       - Shows a summary card for recently completed goals.
-
-    4. **Navigation**
-       - Back to Dashboard
-       - View Progress
-       - Log Workout
-
-    Notes:
-    - No personal user information is shown; only goal-specific data.
-    - Progress bar width auto-adjusts using inline style percentages.
-    - Uses CSS grid to arrange goal cards responsively.
--->
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" type="text/css" href="/static/stylesheets/workoutware.css">
-    <title>Manage Goals</title>
-    <style>
-        .goals-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .goal-form {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 30px;
-            border-radius: 12px;
-            color: white;
-            margin-bottom: 40px;
-        }
-        .goal-form input, .goal-form select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-        .goal-form button {
-            background: white;
-            color: #667eea;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .goals-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .goal-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-left: 6px solid #4caf50;
-        }
-        .goal-card.completed {
-            border-left-color: #2196f3;
-            opacity: 0.8;
-        }
-        .goal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .goal-progress {
-            width: 100%;
-            height: 20px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-        .goal-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #4caf50, #8bc34a);
-            transition: width 0.3s;
-        }
-        .nav-buttons {
-            margin: 20px 0;
-        }
-        .nav-buttons a {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #2196f3;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            margin-right: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="goals-container">
-        <h1>🎯 Fitness Goals</h1>
-        
-        <div class="nav-buttons">
-            <a href="{% url 'home' %}">← Dashboard</a>
-            <a href="{% url 'progress' %}">📊 Progress</a>
-            <a href="{% url 'log_workout' %}">💪 Log Workout</a>
-        </div>
-        
-        <div class="goal-form">
-            <h2>Set New Goal</h2>
-            <form method="post">
-                {% csrf_token %}
-                
-                <label>Exercise:</label>
-                <select name="exercise_id" required>
-                    <option value="">-- Choose Exercise --</option>
-                    {% for ex in exercises %}
-                        <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
-                    {% endfor %}
-                </select>
-                
-                <label>Goal Type:</label>
-                <select name="goal_type" required>
-                    <option value="max_weight">Max Weight PR</option>
-                    <option value="total_volume">Total Volume</option>
-                    <option value="workout_count">Number of Workouts</option>
-                </select>
-                
-                <label>Target Value:</label>
-                <input type="number" name="target_value" step="0.1" placeholder="e.g., 225 lbs" required>
-                
-                <label>Target Date:</label>
-                <input type="date" name="target_date" required>
-                
-                <button type="submit">Create Goal</button>
-            </form>
-        </div>
-        
-        <h2>Active Goals ({{ active_goals.count }})</h2>
-        <div class="goals-grid">
-            {% for goal in active_goals %}
-            <div class="goal-card">
-                <div class="goal-header">
-                    <h3>{{ goal.exercise_id.name }}</h3>
-                    <span style="font-size: 1.5em;">🎯</span>
-                </div>
-                
-                <p><strong>Type:</strong> {{ goal.goal_type|upper }}</p>
-                <p><strong>Target:</strong> {{ goal.target_value }} {% if goal.goal_type == 'max_weight' %}lbs{% endif %}</p>
-                <p><strong>Deadline:</strong> {{ goal.target_date|date:"M d, Y" }}</p>
-                
-                {% if goal.current_value %}
-                <div class="goal-progress">
-                    <div class="goal-progress-bar" style="width: {{ goal.current_value|div:goal.target_value|mul:100 }}%;"></div>
-                </div>
-                <p style="text-align: center; color: #666;">
-                    {{ goal.current_value }} / {{ goal.target_value }} 
-                    ({{ goal.current_value|div:goal.target_value|mul:100|floatformat:0 }}%)
-                </p>
-                {% else %}
-                <p style="color: #999; text-align: center;">Not started yet</p>
-                {% endif %}
-                
-                <p style="font-size: 0.9em; color: #666;">
-                    Days remaining: {{ goal.target_date|timeuntil }}
-                </p>
-            </div>
-            {% empty %}
-            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">
-                <p style="font-size: 1.2em;">No active goals yet. Set one above to start tracking!</p>
-            </div>
-            {% endfor %}
-        </div>
-        
-        {% if completed_goals %}
-        <h2>Recently Completed Goals</h2>
-        <div class="goals-grid">
-            {% for goal in completed_goals %}
-            <div class="goal-card completed">
-                <div class="goal-header">
-                    <h3>{{ goal.exercise_id.name }}</h3>
-                    <span style="font-size: 1.5em;">✅</span>
-                </div>
-                <p><strong>Completed:</strong> {{ goal.target_date|date:"M d, Y" }}</p>
-                <p><strong>Achievement:</strong> {{ goal.target_value }} {% if goal.goal_type == 'max_weight' %}lbs{% endif %}</p>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+ <head>
+  <link href="{% static 'stylesheets/workoutware.css' %}" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <title>
+   Manage Goals
+  </title>
+  <style>
+   .goal-form {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: 16px;
+    margin: 25px 0;
+    border: 1px solid var(--border-color);
+   }
+   .goals-list {
+    margin-top: 30px;
+   }
+   .goal-card {
+    background: var(--bg-card);
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border-left: 5px solid var(--primary);
+    transition: var(--transition-normal);
+   }
+   .goal-card:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+   }
+   .goal-card.completed {
+    border-left-color: var(--success);
+    opacity: 0.7;
+   }
+   .goal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+   }
+   .btn-complete, .btn-abandon, .btn-delete-goal {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85em;
+   }
+   .btn-complete {
+    background: var(--success);
+    color: white;
+   }
+   .btn-abandon {
+    background: rgba(253, 203, 110, 0.2);
+    color: var(--warning);
+    border: 1px solid var(--warning);
+   }
+   .btn-delete-goal {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+   }
+  </style>
+ </head>
+ <body>
+ <div class="container-wrapper">
+  <div class="goals-container">
+   <h1 class="fade-in">
+    <i class="fas fa-bullseye"></i> Fitness Goals
+   </h1>
+   <div class="nav-links fade-in">
+    <a href="{% url 'home' %}">
+     <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+    <a href="{% url 'progress' %}">
+     <i class="fas fa-chart-line"></i> Progress
+    </a>
+    <a href="{% url 'log_workout' %}">
+     <i class="fas fa-dumbbell"></i> Log Workout
+    </a>
+   </div>
+   <div class="goal-form fade-in">
+    <h2>
+     <i class="fas fa-plus-circle"></i> Set New Goal
+    </h2>
+    <form method="post">
+     {% csrf_token %}
+     <label>
+      <i class="fas fa-dumbbell"></i> Exercise
+     </label>
+     <select name="exercise_id" required="">
+      <option value="">
+       -- Choose Exercise --
+      </option>
+      {% for ex in exercises %}
+      <option value="{{ ex.exercise_id }}">
+       {{ ex.name }}
+      </option>
+      {% endfor %}
+     </select>
+     <label>
+      <i class="fas fa-layer-group"></i> Goal Type
+     </label>
+     <select name="goal_type" required="">
+      <option value="max_weight">
+       Max Weight PR
+      </option>
+      <option value="total_volume">
+       Total Volume
+      </option>
+      <option value="workout_count">
+       Number of Workouts
+      </option>
+     </select>
+     <label>
+      <i class="fas fa-flag-checkered"></i> Target Value
+     </label>
+     <input name="target_value" required="" step="0.1" type="number" placeholder="e.g., 225"/>
+     <label>
+      <i class="fas fa-ruler"></i> Unit
+     </label>
+     <select name="unit" required="">
+      <option value="lbs">Pounds (lbs)</option>
+      <option value="kg">Kilograms (kg)</option>
+      <option value="reps">Reps</option>
+      <option value="workouts">Workouts</option>
+     </select>
+     <label>
+      <i class="far fa-calendar-alt"></i> Target Date (optional)
+     </label>
+     <input name="target_date" type="date"/>
+     <label>
+      <i class="fas fa-align-left"></i> Description
+     </label>
+     <textarea name="goal_description" rows="2" placeholder="e.g., Bench press 225 lbs for 1 rep"></textarea>
+     <button type="submit">
+      <i class="fas fa-rocket"></i> Create Goal
+     </button>
+    </form>
+   </div>
+   <div class="goals-list">
+    <h2 class="fade-in">
+     <i class="fas fa-fire"></i> Active Goals
+    </h2>
+    {% for goal in active_goals %}
+    <div class="goal-card fade-in">
+     <h3 style="margin-top: 0;">
+      <i class="fas fa-crosshairs"></i> {{ goal.goal_description|default:goal.goal_type }}
+     </h3>
+     <p style="color: var(--text-secondary);">
+      <i class="fas fa-dumbbell"></i> <strong>{{ goal.exercise_id.name }}</strong> |
+      <i class="fas fa-flag"></i> Target: {{ goal.target_value }} {{ goal.unit }}
+      {% if goal.target_date %}
+      | <i class="far fa-calendar"></i> By {{ goal.target_date|date:"M d, Y" }}
+      {% endif %}
+     </p>
+     {% if goal.current_value %}
+     <div class="progress-bar-container">
+      {% widthratio goal.current_value goal.target_value 100 as progress %}
+      <div class="progress-bar" style="width: {% if progress > 100 %}100{% else %}{{ progress }}{% endif %}%;">
+       {{ goal.current_value }} / {{ goal.target_value }} {{ goal.unit }} ({{ progress }}%)
+      </div>
+     </div>
+     {% else %}
+     <p style="color: var(--text-muted);">
+      <i class="fas fa-hourglass-start"></i> Not started - log workouts to track progress
+     </p>
+     {% endif %}
+     <div class="goal-actions">
+      <form action="{% url 'update_goal_status' goal.goal_id %}" method="post" style="display: inline;">
+       {% csrf_token %}
+       <input type="hidden" name="status" value="completed"/>
+       <button class="btn-complete" type="submit">
+        <i class="fas fa-check"></i> Complete
+       </button>
+      </form>
+      <form action="{% url 'update_goal_status' goal.goal_id %}" method="post" style="display: inline;">
+       {% csrf_token %}
+       <input type="hidden" name="status" value="abandoned"/>
+       <button class="btn-abandon" type="submit">
+        <i class="fas fa-times"></i> Abandon
+       </button>
+      </form>
+      <form action="{% url 'delete_goal' goal.goal_id %}" method="post" style="display: inline;" onsubmit="return confirm('Delete this goal?');">
+       {% csrf_token %}
+       <button class="btn-delete-goal" type="submit">
+        <i class="fas fa-trash"></i>
+       </button>
+      </form>
+     </div>
     </div>
+    {% empty %}
+    <div class="empty-state fade-in">
+     <i class="fas fa-bullseye"></i>
+     <p>No active goals. Set one above to stay motivated!</p>
+    </div>
+    {% endfor %}
+    <h2 class="fade-in" style="margin-top: 40px;">
+     <i class="fas fa-trophy"></i> Completed Goals
+    </h2>
+    {% for goal in completed_goals %}
+    <div class="goal-card completed fade-in">
+     <h3 style="margin-top: 0;">
+      <i class="fas fa-check-circle text-success"></i> {{ goal.goal_description|default:goal.goal_type }}
+     </h3>
+     <p style="color: var(--text-secondary);">
+      <i class="fas fa-dumbbell"></i> {{ goal.exercise_id.name }} |
+      <i class="fas fa-medal"></i> Achieved: {{ goal.current_value }} {{ goal.unit }}
+      {% if goal.completion_date %}
+      | <i class="far fa-calendar-check"></i> {{ goal.completion_date|date:"M d, Y" }}
+      {% endif %}
+     </p>
+    </div>
+    {% empty %}
+    <p class="fade-in" style="color: var(--text-muted);">
+     <i class="fas fa-info-circle"></i> No completed goals yet.
+    </p>
+    {% endfor %}
+   </div>
+  </div>
+  </div>
 </body>
 </html>

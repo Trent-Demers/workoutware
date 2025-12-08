@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <!--
     Template: Completed Workouts List
@@ -21,90 +22,137 @@
 
 <!DOCTYPE html>
 <html>
-<head>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="/static/stylesheets/workoutware.css">
-    <title>Completed Workouts</title>
-    <style>
-        .workout-list {
-            list-style: none;
-            padding: 0;
-        }
-        .workout-item {
-            background: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border-left: 4px solid #4caf50;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .workout-info {
-            flex: 1;
-        }
-        .workout-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .status-pill {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            margin-left: 8px;
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <h1>✅ All Completed Workouts</h1>
-
-    <a href="{% url 'home' %}">← Back to Dashboard</a> |
-    <a href="{% url 'log_workout' %}">💪 Log Workout</a>
-
-    <p style="margin-top: 10px; color: #555;">
-        These are your past completed, non-template workout sessions.
-    </p>
-
-    {% if sessions %}
-        <ul class="workout-list">
-            {% for session in sessions %}
-                <li class="workout-item">
-                    <div class="workout-info">
-                        <strong>{{ session.session_name }}</strong>
-                        <span class="status-pill">Completed</span><br>
-                        <span style="color: #666;">
-                            {{ session.session_date|date:"M d, Y" }}
+ <head>
+  <link href="{% static 'stylesheets/workoutware.css' %}" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  {% load static %}
+  <title>
+   Completed Workouts
+  </title>
+  <style> 
+   .workout-list {
+    padding: 0;
+    margin-top: 20px;
+   }
+   .workout-item {
+    background: var(--bg-card);
+    padding: 20px 25px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    border: 1px solid var(--border-color);
+    transition: var(--transition-normal);
+   }
+   .workout-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+   }
+   .status-pill {
+    background: rgba(0, 184, 148, 0.2);
+    color: var(--success);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    margin-left: 10px;
+   }
+   .btn-view {
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition-normal);
+   }
+   .btn-view:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+   }
+   .btn-delete-workout {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--danger);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--danger);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-normal);
+   }   
+   .btn-delete-workout:hover {
+    background: var(--danger);
+    color: white;
+    transform: translateY(-2px);
+   }
+  </style>
+ </head>
+ <body>
+ <div class="container-wrapper">
+  <h1 class="fade-in">
+   <i class="fas fa-check-circle"></i> All Completed Workouts
+  </h1>
+  <div class="nav-links fade-in">
+   <a href="{% url 'home' %}">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+   </a>
+   <a href="{% url 'log_workout' %}">
+    <i class="fas fa-dumbbell"></i> Log Workout
+   </a>
+  </div>
+  <p class="fade-in" style="margin-top: 15px; color: var(--text-muted);">
+   <i class="fas fa-info-circle"></i> These are your past completed, non-template workout sessions.
+  </p>
+  {% if sessions %}
+  <ul class="workout-list">
+   {% for session in sessions %}
+   <li class="workout-item fade-in">
+    <div class="workout-info">
+     <strong>
+      <i class="fas fa-dumbbell"></i> {{ session.session_name }}
+     </strong>
+     <span class="status-pill">
+      <i class="fas fa-check"></i> Completed
+     </span>
+     <br/>
+     <span style="color: var(--text-muted);">
+      <i class="far fa-calendar"></i> {{ session.session_date|date:"M d, Y" }}
                             {% if session.start_time %}
-                                • {{ session.start_time|time:"g:i A" }}
+                                <i class="far fa-clock"></i> {{ session.start_time|time:"g:i A" }}
                             {% endif %}
                             {% if session.duration_minutes %}
-                                • {{ session.duration_minutes }} min
+                                <i class="fas fa-stopwatch"></i> {{ session.duration_minutes }} min
                             {% endif %}
-                        </span>
-                    </div>
-                    <div class="workout-actions">
-                        <a href="{% url 'add_exercises_to_session' session.session_id %}" class="btn-view">
-                            View / Review
-                        </a>
-                        <form action="{% url 'delete_workout' session.session_id %}"
-                              method="post"
-                              style="display:inline;"
-                              onsubmit="return confirm('Delete this workout? This cannot be undone.');">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-delete-workout">Delete</button>
-                        </form>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p style="padding: 15px; background-color: #e3f2fd; border-radius: 5px;">
-            You don't have any completed workouts yet. Finish a workout session and mark it as completed to see it here.
-        </p>
-    {% endif %}
+     </span>
+    </div>
+    <div class="workout-actions">
+     <a class="btn-view" href="{% url 'add_exercises_to_session' session.session_id %}">
+      <i class="fas fa-eye"></i> View Details
+     </a>
+     <form action="{% url 'delete_workout' session.session_id %}"
+           method="post"
+           style="display:inline;"
+           onsubmit="return confirm('Delete this workout? This cannot be undone.');">
+      {% csrf_token %}
+      <button type="submit" class="btn-delete-workout">
+       <i class="fas fa-trash"></i> Delete
+      </button>
+     </form>
+    </div>
+   </li>
+   {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty-state fade-in">
+   <i class="fas fa-clipboard-list"></i>
+   <p>No completed workouts yet. Go crush a workout!</p>
+   <a href="{% url 'log_workout' %}" class="btn">
+    <i class="fas fa-play"></i> Start Workout
+   </a>
+  </div>
+  {% endif %}
+  </div>
 </body>
 </html>

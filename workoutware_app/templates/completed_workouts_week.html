@@ -1,54 +1,72 @@
-<!--
-    Template: This Week's Workouts
-
-    Purpose:
-    - Show all workout sessions completed during the current week.
-    - Provide quick navigation back to:
-        • Main dashboard
-        • Progress overview page
-    - Allow the user to open each workout and review its details.
-
-    Context variables expected:
-    - sessions: iterable of WorkoutSession objects for the current week, where:
-        • session_name: title of the workout
-        • session_date: date the workout was completed
-        • session_id: primary key used to link to the workout detail page
--->
-
-
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head>
-    {% load static %}
-    <link rel="stylesheet" href="/static/stylesheets/workoutware.css">
-    <title>This Week's Workouts</title>
-    <style>
-        .workout-item { background:white;padding:15px;margin:10px 0;border-left:4px solid #4caf50;border-radius:5px; }
-    </style>
-</head>
-<body>
-
-<h1>🔥 Workouts Completed This Week</h1>
-<a href="{% url 'home' %}">← Back to Dashboard</a> |
-<a href="{% url 'progress' %}"> Progress</a>
-
-{% if sessions %}
-    <ul class="workout-list">
-        {% for session in sessions %}
-        <li class="workout-item">
-            <strong>{{ session.session_name }}</strong><br>
-            {{ session.session_date|date:"M d, Y" }}
-            <br>
-            <a href="{% url 'add_exercises_to_session' session.session_id %}">
-                View Workout Details →
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p style="background:#e3f2fd;padding:15px;border-radius:5px;">
-        No completed workouts yet this week — go get after it 💪
-    </p>
-{% endif %}
+ <head>
+  <link href="{% static 'stylesheets/workoutware.css' %}" rel="stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  {% load static %}
+  <title>
+   This Week's Workouts
+  </title>
+  <style>
+   .workout-list {
+    padding: 0;
+    margin-top: 20px;
+   }
+   .workout-item {
+    background: var(--bg-card);
+    padding: 20px 25px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border-left: 5px solid var(--success);
+    transition: var(--transition-normal);
+   }
+   .workout-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+   }
+  </style>
+ </head>
+ <body>
+ <div class="container-wrapper">
+  <h1 class="fade-in">
+   <i class="fas fa-fire-flame-curved"></i> Workouts Completed This Week
+  </h1>
+  <div class="nav-links fade-in">
+   <a href="{% url 'home' %}">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+   </a>
+   <a href="{% url 'progress' %}">
+    <i class="fas fa-chart-line"></i> Progress
+   </a>
+  </div>
+  {% if sessions %}
+  <ul class="workout-list">
+   {% for session in sessions %}
+   <li class="workout-item fade-in">
+    <strong>
+     <i class="fas fa-dumbbell"></i> {{ session.session_name }}
+    </strong>
+    <br/>
+    <span style="color: var(--text-muted);">
+     <i class="far fa-calendar"></i> {{ session.session_date|date:"M d, Y" }}
+    </span>
+    <br/>
+    <a href="{% url 'add_exercises_to_session' session.session_id %}" style="margin-top: 10px; display: inline-block;">
+     <i class="fas fa-eye"></i> View Workout Details <i class="fas fa-arrow-right"></i>
+    </a>
+   </li>
+   {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty-state fade-in">
+   <i class="fas fa-fire"></i>
+   <p>No completed workouts yet this week — go get after it!</p>
+   <a href="{% url 'log_workout' %}" class="btn">
+    <i class="fas fa-play"></i> Start Workout
+   </a>
+  </div>
+  {% endif %}
+  </div>
 </body>
 </html>

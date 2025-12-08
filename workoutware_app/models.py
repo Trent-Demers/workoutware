@@ -15,8 +15,11 @@ fitness- and progress-related concepts to Django ORM models, including:
 - `goals`: User-defined fitness goals tied optionally to an exercise.
 - `user_stats_log`: Body metrics and measurements over time.
 - `workout_plan`: High-level plans describing multi-day workout structure.
+- `daily_workout_plan`: Daily breakdown linking sessions to plan days.
+- `exercise_history_summary`: Aggregated all-time exercise statistics per user.
 - `target` and `exercise_target_association`: Muscle groups / targets and
   their relationship with exercises.
+- `workout_goal_link`: Links between goals and workout sessions.
 
 All models are designed to work with a MySQL backend (via Docker container)
 and are used heavily throughout the views, analytics, and Streamlit dashboard.
@@ -30,11 +33,12 @@ class user_info(models.Model):
     Stores profile and demographic information for a user.
 
     This table acts as the WorkoutWare-specific user profile that links
-    logically to Django's authentication user (via `email`), and is used
-    as the foreign key target for most other models in this app.
+    logically to Django's authentication user (via `username` and `email`),
+    and is used as the foreign key target for most other models in this app.
 
     Fields:
         user_id (int): Primary key for the user_info record.
+        username (str): Unique username for the user.
         first_name (str): User's first name.
         last_name (str): User's last name.
         address, town, state, country (str): Optional location details.
@@ -50,7 +54,8 @@ class user_info(models.Model):
         user_type (str): Role classification (e.g., 'member', 'coach', etc.).
     """
 
-    user_id = models.IntegerField(primary_key=True)
+    user_id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=50)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     address = models.CharField(max_length=50, blank=True, null=True)
@@ -64,7 +69,7 @@ class user_info(models.Model):
     height = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     date_registered = models.DateField(blank=True, null=True)
     date_unregistered = models.DateField(blank=True, null=True)
-    registered = models.BooleanField(default=True)
+    registered = models.BooleanField(blank=True, null=True)
     fitness_goal = models.CharField(max_length=50, blank=True, null=True)
     user_type = models.CharField(max_length=50, blank=True, null=True)
 
@@ -73,8 +78,8 @@ class user_info(models.Model):
         db_table = 'user_info'
 
     def __str__(self) -> str:
-        """Return a readable representation combining name and email."""
-        return f"{self.first_name} {self.last_name} ({self.email})"
+        """Return a readable representation combining username and email."""
+        return f"{self.username} ({self.email})"
 
 
 class exercise(models.Model):
@@ -90,10 +95,9 @@ class exercise(models.Model):
         type (str): High-level category (Strength, Cardio, etc.).
         subtype (str): Body region / muscle group (Chest, Legs, Back, etc.).
         equipment (str): Equipment required (Dumbbell, Barbell, Machine, etc.).
-        difficulty (str): Difficulty level (Beginner, Intermediate, Advanced).
+        difficulty (int): Difficulty level (numeric scale).
         description (str): Free-text instructions or notes.
-        demo_link (URL): Optional YouTube or external demo link.
-        image (ImageField): Optional thumbnail/preview for the exercise.
+        demo_link (str): Optional YouTube or external demo link.
     """
 
     exercise_id = models.AutoField(primary_key=True)
@@ -109,6 +113,11 @@ class exercise(models.Model):
     class Meta:
         managed = False
         db_table = "exercise"
+
+    def __str__(self) -> str:
+        """Return the exercise name for admin and shell display."""
+        return self.name
+
 
     def __str__(self) -> str:
         """Return the exercise name for admin and shell display."""
@@ -142,7 +151,7 @@ class workout_sessions(models.Model):
     end_time = models.TimeField(blank=True, null=True)
     duration_minutes = models.IntegerField(blank=True, null=True)
     bodyweight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    completed = models.BooleanField(default=False)
+    completed = models.BooleanField(default=True)
     is_template = models.BooleanField(default=False)
 
     class Meta:
@@ -179,8 +188,8 @@ class session_exercises(models.Model):
     exercise_order = models.IntegerField()
     target_sets = models.IntegerField(blank=True, null=True)
     target_reps = models.IntegerField(blank=True, null=True)
-    completed = models.BooleanField(default=False)
-
+    completed = models.BooleanField(default=True)
+    
     class Meta:
         managed = False
         db_table = 'session_exercises'
@@ -260,8 +269,8 @@ class data_validation(models.Model):
     expected_max = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     flagged_as = models.CharField(max_length=20, blank=True, null=True)
     user_action = models.CharField(max_length=20, blank=True, null=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
+    timestamp = models.DateTimeField(blank=True, null=True)
+    
     class Meta:
         managed = False
         db_table = 'data_validation'
@@ -320,7 +329,6 @@ class user_pb(models.Model):
         pr_id (int): Primary key.
         user_id (FK user_info): User who owns this PR.
         exercise_id (FK exercise): Exercise this PR relates to.
-        session (FK workout_sessions): Session where the PR occurred.
         pr_type (str): Type of PR (e.g., 'max_weight').
         pb_weight (Decimal): Best weight lifted.
         pb_reps (int): Reps completed at pb_weight.
@@ -333,7 +341,6 @@ class user_pb(models.Model):
     pr_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey('user_info', on_delete=models.CASCADE, db_column='user_id')
     exercise_id = models.ForeignKey('exercise', on_delete=models.CASCADE, db_column='exercise_id')
-    session = models.ForeignKey('workout_sessions', on_delete=models.CASCADE, db_column='session_id', null=False)
     pr_type = models.CharField(max_length=20)
     pb_weight = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     pb_reps = models.IntegerField(blank=True, null=True)
@@ -484,8 +491,8 @@ class target(models.Model):
 
     target_id = models.AutoField(primary_key=True)
     target_name = models.CharField(max_length=50)
-    target_group = models.CharField(max_length=50)
-    target_function = models.CharField(max_length=50)
+    target_group = models.CharField(max_length=50, blank=True, null=True)
+    target_function = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -513,7 +520,7 @@ class exercise_target_association(models.Model):
     association_id = models.AutoField(primary_key=True)
     exercise_id = models.ForeignKey('exercise', on_delete=models.CASCADE, db_column='exercise_id')
     target_id = models.ForeignKey('target', on_delete=models.CASCADE, db_column='target_id')
-    intensity = models.CharField(max_length=20, blank=True)
+    intensity = models.CharField(max_length=20)
 
     class Meta:
         managed = False
@@ -524,30 +531,100 @@ class exercise_target_association(models.Model):
         return f"{self.exercise_id} → {self.target_id} ({self.intensity or 'unspecified'})"
 
 
+class daily_workout_plan(models.Model):
+    """
+    Daily breakdown of a workout plan.
+
+    Links individual workout sessions to specific days within a multi-day
+    workout plan structure.
+
+    Fields:
+        daily_plan_id (int): Primary key.
+        workout_plan_id (FK workout_plan): Parent workout plan.
+        day (int): Day number in the plan cycle.
+        wk_day (str): Optional day of week name (e.g., 'Monday').
+        session_id (FK workout_sessions): The workout session for this day.
+    """
+
+    daily_plan_id = models.AutoField(primary_key=True)
+    workout_plan_id = models.ForeignKey('workout_plan', on_delete=models.CASCADE, db_column='workout_plan_id')
+    day = models.IntegerField()
+    wk_day = models.CharField(max_length=50, blank=True, null=True)
+    session_id = models.ForeignKey('workout_sessions', on_delete=models.SET_NULL, db_column='session_id', null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'daily_workout_plan'
+
+    def __str__(self) -> str:
+        """Return a readable label for the daily plan."""
+        day_name = self.wk_day or f"Day {self.day}"
+        return f"{self.workout_plan_id} - {day_name}"
+
+
+class exercise_history_summary(models.Model):
+    """
+    Aggregated exercise history and statistics per user.
+
+    Provides a summary view of all-time training metrics for each
+    exercise a user has performed, useful for quick lookups and analytics.
+
+    Fields:
+        summary_id (int): Primary key.
+        user_id (FK user_info): User this summary belongs to.
+        exercise_id (FK exercise): Exercise being summarized.
+        total_workouts (int): Total number of workouts including this exercise.
+        total_sets (int): Total sets logged across all time.
+        total_reps (int): Total reps performed across all time.
+        lifetime_volume (Decimal): Cumulative volume (weight × reps).
+        current_pr (Decimal): Current personal record for this exercise.
+        last_workout_date (date): Most recent workout date for this exercise.
+    """
+
+    summary_id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey('user_info', on_delete=models.CASCADE, db_column='user_id')
+    exercise_id = models.ForeignKey('exercise', on_delete=models.CASCADE, db_column='exercise_id')
+    total_workouts = models.IntegerField(default=0)
+    total_sets = models.IntegerField(default=0)
+    total_reps = models.IntegerField(default=0)
+    lifetime_volume = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    current_pr = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    last_workout_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'exercise_history_summary'
+
+    def __str__(self) -> str:
+        """Return a readable summary label."""
+        return f"Summary for {self.user_id} - {self.exercise_id}"
+
+
 class workout_goal_link(models.Model):
     """
     Link table between goals and workout sessions.
+
+    Tracks which goals are associated with which workout sessions,
+    enabling progress tracking toward specific fitness objectives.
+
+    Fields:
+        id (int): Primary key.
+        user_id (FK user_info): Owner of both the goal and session.
+        goal (FK goals): The fitness goal being tracked (nullable).
+        session (FK workout_sessions): The workout session contributing to the goal.
+        created_at (datetime): When the link was created.
     """
+
     id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(
-        'user_info',
-        on_delete=models.CASCADE,
-        db_column='user_id'
-    )
-    goal = models.ForeignKey(
-        'goals',
-        on_delete=models.SET_NULL,
-        db_column='goal',
-        null=True,
-        blank=True
-    )
-    session = models.ForeignKey(
-        'workout_sessions',
-        on_delete=models.CASCADE,
-        db_column='session'
-    )
+    user_id = models.ForeignKey('user_info', on_delete=models.CASCADE, db_column='user_id')
+    goal = models.ForeignKey('goals', on_delete=models.SET_NULL, db_column='goal', null=True, blank=True)
+    session = models.ForeignKey('workout_sessions', on_delete=models.CASCADE, db_column='session')
     created_at = models.DateTimeField()
 
     class Meta:
         managed = False
         db_table = 'workout_goal_link'
+
+    def __str__(self) -> str:
+        """Return a descriptive label for the goal-session link."""
+        return f"Goal {self.goal_id if self.goal else 'None'} linked to Session {self.session_id}"
