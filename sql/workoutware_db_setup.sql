@@ -46,7 +46,6 @@ CREATE TABLE `exercise` (
   `difficulty` int DEFAULT NULL,
   `description` text,
   `demo_link` varchar(100) DEFAULT NULL,
-  `image` varchar(100) NOT NULL,
   PRIMARY KEY (`exercise_id`),
   UNIQUE KEY `name` (`name`),
   CONSTRAINT `exercise_chk_1` CHECK (((`difficulty` >= 1) and (`difficulty` <= 5)))

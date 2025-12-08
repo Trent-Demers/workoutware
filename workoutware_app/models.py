@@ -108,7 +108,6 @@ class exercise(models.Model):
     difficulty = models.CharField(max_length=50, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     demo_link = models.URLField(blank=True, null=True)
-    image = models.ImageField(upload_to="exercise_images/", blank=True, null=True)
 
     class Meta:
         managed = False
