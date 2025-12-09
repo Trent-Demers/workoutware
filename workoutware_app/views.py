@@ -1464,7 +1464,9 @@ def get_user_profile_data(request, user_id):
         # Get active goals - use start_date instead of created_date
         active_goals = goals.objects.filter(
             user_id=user_id,
-            status='active'
+            status='active',
+            current_value__isnull=False,
+            current_value__gt=0
         ).order_by('-start_date')[:5]
         
         goals_list = [
