@@ -64,6 +64,7 @@ from .models import (
 )
 from .recommendations import get_workout_recommendations
 from .progress_utils import rebuild_progress_for_user
+from .forms import SignupForm
 
 
 # ------------------------------------------------------------------------------
@@ -1234,19 +1235,20 @@ def log_body_stats(request):
 
 def signup(request):
     """
-    Register a new account using Django's built-in UserCreationForm.
+    Register a new user account.
 
-    Returns:
-        HttpResponse
+    Uses a custom SignupForm that extends UserCreationForm by adding
+    an email field. On successful registration, the user is logged in
+    automatically and redirected to the homepage.
     """
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect("home")
     else:
-        form = UserCreationForm()
+        form = SignupForm()
 
     return render(request, "registration/signup.html", {"form": form})
 
@@ -1465,8 +1467,7 @@ def get_user_profile_data(request, user_id):
         active_goals = goals.objects.filter(
             user_id=user_id,
             status='active',
-            current_value__isnull=False,
-            current_value__gt=0
+            current_value__isnull=False
         ).order_by('-start_date')[:5]
         
         goals_list = [
