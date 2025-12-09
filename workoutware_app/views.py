@@ -82,7 +82,8 @@ def get_or_create_user_record(request_user):
         return user_info.objects.create(
             first_name=request_user.first_name or "",
             last_name=request_user.last_name or "",
-            email=request_user.email,
+            email= request_user.email or (request_user.username + "@email.com"),
+            phone_number = request_user.username + " has no number",
             username=request_user.username,
             password_hash="django_managed",  # placeholder
             date_registered=timezone.now().date(),
