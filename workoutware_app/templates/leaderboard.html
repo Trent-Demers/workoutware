@@ -1,175 +1,432 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
- <head>
-  <link href="{% static 'stylesheets/workoutware.css' %}" rel="stylesheet" type="text/css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <title>
-   Leaderboard
-  </title>
-  <style>
-   .info-box {
-    background: rgba(116, 185, 255, 0.1);
-    border-left: 5px solid var(--info);
-    padding: 20px;
-    border-radius: 8px;
-    margin: 20px 0;
-   }
-   .leaderboard-section {
-    margin: 30px 0;
-   }
-  </style>
- </head>
- <body>
- <div class="container-wrapper">
-  <div class="leaderboard-container">
-   <h1 class="fade-in">
-    <i class="fas fa-trophy"></i> Community Leaderboard
-   </h1>
-   <div class="nav-links fade-in">
-    <a href="{% url 'home' %}">
-     <i class="fas fa-arrow-left"></i> Dashboard
-    </a>
-    <a href="{% url 'progress' %}">
-     <i class="fas fa-chart-line"></i> My Progress
-    </a>
-    <a href="{% url 'manage_goals' %}">
-     <i class="fas fa-bullseye"></i> Goals
-    </a>
-   </div>
-   <div class="info-box fade-in">
-    <p style="margin: 0; color: var(--info);">
-     <strong>
-      <i class="fas fa-shield-alt"></i> Privacy Notice:
-     </strong>
-     All leaderboard data is anonymous. No personal information is displayed to protect user privacy.
-    </p>
-   </div>
-   <div class="leaderboard-section fade-in">
-    <h2>
-     <i class="fas fa-dumbbell"></i> Top Lifts by Exercise
-    </h2>
-    <p style="color: var(--text-muted); margin-bottom: 20px;">
-     Highest recorded weights across all users
-    </p>
-    {% if top_lifts %}
-    <table class="leaderboard-table">
-     <thead>
-      <tr>
-       <th style="width: 80px;">
-        <i class="fas fa-medal"></i> Rank
-       </th>
-       <th>
-        <i class="fas fa-dumbbell"></i> Exercise
-       </th>
-       <th>
-        <i class="fas fa-weight-hanging"></i> Max Weight
-       </th>
-       <th>
-        <i class="fas fa-user-secret"></i> Lifter
-       </th>
-       <th>
-        <i class="far fa-calendar"></i> Date
-       </th>
-      </tr>
-     </thead>
-     <tbody>
-      {% for lift in top_lifts %}
-      <tr>
-       <td>
-        {% if forloop.counter == 1 %}
-        <i class="fas fa-crown" style="color: gold;"></i>
-        {% elif forloop.counter == 2 %}
-        <i class="fas fa-medal" style="color: silver;"></i>
-        {% elif forloop.counter == 3 %}
-        <i class="fas fa-medal" style="color: #cd7f32;"></i>
-        {% else %}
-        #{{ forloop.counter }}
-        {% endif %}
-       </td>
-       <td>
-        <strong>{{ lift.exercise_name }}</strong>
-       </td>
-       <td>
-        {{ lift.max_weight }} lbs
-       </td>
-       <td>
-        Anonymous #{{ lift.user_id }}
-       </td>
-       <td>
-        {{ lift.date|date:"M d, Y" }}
-       </td>
-      </tr>
-      {% endfor %}
-     </tbody>
-    </table>
-    {% else %}
-    <div class="empty-state">
-     <i class="fas fa-trophy"></i>
-     <p>No lift data yet. Be the first to set a record!</p>
+<head>
+    <link href="{% static 'stylesheets/workoutware.css' %}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <title>Leaderboard</title>
+</head>
+<body>
+    <div class="container-wrapper">
+        <h1 class="fade-in">
+            <i class="fas fa-trophy"></i> WorkoutWare Leaderboard
+        </h1>
+        
+        <div class="nav-links fade-in">
+            <a href="{% url 'home' %}">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <a href="{% url 'log_workout' %}">
+                <i class="fas fa-dumbbell"></i> Log Workout
+            </a>
+            <a href="{% url 'progress' %}">
+                <i class="fas fa-chart-line"></i> Progress
+            </a>
+        </div>
+
+        <!-- Global Rankings Section -->
+        <div class="section-header fade-in">
+            <h2>
+                <i class="fas fa-medal"></i> Global Rankings
+            </h2>
+            <p>
+                Top performers across WorkoutWare
+            </p>
+        </div>
+
+        <div class="leaderboard-toggle-container fade-in">
+            <div class="leaderboard-toggle">
+                <button class="toggle-btn active" onclick="switchRanking('streak')" id="streakBtn">
+                    <i class="fas fa-fire"></i> Longest Streak
+                </button>
+                <button class="toggle-btn" onclick="switchRanking('workouts')" id="workoutsBtn">
+                    <i class="fas fa-dumbbell"></i> Most Workouts
+                </button>
+            </div>
+        </div>
+
+        <!-- Streak Leaderboard -->
+        <div id="streakLeaderboard" class="leaderboard-table-container fade-in">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-hashtag"></i> Rank</th>
+                        <th><i class="fas fa-user"></i> User</th>
+                        <th><i class="fas fa-fire"></i> Streak (Days)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in streak_leaders %}
+                    <tr class="leaderboard-row {% if forloop.counter <= 3 %}rank-{{ forloop.counter }}{% endif %}">
+                        <td class="rank-cell">
+                            {% if forloop.counter == 1 %}
+                                <span class="rank-badge gold"><i class="fas fa-crown"></i> 1</span>
+                            {% elif forloop.counter == 2 %}
+                                <span class="rank-badge silver"><i class="fas fa-medal"></i> 2</span>
+                            {% elif forloop.counter == 3 %}
+                                <span class="rank-badge bronze"><i class="fas fa-award"></i> 3</span>
+                            {% else %}
+                                <span class="rank-number">{{ forloop.counter }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="user-cell">
+                            <strong>{{ entry.username }}</strong>
+                        </td>
+                        <td class="value-cell">
+                            <span class="stat-highlight">{{ entry.streak }}</span> days
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="empty-state-inline">
+                            <i class="fas fa-inbox"></i> No data available yet
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Workouts Leaderboard -->
+        <div id="workoutsLeaderboard" class="leaderboard-table-container fade-in" style="display: none;">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-hashtag"></i> Rank</th>
+                        <th><i class="fas fa-user"></i> User</th>
+                        <th><i class="fas fa-dumbbell"></i> Total Workouts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in workout_leaders %}
+                    <tr class="leaderboard-row {% if forloop.counter <= 3 %}rank-{{ forloop.counter }}{% endif %}">
+                        <td class="rank-cell">
+                            {% if forloop.counter == 1 %}
+                                <span class="rank-badge gold"><i class="fas fa-crown"></i> 1</span>
+                            {% elif forloop.counter == 2 %}
+                                <span class="rank-badge silver"><i class="fas fa-medal"></i> 2</span>
+                            {% elif forloop.counter == 3 %}
+                                <span class="rank-badge bronze"><i class="fas fa-award"></i> 3</span>
+                            {% else %}
+                                <span class="rank-number">{{ forloop.counter }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="user-cell">
+                            <strong>{{ entry.username }}</strong>
+                        </td>
+                        <td class="value-cell">
+                            <span class="stat-highlight">{{ entry.total_workouts }}</span> workouts
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="empty-state-inline">
+                            <i class="fas fa-inbox"></i> No data available yet
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Exercise PR Rankings -->
+        <div class="section-header fade-in" style="margin-top: 50px;">
+            <h2>
+                <i class="fas fa-chart-bar"></i> Exercise Personal Records
+            </h2>
+            <p>
+                Top lifters by exercise
+            </p>
+        </div>
+
+        <div class="chart-controls form-container fade-in">
+            <label for="exerciseSelect">
+                <i class="fas fa-list"></i> Select Exercise
+            </label>
+            <select id="exerciseSelect" onchange="loadExerciseLeaderboard()">
+                <option value="">-- Choose an exercise --</option>
+                {% for ex in logged_exercises %}
+                <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="exerciseLeaderboardContainer" style="display: none;">
+            <div class="leaderboard-table-container fade-in">
+                <h3 id="exerciseLeaderboardTitle" style="margin-bottom: 20px; text-align: center;">
+                    <i class="fas fa-dumbbell"></i> Loading...
+                </h3>
+                <table class="leaderboard-table" id="exerciseLeaderboardTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> Rank</th>
+                            <th><i class="fas fa-user"></i> User</th>
+                            <th><i class="fas fa-weight-hanging"></i> Personal Best</th>
+                            <th><i class="fas fa-redo"></i> Reps</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exerciseLeaderboardBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- User Profile Lookup -->
+        <div class="section-header fade-in" style="margin-top: 50px;">
+            <h2>
+                <i class="fas fa-user-circle"></i> User Profile Lookup
+            </h2>
+            <p>
+                View any user's stats and achievements
+            </p>
+        </div>
+
+        <div class="chart-controls form-container fade-in">
+            <label for="userSelect">
+                <i class="fas fa-search"></i> Select User
+            </label>
+            <select id="userSelect" onchange="loadUserProfile()">
+                <option value="">-- Choose a user --</option>
+                {% for user in all_users %}
+                <option value="{{ user.user_id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="userProfileContainer" style="display: none;">
+            <div class="user-profile-card fade-in">
+                <div class="user-profile-header">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3 id="profileUsername">Loading...</h3>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire-flame-curved"></i>
+                        </div>
+                        <div class="stat-number" id="profileStreak">0</div>
+                        <div class="stat-label">Day Workout Streak</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <div class="stat-number" id="profileTotalWorkouts">0</div>
+                        <div class="stat-label">Total Workouts</div>
+                    </div>
+                </div>
+
+                <div class="achievements-section" style="margin-top: 30px;">
+                    <h2>
+                        <i class="fas fa-medal"></i> Recent Personal Records
+                    </h2>
+                    <div id="profilePRsList" class="pr-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="achievements-section" style="margin-top: 30px;">
+                    <h2>
+                        <i class="fas fa-crosshairs"></i> Active Goals
+                    </h2>
+                    <div id="profileGoalsList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    {% endif %}
-   </div>
-   <div class="leaderboard-section fade-in">
-    <h2>
-     <i class="fas fa-fire"></i> Most Active Users
-    </h2>
-    <p style="color: var(--text-muted); margin-bottom: 20px;">
-     Top users by workout count this month
-    </p>
-    {% if most_active %}
-    <table class="leaderboard-table">
-     <thead>
-      <tr>
-       <th style="width: 80px;">
-        <i class="fas fa-medal"></i> Rank
-       </th>
-       <th>
-        <i class="fas fa-user-secret"></i> User
-       </th>
-       <th>
-        <i class="fas fa-clipboard-list"></i> Workouts
-       </th>
-       <th>
-        <i class="fas fa-fire-flame-curved"></i> Streak
-       </th>
-      </tr>
-     </thead>
-     <tbody>
-      {% for user in most_active %}
-      <tr>
-       <td>
-        {% if forloop.counter == 1 %}
-        <i class="fas fa-crown" style="color: gold;"></i>
-        {% elif forloop.counter == 2 %}
-        <i class="fas fa-medal" style="color: silver;"></i>
-        {% elif forloop.counter == 3 %}
-        <i class="fas fa-medal" style="color: #cd7f32;"></i>
-        {% else %}
-        #{{ forloop.counter }}
-        {% endif %}
-       </td>
-       <td>
-        Anonymous #{{ user.user_id }}
-       </td>
-       <td>
-        {{ user.workout_count }}
-       </td>
-       <td>
-        {{ user.streak_days }} days
-       </td>
-      </tr>
-      {% endfor %}
-     </tbody>
-    </table>
-    {% else %}
-    <div class="empty-state">
-     <i class="fas fa-users"></i>
-     <p>No activity data yet.</p>
-    </div>
-    {% endif %}
-   </div>
-  </div>
-  </div>
+
+    <script>
+        // Toggle between streak and workouts leaderboard
+        function switchRanking(type) {
+            const streakBoard = document.getElementById('streakLeaderboard');
+            const workoutsBoard = document.getElementById('workoutsLeaderboard');
+            const streakBtn = document.getElementById('streakBtn');
+            const workoutsBtn = document.getElementById('workoutsBtn');
+
+            if (type === 'streak') {
+                streakBoard.style.display = 'block';
+                workoutsBoard.style.display = 'none';
+                streakBtn.classList.add('active');
+                workoutsBtn.classList.remove('active');
+            } else {
+                streakBoard.style.display = 'none';
+                workoutsBoard.style.display = 'block';
+                streakBtn.classList.remove('active');
+                workoutsBtn.classList.add('active');
+            }
+        }
+
+        // Load exercise-specific leaderboard
+        async function loadExerciseLeaderboard() {
+            const exerciseId = document.getElementById('exerciseSelect').value;
+            const container = document.getElementById('exerciseLeaderboardContainer');
+            
+            if (!exerciseId) {
+                container.style.display = 'none';
+                return;
+            }
+
+            const exerciseName = document.getElementById('exerciseSelect').selectedOptions[0].text;
+            document.getElementById('exerciseLeaderboardTitle').innerHTML = 
+                `<i class="fas fa-dumbbell"></i> ${exerciseName} - Top Performers`;
+            
+            try {
+                const response = await fetch(`/leaderboard/exercise/${exerciseId}/`);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('exerciseLeaderboardBody');
+                tbody.innerHTML = '';
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="empty-state-inline">
+                                <i class="fas fa-inbox"></i> No records for this exercise yet
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    data.forEach((entry, index) => {
+                        const rank = index + 1;
+                        const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                        let rankDisplay = '';
+                        
+                        if (rank === 1) {
+                            rankDisplay = `<span class="rank-badge gold"><i class="fas fa-crown"></i> 1</span>`;
+                        } else if (rank === 2) {
+                            rankDisplay = `<span class="rank-badge silver"><i class="fas fa-medal"></i> 2</span>`;
+                        } else if (rank === 3) {
+                            rankDisplay = `<span class="rank-badge bronze"><i class="fas fa-award"></i> 3</span>`;
+                        } else {
+                            rankDisplay = `<span class="rank-number">${rank}</span>`;
+                        }
+                        
+                        const row = `
+                            <tr class="leaderboard-row ${rankClass}">
+                                <td class="rank-cell">${rankDisplay}</td>
+                                <td class="user-cell"><strong>${entry.username}</strong></td>
+                                <td class="value-cell"><span class="stat-highlight">${entry.pb_weight}</span> lbs</td>
+                                <td class="reps-cell"><small>${entry.reps} reps</small></td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                }
+                
+                container.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading exercise leaderboard:', error);
+                container.style.display = 'none';
+            }
+        }
+
+        // Load user profile
+        async function loadUserProfile() {
+            const userId = document.getElementById('userSelect').value;
+            const container = document.getElementById('userProfileContainer');
+            
+            if (!userId) {
+                container.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/leaderboard/user/${userId}/`);
+                const data = await response.json();
+                
+                // Update profile header
+                document.getElementById('profileUsername').textContent = data.username;
+                document.getElementById('profileStreak').textContent = data.streak;
+                document.getElementById('profileTotalWorkouts').textContent = data.total_workouts;
+                
+                // Update PRs
+                const prsList = document.getElementById('profilePRsList');
+                prsList.innerHTML = '';
+                
+                if (data.recent_prs.length === 0) {
+                    prsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-trophy"></i>
+                            <p>No PRs recorded yet</p>
+                        </div>
+                    `;
+                } else {
+                    data.recent_prs.forEach(pr => {
+                        const improvement = pr.previous_pr ? 
+                            `<span style="color: var(--text-muted);">(+${pr.improvement.toFixed(1)} lbs from ${pr.previous_pr} lbs)</span>` : '';
+                        
+                        const prItem = `
+                            <div class="pr-item">
+                                <strong>${pr.exercise_name}</strong><br/>
+                                <span style="font-size: 1.3em; color: var(--success);">${pr.pb_weight} lbs</span>
+                                ${improvement}<br/>
+                                <small style="color: var(--text-muted);">
+                                    <i class="far fa-calendar"></i> ${pr.pb_date}
+                                </small>
+                            </div>
+                        `;
+                        prsList.innerHTML += prItem;
+                    });
+                }
+                
+                // Update goals
+                const goalsList = document.getElementById('profileGoalsList');
+                goalsList.innerHTML = '';
+                
+                if (data.active_goals.length === 0) {
+                    goalsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-bullseye"></i>
+                            <p>No active goals</p>
+                        </div>
+                    `;
+                } else {
+                    data.active_goals.forEach(goal => {
+                        const targetDate = goal.target_date ? ` by ${goal.target_date}` : '';
+                        const progressPercent = goal.current_value && goal.target_value ? 
+                            Math.min(100, Math.round((goal.current_value / goal.target_value) * 100)) : 0;
+                        
+                        let progressBar = '';
+                        if (goal.current_value) {
+                            progressBar = `
+                                <div class="progress-mini">
+                                    <div class="progress-mini-fill" style="width: ${progressPercent}%;"></div>
+                                </div>
+                                <small>${goal.current_value} / ${goal.target_value} ${goal.unit} (${progressPercent}%)</small>
+                            `;
+                        } else {
+                            progressBar = `
+                                <small style="color: var(--text-muted);">
+                                    <i class="fas fa-hourglass-start"></i> Not started yet
+                                </small>
+                            `;
+                        }
+                        
+                        const goalItem = `
+                            <div class="goal-item">
+                                <strong>${goal.goal_description}</strong><br/>
+                                <span style="color: var(--text-muted);">
+                                    <i class="fas fa-flag-checkered"></i> Target: ${goal.target_value} ${goal.unit}${targetDate}
+                                </span><br/>
+                                ${progressBar}
+                            </div>
+                        `;
+                        goalsList.innerHTML += goalItem;
+                    });
+                }
+                
+                container.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                container.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -41,7 +41,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.utils import timezone
 from django.db import connection
-from django.db.models import Count, Avg, Max, Sum, Q
+from django.db.models import Count, Avg, Max, Sum, Q, F
 from django.http import JsonResponse
 from datetime import datetime, date, timedelta
 from decimal import Decimal
@@ -1271,3 +1271,226 @@ def progress_view(request):
             "neglected_muscle_group_recs": recs["neglected_muscle_groups"],
         },
     )
+
+
+# ------------------------------------------------------------------------------
+# LEADERBOARD VIEWS
+# ------------------------------------------------------------------------------
+
+@login_required
+def leaderboard(request):
+    """
+    Display global leaderboards and exercise-specific rankings.
+    
+    Shows:
+    - Top 10 users by workout streak
+    - Top 10 users by total completed workouts
+    - Dropdown for exercise-specific PR leaderboards
+    - User profile lookup functionality
+    
+    Returns:
+        HttpResponse: Rendered leaderboard page
+    """
+    # Get all users for the lookup dropdown
+    all_users = user_info.objects.filter(registered=True).order_by('username')
+    
+    # Get top 10 users by workout streak
+    users_with_workouts = user_info.objects.filter(
+        workout_sessions__completed=True,
+        workout_sessions__is_template=False
+    ).distinct()
+    
+    streak_leaders = []
+    for user_record in users_with_workouts:
+        streak = calculate_workout_streak(user_record.user_id)
+        if streak > 0:
+            streak_leaders.append({
+                'username': user_record.username,
+                'user_id': user_record.user_id,
+                'streak': streak
+            })
+    
+    # Sort by streak descending and take top 10
+    streak_leaders = sorted(streak_leaders, key=lambda x: x['streak'], reverse=True)[:10]
+    
+    # Get top 10 users by total workouts
+    workout_leaders = user_info.objects.filter(
+        workout_sessions__completed=True,
+        workout_sessions__is_template=False
+    ).annotate(
+        total_workouts=Count('workout_sessions', filter=Q(
+            workout_sessions__completed=True,
+            workout_sessions__is_template=False
+        ))
+    ).order_by('-total_workouts')[:10]
+    
+    # Convert to list of dicts for consistency
+    workout_leaders_list = [
+        {
+            'username': user.username,
+            'user_id': user.user_id,
+            'total_workouts': user.total_workouts
+        }
+        for user in workout_leaders
+    ]
+    
+    # Get exercises that have PRs recorded in user_pb table
+    # Only shows exercises where at least one user has a personal record
+    logged_exercises = exercise.objects.filter(
+        user_pb__pb_weight__isnull=False
+    ).distinct().order_by('name')
+    
+    context = {
+        'streak_leaders': streak_leaders,
+        'workout_leaders': workout_leaders_list,
+        'logged_exercises': logged_exercises,
+        'all_users': all_users,
+    }
+    
+    return render(request, 'leaderboard.html', context)
+
+
+@login_required
+def get_exercise_leaderboard(request, exercise_id):
+    """
+    API endpoint to get top 10 users for a specific exercise by PR weight.
+    
+    Args:
+        exercise_id (int): The exercise to get rankings for
+        
+    Returns:
+        JsonResponse: List of top 10 users with their PRs and rep counts
+    """
+    try:
+        # Get the most recent PR for each user for this exercise
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT 
+                    ui.username,
+                    pb.pb_weight,
+                    pb.pb_reps
+                FROM user_pb pb
+                JOIN user_info ui ON pb.user_id = ui.user_id
+                WHERE pb.exercise_id = %s
+                  AND pb.pr_id IN (
+                      SELECT MAX(pr_id) 
+                      FROM user_pb 
+                      WHERE exercise_id = %s 
+                      GROUP BY user_id
+                  )
+                ORDER BY pb.pb_weight DESC, pb.pb_reps DESC
+                LIMIT 10
+                """,
+                [exercise_id, exercise_id]
+            )
+            results = cursor.fetchall()
+        
+        leaderboard_data = [
+            {
+                'username': row[0],
+                'pb_weight': float(row[1]) if row[1] else 0,
+                'reps': row[2] if row[2] else 0
+            }
+            for row in results
+        ]
+        
+        return JsonResponse(leaderboard_data, safe=False)
+    
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error in get_exercise_leaderboard: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def get_user_profile_data(request, user_id):
+    """
+    API endpoint to get detailed profile data for a specific user.
+    
+    Args:
+        user_id (int): The user_info ID to fetch data for
+        
+    Returns:
+        JsonResponse: User's streak, workout count, recent PRs, and active goals
+    """
+    try:
+        user_record = user_info.objects.get(user_id=user_id)
+    except user_info.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+    
+    try:
+        # Calculate streak
+        streak = calculate_workout_streak(user_id)
+        
+        # Get total workouts
+        total_workouts = workout_sessions.objects.filter(
+            user_id=user_id,
+            completed=True,
+            is_template=False
+        ).count()
+        
+        # Get recent PRs (last 5)
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT e.name, pb.pb_weight, pb.pb_date, pb.previous_pr
+                FROM user_pb pb
+                JOIN exercise e ON pb.exercise_id = e.exercise_id
+                WHERE pb.user_id = %s
+                  AND pb.pr_id IN (
+                    SELECT MAX(pr_id) FROM user_pb
+                    WHERE user_id = %s GROUP BY exercise_id
+                  )
+                ORDER BY pb.pb_date DESC LIMIT 5
+                """,
+                [user_id, user_id]
+            )
+            pr_rows = cursor.fetchall()
+        
+        recent_prs = [
+            {
+                'exercise_name': row[0],
+                'pb_weight': float(row[1]) if row[1] else 0,
+                'pb_date': row[2].strftime('%b %d, %Y'),
+                'previous_pr': float(row[3]) if row[3] else None,
+                'improvement': (float(row[1]) - float(row[3])) if (row[1] and row[3]) else None
+            }
+            for row in pr_rows
+        ]
+        
+        # Get active goals - use start_date instead of created_date
+        active_goals = goals.objects.filter(
+            user_id=user_id,
+            status='active'
+        ).order_by('-start_date')[:5]
+        
+        goals_list = [
+            {
+                'goal_description': goal.goal_description,
+                'target_value': float(goal.target_value) if goal.target_value else None,
+                'current_value': float(goal.current_value) if goal.current_value else None,
+                'unit': goal.unit or '',
+                'target_date': goal.target_date.strftime('%b %d') if goal.target_date else None
+            }
+            for goal in active_goals
+        ]
+        
+        profile_data = {
+            'username': user_record.username,
+            'streak': streak,
+            'total_workouts': total_workouts,
+            'recent_prs': recent_prs,
+            'active_goals': goals_list
+        }
+        
+        return JsonResponse(profile_data)
+    
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error in get_user_profile_data: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)

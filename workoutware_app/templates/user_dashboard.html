@@ -9,8 +9,7 @@
   </title>
  </head>
  <body>
-  <div class="container-wrapper">
-   <div class="dashboard-header fade-in">
+  <div class="dashboard-header fade-in">
    <div>
     <h1>
      Welcome, {{ user.username }}!
@@ -19,12 +18,17 @@
      Your Fitness Journey Starts Here
     </p>
    </div>
-   <form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <button class="logout-btn" type="submit">
-     <i class="fas fa-sign-out-alt"></i> Log Out
-    </button>
-   </form>
+   <div class="header-actions">
+    <a href="{% url 'leaderboard' %}" class="header-btn">
+     <i class="fas fa-trophy"></i> Leaderboard
+    </a>
+    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+     {% csrf_token %}
+     <button class="logout-btn" type="submit">
+      <i class="fas fa-sign-out-alt"></i> Log Out
+     </button>
+    </form>
+   </div>
   </div>
   <div class="stats-grid">
    <div class="stat-box fade-in fade-in-delay-1">

@@ -62,4 +62,9 @@ urlpatterns = [
     
     # Body Stats
     path('log_stats/', views.log_body_stats, name="log_body_stats"),
+
+    # Leaderboard
+    path('leaderboard/', views.leaderboard, name='leaderboard'),
+    path('leaderboard/exercise/<int:exercise_id>/', views.get_exercise_leaderboard, name='get_exercise_leaderboard'),
+    path('leaderboard/user/<int:user_id>/', views.get_user_profile_data, name='get_user_profile_data'),
 ]
