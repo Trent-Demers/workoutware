@@ -139,6 +139,8 @@ erDiagram
   EXERCISE ||--o{ SESSION_EXERCISES : used_in
   EXERCISE ||--o{ EXERCISE_TARGET_ASSOCIATION : linked_with
   EXERCISE ||--o{ EXERCISE_HISTORY_SUMMARY : "summarized in history"
+  EXERCISE ||--o{ USER_PB : "has personal records"
+  EXERCISE ||--o| GOALS : "optional exercise goal"
   TARGET ||--o{ EXERCISE_TARGET_ASSOCIATION : "has targets"
   USER ||--o{ PROGRESS : "tracks performance"
   EXERCISE ||--o{ PROGRESS : "progress per exercise"
