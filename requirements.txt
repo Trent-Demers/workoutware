@@ -1,3 +1,36 @@
+# ================================================================================
+# WORKOUTWARE PYTHON DEPENDENCIES
+# ================================================================================
+# This file contains all Python packages required to run Workoutware.
+#
+# SETUP INSTRUCTIONS:
+#   1. Ensure Python 3.10+ is installed
+#   2. Create and activate virtual environment:
+#      python -m venv .venv
+#      Windows: .venv\Scripts\activate
+#      Mac/Linux: source .venv/bin/activate
+#   3. Upgrade pip to latest version:
+#      pip install --upgrade pip
+#   4. Install all dependencies:
+#      pip install -r requirements.txt
+#
+# DEPENDENCY NOTES:
+#   - Django 5.2.7: Web framework for backend API
+#   - mysqlclient 2.2.7: MySQL database adapter for Django
+#   - mysql-connector-python 9.2.0: MySQL connector for Streamlit client
+#   - streamlit 1.41.1: Frontend UI framework
+#   - pandas 2.2.3: Data manipulation for analytics
+#   - pillow 11.1.0: Image processing (if needed for future features)
+#
+# TROUBLESHOOTING:
+#   - If mysqlclient installation fails on Mac, install MySQL first:
+#     brew install mysql
+#   - If mysqlclient installation fails on Linux, install:
+#     sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
+#   - If installation fails, try upgrading pip first
+#
+# ================================================================================
+
 asgiref==3.10.0
 Django==5.2.7
 mysqlclient==2.2.7

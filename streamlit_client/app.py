@@ -1,6 +1,66 @@
 """
 Streamlit front-end for Workoutware.
 
+================================================================================
+SETUP INSTRUCTIONS - READ BEFORE RUNNING
+================================================================================
+
+PREREQUISITES:
+    1. Complete Django setup first (see manage.py for instructions)
+    2. MySQL database must be running and accessible
+    3. Database schema must be initialized (run sql/workoutware_db_setup.sql)
+    4. Python virtual environment activated
+    5. All dependencies installed (pip install -r requirements.txt)
+
+DATABASE CONFIGURATION:
+    This Streamlit client connects to the same MySQL database as Django.
+    Configure via environment variables (defaults shown below):
+    
+    DB_HOST=127.0.0.1          # MySQL host address
+    DB_PORT=3306               # MySQL port
+    DB_NAME=workoutware        # Database name
+    DB_USER=root               # MySQL username
+    DB_PASSWORD=Rutgers123     # MySQL password
+
+    To set environment variables:
+        Windows (PowerShell):
+            $env:DB_HOST="127.0.0.1"
+            $env:DB_PASSWORD="your_password"
+        
+        Mac/Linux:
+            export DB_HOST=127.0.0.1
+            export DB_PASSWORD=your_password
+
+RUNNING THE APPLICATION:
+    1. Ensure Django server is NOT required for Streamlit (it connects directly to MySQL)
+    2. Ensure MySQL database is running:
+       docker ps (should show workoutware container)
+    3. Activate virtual environment:
+       Windows: .venv\Scripts\activate
+       Mac/Linux: source .venv/bin/activate
+    4. Run Streamlit:
+       streamlit run streamlit_client/app.py
+    5. Application will open in browser at http://localhost:8501/
+
+FEATURES AVAILABLE:
+    - User Dashboard: View KPIs, streaks, recent PRs, active goals
+    - Log Workout: Create sessions, add exercises, log sets with validation
+    - Progress & Analytics: View volume charts, bodyweight trends, weekly metrics
+    - Goals: Create and track fitness goals with progress updates
+    - Body Stats: Log body measurements (weight, neck, waist, hips, body fat %)
+    - Completed Workouts: View and manage completed workout sessions
+    - Admin Dashboard: Manage exercise library (admin users only)
+
+USER MANAGEMENT:
+    - Users must be created in the database first (via Django admin or SQL)
+    - First user in database will be auto-selected on startup
+    - Use sidebar to switch between users during development
+
+TROUBLESHOOTING:
+    - "No users found": Create users via Django admin or seed database
+    - Connection errors: Verify MySQL is running and credentials are correct
+    - Import errors: Ensure virtual environment is activated and dependencies installed
+
 Run with:
     streamlit run streamlit_client/app.py
 """

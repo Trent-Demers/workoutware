@@ -1,3 +1,56 @@
+-- ================================================================================
+-- WORKOUTWARE DATABASE SETUP SCRIPT
+-- ================================================================================
+-- This script creates the workoutware database and all required tables.
+--
+-- SETUP INSTRUCTIONS:
+--   1. Ensure MySQL 8.0 is running (via Docker or local installation)
+--   2. MySQL root user must have CREATE DATABASE privileges
+--   3. Run this script using one of the following methods:
+--
+--   METHOD 1: MySQL Command Line
+--     mysql -u root -pRutgers123 < sql/workoutware_db_setup.sql
+--
+--   METHOD 2: MySQL Workbench
+--     - Open MySQL Workbench
+--     - Connect to MySQL server (localhost:3306, user: root, password: Rutgers123)
+--     - Open this file and execute it
+--
+--   METHOD 3: DBeaver or VSCode MySQL Extension
+--     - Connect to MySQL server
+--     - Open and execute this script
+--
+--   METHOD 4: Docker MySQL Container
+--     docker exec -i workoutware mysql -uroot -pRutgers123 < sql/workoutware_db_setup.sql
+--
+-- VERIFICATION:
+--   After running this script, verify tables were created:
+--     mysql -u root -pRutgers123 -e "USE workoutware; SHOW TABLES;"
+--
+-- EXPECTED TABLES:
+--   - user_info
+--   - exercise
+--   - target
+--   - exercise_target_association
+--   - user_pb
+--   - workout_sessions
+--   - session_exercises
+--   - sets
+--   - goals
+--   - progress
+--   - data_validation
+--   - workout_plan
+--   - daily_workout_plan
+--   - user_stats_log
+--
+-- NEXT STEPS:
+--   After running this script:
+--   1. Run Django migrations: python manage.py makemigrations && python manage.py migrate
+--   2. Optionally load sample data: mysql -u root -pRutgers123 < sql/sample_data.sql
+--   3. Create admin user: python manage.py createsuperuser
+--
+-- ================================================================================
+
 DROP DATABASE IF EXISTS workoutware;
 CREATE DATABASE workoutware;
 USE workoutware;

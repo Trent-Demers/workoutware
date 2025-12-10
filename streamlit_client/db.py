@@ -3,6 +3,39 @@ MySQL connection utilities for the Streamlit client.
 
 Connections are pooled and retried to avoid stale sockets. Each helper uses
 dictionary cursors for ergonomic access in the UI layer.
+
+================================================================================
+SETUP INSTRUCTIONS - DATABASE CONNECTION
+================================================================================
+
+PREREQUISITES:
+    1. MySQL database must be running and accessible
+    2. Database schema must be initialized (run sql/workoutware_db_setup.sql)
+    3. Database credentials configured (see streamlit_client/config.py)
+
+CONNECTION POOL CONFIGURATION:
+    - Pool size: 8 connections (configurable in _get_pool function)
+    - Auto-commit: Disabled (manual commit/rollback)
+    - Retry logic: 3 attempts with exponential backoff
+
+VERIFYING CONNECTION:
+    If connection fails, check:
+    1. MySQL container is running: docker ps
+    2. Database exists: mysql -u root -p -e "SHOW DATABASES;"
+    3. Credentials match config.py settings
+    4. Network connectivity to MySQL host
+
+TROUBLESHOOTING CONNECTION ERRORS:
+    - "Can't connect to MySQL server": Check if MySQL is running
+    - "Access denied": Verify username/password in config.py
+    - "Unknown database": Run sql/workoutware_db_setup.sql first
+    - "Connection pool exhausted": Increase pool_size in _get_pool()
+
+TESTING CONNECTION:
+    Test database connection from Python:
+    from streamlit_client.db import get_connection
+    with get_connection() as conn:
+        print("Connection successful!")
 """
 
 from contextlib import contextmanager

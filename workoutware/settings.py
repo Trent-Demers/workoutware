@@ -14,6 +14,50 @@ including:
 
 The file reads optional overrides from `local_settings.py` when present.
 It is the central configuration file that controls how the framework behaves.
+
+================================================================================
+SETUP INSTRUCTIONS - DATABASE CONFIGURATION
+================================================================================
+
+DATABASE SETUP REQUIREMENTS:
+    1. MySQL 8.0 must be running (via Docker or local installation)
+    2. Database 'workoutware' must exist (created via sql/workoutware_db_setup.sql)
+    3. MySQL user must have appropriate permissions
+
+DEFAULT DATABASE CONFIGURATION:
+    - Database Name: workoutware
+    - User: root
+    - Password: Rutgers123 (CHANGE IN PRODUCTION!)
+    - Host: 127.0.0.1 (localhost)
+    - Port: 3306
+
+TO MODIFY DATABASE SETTINGS:
+    1. Edit the DATABASES dictionary below (lines 97-109)
+    2. Or create a local_settings.py file in this directory with:
+       DATABASES = {
+           'default': {
+               'ENGINE': 'django.db.backends.mysql',
+               'NAME': 'your_database_name',
+               'USER': 'your_username',
+               'PASSWORD': 'your_password',
+               'HOST': 'your_host',
+               'PORT': 'your_port',
+           }
+       }
+
+DOCKER MYSQL SETUP:
+    docker pull mysql:8.0
+    docker run --name workoutware -e MYSQL_ROOT_PASSWORD=Rutgers123 -p 3306:3306 -d mysql:8.0
+
+VERIFY DATABASE CONNECTION:
+    After setup, test connection with:
+    python manage.py dbshell
+    (Should connect to MySQL prompt)
+
+SECURITY NOTES:
+    - DEBUG=True is set for development only - NEVER use in production
+    - SECRET_KEY should be changed for production deployments
+    - Database password should be stored in environment variables in production
 """
 """
 Django settings for workoutware project.

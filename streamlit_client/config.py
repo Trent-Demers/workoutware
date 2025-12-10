@@ -4,6 +4,60 @@ Configuration helpers for the Streamlit client.
 Values are sourced from environment variables so the app can point at the
 existing MySQL instance without code changes. Defaults are safe for local
 docker-compose usage.
+
+================================================================================
+SETUP INSTRUCTIONS - CONFIGURATION
+================================================================================
+
+ENVIRONMENT VARIABLES:
+    Configure database connection via environment variables. If not set, defaults
+    are used (shown below).
+
+    DB_HOST: MySQL host address (default: 127.0.0.1)
+    DB_PORT: MySQL port number (default: 3306)
+    DB_NAME: Database name (default: workoutware)
+    DB_USER: MySQL username (default: root)
+    DB_PASSWORD: MySQL password (default: Rutgers123)
+
+SETTING ENVIRONMENT VARIABLES:
+
+    Windows (PowerShell):
+        $env:DB_HOST="127.0.0.1"
+        $env:DB_PORT="3306"
+        $env:DB_NAME="workoutware"
+        $env:DB_USER="root"
+        $env:DB_PASSWORD="Rutgers123"
+
+    Windows (Command Prompt):
+        set DB_HOST=127.0.0.1
+        set DB_PORT=3306
+        set DB_NAME=workoutware
+        set DB_USER=root
+        set DB_PASSWORD=Rutgers123
+
+    Mac/Linux:
+        export DB_HOST=127.0.0.1
+        export DB_PORT=3306
+        export DB_NAME=workoutware
+        export DB_USER=root
+        export DB_PASSWORD=Rutgers123
+
+    Using .env file (recommended):
+        Create a .env file in project root:
+        DB_HOST=127.0.0.1
+        DB_PORT=3306
+        DB_NAME=workoutware
+        DB_USER=root
+        DB_PASSWORD=Rutgers123
+
+VALIDATION SETTINGS:
+    PR_OUTLIER_PCT: Percentage threshold for PR detection (default: 0.15 = 15%)
+    SUSPICIOUS_LOW_PCT: Percentage threshold for suspiciously low values (default: 0.30 = 30%)
+
+IMPORTANT:
+    - Database credentials must match Django settings.py configuration
+    - Ensure MySQL container is running before starting Streamlit
+    - Default password 'Rutgers123' should be changed in production
 """
 
 from dataclasses import dataclass

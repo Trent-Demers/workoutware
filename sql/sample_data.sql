@@ -1,3 +1,40 @@
+-- ================================================================================
+-- WORKOUTWARE SAMPLE DATA SCRIPT
+-- ================================================================================
+-- This script populates the workoutware database with sample data for testing
+-- and development purposes.
+--
+-- SETUP INSTRUCTIONS:
+--   1. Run workoutware_db_setup.sql FIRST to create the database schema
+--   2. This script is OPTIONAL - only run if you want sample data
+--   3. Run using one of the following methods:
+--
+--   METHOD 1: MySQL Command Line
+--     mysql -u root -pRutgers123 < sql/sample_data.sql
+--
+--   METHOD 2: MySQL Workbench
+--     - Open MySQL Workbench
+--     - Connect to MySQL server
+--     - Open this file and execute it
+--
+--   METHOD 3: Docker MySQL Container
+--     docker exec -i workoutware mysql -uroot -pRutgers123 < sql/sample_data.sql
+--
+-- SAMPLE DATA INCLUDES:
+--   - User accounts (including admin user: jnguyen)
+--   - Exercise library entries
+--   - Sample workout sessions
+--   - Sample goals and progress data
+--   - Body stats logs
+--
+-- IMPORTANT:
+--   - This will INSERT data into existing tables
+--   - If you want to start fresh, drop and recreate database first
+--   - Sample passwords are hashed - use Django admin or create new users
+--   - Admin user credentials: username='jnguyen', user_type='admin'
+--
+-- ================================================================================
+
 USE workoutware;
 
 -- 

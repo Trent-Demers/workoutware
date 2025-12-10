@@ -8,6 +8,37 @@ It configures the Django environment and returns the ASGI application object
 that servers like Daphne or Uvicorn use to run the project.
 
 Referenced by: asgi.py is used in production deployments where ASGI is supported.
+
+================================================================================
+SETUP INSTRUCTIONS - ASYNC SERVER DEPLOYMENT
+================================================================================
+
+DEVELOPMENT:
+    For development, use Django's built-in server:
+    python manage.py runserver
+
+PRODUCTION DEPLOYMENT (ASGI):
+    This file enables async features. To deploy with ASGI server:
+
+    1. Install ASGI server (e.g., Uvicorn or Daphne):
+       pip install uvicorn
+       # or
+       pip install daphne
+
+    2. Run with Uvicorn:
+       uvicorn workoutware.asgi:application --host 0.0.0.0 --port 8000
+
+    3. Run with Daphne:
+       daphne -b 0.0.0.0 -p 8000 workoutware.asgi:application
+
+WHEN TO USE ASGI:
+    - If you need WebSocket support
+    - If you need async/await features
+    - For modern async Django applications
+
+NOTE:
+    Currently, Workoutware uses standard Django views (synchronous).
+    ASGI is included for future async feature support.
 """
 """
 ASGI config for workoutware project.
