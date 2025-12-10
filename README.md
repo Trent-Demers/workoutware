@@ -64,6 +64,7 @@ Workoutware is a Django-based exercise tracking application backed by a relation
 - To see the use of the application, **user must sign up**
 
 ## Streamlit Client (End-user UI)
+- **The Streamlit application is intended for future use/implementation.**
 - Uses the same MySQL instance as Django. Configure via environment variables (defaults shown):  
   `DB_HOST=127.0.0.1 DB_PORT=3306 DB_NAME=workoutware DB_USER=root DB_PASSWORD=Rutgers123`
 - Install dependencies then launch:  
