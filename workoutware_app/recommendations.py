@@ -132,18 +132,20 @@ def get_weight_increase_recommendations(user_id):
             current_weight * (1 + WEIGHT_INCREASE_PERCENT / 100.0), 2
         )
 
-        recommendations.append({
-            "exercise_name": ex.name,
-            "current_weight": current_weight,
-            "suggested_weight": suggested_weight,
-            "target_reps": target_reps,
-            "num_sets": MIN_CONSECUTIVE_SETS,
-            "message": (
-                f"For {ex.name}, you hit at least {target_reps} reps on your last "
-                f"{MIN_CONSECUTIVE_SETS} working sets at {current_weight} lbs. "
-                f"Consider increasing to ~{suggested_weight} lbs next time."
-            ),
-        })
+        if not any(rec['exercise_name'] == ex.name for rec in recommendations):
+
+            recommendations.append({
+                "exercise_name": ex.name,
+                "current_weight": current_weight,
+                "suggested_weight": suggested_weight,
+                "target_reps": target_reps,
+                "num_sets": MIN_CONSECUTIVE_SETS,
+                "message": (
+                    f"For {ex.name}, you hit at least {target_reps} reps on your last "
+                    f"{MIN_CONSECUTIVE_SETS} working sets at {current_weight} lbs. "
+                    f"Consider increasing to ~{suggested_weight} lbs next time."
+                ),
+            })
 
     return recommendations
 
