@@ -1216,16 +1216,16 @@ def log_body_stats(request):
             else None,
             notes=request.POST.get("notes", ""),
         )
-        return redirect("progress")
+        return redirect("log_body_stats")
 
-    recent_logs = user_stats_log.objects.filter(
+    recent_stats = user_stats_log.objects.filter(
         user_id=user_record.user_id
     ).order_by("-date")[:10]
 
     return render(
         request,
         "log_stats.html",
-        {"recent_logs": recent_logs, "today": date.today()},
+        {"recent_stats": recent_stats, "today": date.today()},
     )
 
 
