@@ -22,7 +22,9 @@ Workoutware is a Django-based exercise tracking application backed by a relation
   ```
 - Setup database
 
-  Run scripts in the _sql_ folder (can be done using MySQL Workbench, DBeaver, or through VSCode)
+  Run scripts in the _sql_ folder (can be done using MySQL Workbench, DBeaver, or through VSCode).
+    1) Run _workoutware_db_setup.sql_ to set up database and tables.
+    2) (Optional) Run _sample_data.sql_ to load sample data into existing tables.
 - Create and activate virtual environment
   ```
   python -m venv .venv
