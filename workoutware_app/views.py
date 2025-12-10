@@ -1193,7 +1193,7 @@ def log_body_stats(request):
     Renders last 10 logs.
 
     Returns:
-        HttpResponse or redirect to progress page
+        HttpResponse or redirect to log_body_stats page
     """
     user_record = get_or_create_user_record(request.user)
 
