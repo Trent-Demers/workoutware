@@ -130,14 +130,20 @@ erDiagram
   USER ||--o{ USER_STATS_LOG : logs
   USER ||--o{ USER_PB : "has personal bests"
   USER ||--o{ WORKOUT_SESSIONS : performs
+  USER ||--o{ EXERCISE_HISTORY_SUMMARY : "has exercise history"
+  USER ||--o{ WORKOUT_GOAL_LINK : "links goals to workouts"
   WORKOUT_SESSIONS ||--o{ SESSION_EXERCISES : contains
+  WORKOUT_SESSIONS ||--o{ DAILY_WORKOUT_PLAN : "referenced in plan"
+  WORKOUT_SESSIONS ||--o{ WORKOUT_GOAL_LINK : "linked to goals"
   SESSION_EXERCISES ||--o{ SETS : consists_of
   EXERCISE ||--o{ SESSION_EXERCISES : used_in
   EXERCISE ||--o{ EXERCISE_TARGET_ASSOCIATION : linked_with
+  EXERCISE ||--o{ EXERCISE_HISTORY_SUMMARY : "summarized in history"
   TARGET ||--o{ EXERCISE_TARGET_ASSOCIATION : "has targets"
   USER ||--o{ PROGRESS : "tracks performance"
   EXERCISE ||--o{ PROGRESS : "progress per exercise"
   USER ||--o{ GOALS : "sets goals"
+  GOALS ||--o{ WORKOUT_GOAL_LINK : "linked to workouts"
   USER ||--o{ WORKOUT_PLAN : "has plan"
   WORKOUT_PLAN ||--o{ DAILY_WORKOUT_PLAN : includes
   USER ||--o{ DATA_VALIDATION : validates
@@ -146,6 +152,7 @@ erDiagram
 
   USER { 
     int user_id PK
+    string username
     string first_name
     string last_name
     string address
@@ -224,7 +231,7 @@ erDiagram
     int duration_minutes
     decimal bodyweight
     boolean completed
-    int is_template
+    boolean is_template
   }
 
   SESSION_EXERCISES {
@@ -302,4 +309,24 @@ erDiagram
     int day
     string wk_day
     int session_id FK
+  }
+
+  EXERCISE_HISTORY_SUMMARY {
+    int summary_id PK
+    int user_id FK
+    int exercise_id FK
+    int total_workouts
+    int total_sets
+    int total_reps
+    decimal lifetime_volume
+    decimal current_pr
+    date last_workout_date
+  }
+
+  WORKOUT_GOAL_LINK {
+    int id PK
+    int user_id FK
+    int goal FK
+    int session FK
+    datetime created_at
   }

@@ -42,6 +42,8 @@
 --   - workout_plan
 --   - daily_workout_plan
 --   - user_stats_log
+--   - exercise_history_summary
+--   - workout_goal_link
 --
 -- NEXT STEPS:
 --   After running this script:
