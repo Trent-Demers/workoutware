@@ -130,11 +130,11 @@ Workoutware is a Django-based exercise tracking application backed by a relation
   'flowchart': { 'curve': 'linear' }
 }}%%
 erDiagram
-  USER ||--o{ USER_STATS_LOG : logs
-  USER ||--o{ USER_PB : "has personal bests"
-  USER ||--o{ WORKOUT_SESSIONS : performs
-  USER ||--o{ EXERCISE_HISTORY_SUMMARY : "has exercise history"
-  USER ||--o{ WORKOUT_GOAL_LINK : "links goals to workouts"
+  USER_INFO ||--o{ USER_STATS_LOG : logs
+  USER_INFO ||--o{ USER_PB : "has personal bests"
+  USER_INFO ||--o{ WORKOUT_SESSIONS : performs
+  USER_INFO ||--o{ EXERCISE_HISTORY_SUMMARY : "has exercise history"
+  USER_INFO ||--o{ WORKOUT_GOAL_LINK : "links goals to workouts"
   WORKOUT_SESSIONS ||--o{ SESSION_EXERCISES : contains
   WORKOUT_SESSIONS ||--o{ DAILY_WORKOUT_PLAN : "referenced in plan"
   WORKOUT_SESSIONS ||--o{ WORKOUT_GOAL_LINK : "linked to goals"
@@ -145,13 +145,13 @@ erDiagram
   EXERCISE ||--o{ USER_PB : "has personal records"
   EXERCISE ||--o| GOALS : "optional exercise goal"
   TARGET ||--o{ EXERCISE_TARGET_ASSOCIATION : "has targets"
-  USER ||--o{ PROGRESS : "tracks performance"
+  USER_INFO ||--o{ PROGRESS : "tracks performance"
   EXERCISE ||--o{ PROGRESS : "progress per exercise"
-  USER ||--o{ GOALS : "sets goals"
+  USER_INFO ||--o{ GOALS : "sets goals"
   GOALS ||--o{ WORKOUT_GOAL_LINK : "linked to workouts"
-  USER ||--o{ WORKOUT_PLAN : "has plan"
+  USER_INFO ||--o{ WORKOUT_PLAN : "has plan"
   WORKOUT_PLAN ||--o{ DAILY_WORKOUT_PLAN : includes
-  USER ||--o{ DATA_VALIDATION : validates
+  USER_INFO ||--o{ DATA_VALIDATION : validates
   EXERCISE ||--o{ DATA_VALIDATION : validated_on
   SETS ||--o{ DATA_VALIDATION : "validation per set"
 
