@@ -155,7 +155,7 @@ erDiagram
   EXERCISE ||--o{ DATA_VALIDATION : validated_on
   SETS ||--o{ DATA_VALIDATION : "validation per set"
 
-  USER { 
+  USER_INFO { 
     int user_id PK
     string username
     string first_name
