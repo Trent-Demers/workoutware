@@ -65,13 +65,12 @@ fi
 # Step 3: Setup database schema
 echo ""
 echo "Step 3: Database schema setup..."
-echo "IMPORTANT: You must manually run SQL scripts from the 'sql' folder:"
+echo "IMPORTANT: You must manually run the following SQL script from the 'sql' folder:"
 echo "  - sql/workoutware_db_setup.sql (creates database and tables)"
-echo "  - sql/sample_data.sql (optional, adds sample data)"
 echo ""
-echo "You can use MySQL Workbench, DBeaver, or VSCode to execute these scripts."
+echo "You can use MySQL Workbench, DBeaver, or VSCode to execute this script."
 echo "Or run: mysql -u root -pRutgers123 < sql/workoutware_db_setup.sql"
-read -p "Press Enter after you've run the database setup scripts..."
+read -p "Press Enter after you've run the database setup script..."
 
 # Step 4: Setup Python virtual environment
 echo ""
@@ -111,6 +110,15 @@ read -p "Do you want to create a superuser/admin account? (y/n): " create_admin
 if [ "$create_admin" = "y" ] || [ "$create_admin" = "Y" ]; then
     python manage.py createsuperuser
 fi
+
+# Step 9: Optional: Add sample data
+echo "Step 9: Sample data setup..."
+echo "IMPORTANT: To run the application with sample data, you must first create a normal user through the login page of the application."
+echo "Then, the following SQL script can be ran:"
+echo "  - sql/sample_data.sql"
+echo "Use MySQL Workbench, DBeaver, or:"
+echo "  mysql -u root -pRutgers123 < sql/sample_data.sql"
+read -p "Press Enter to acknowledge..."
 
 # Step 9: Start the server
 echo ""

@@ -56,12 +56,11 @@ if ($containerExists) {
 
 # Step 3: Database schema instructions
 Write-Host "`nStep 3: Database schema setup..."
-Write-Host "IMPORTANT: You must manually run the SQL scripts from the 'sql' folder:"
+Write-Host "IMPORTANT: You must manually run the following SQL script from the 'sql' folder:"
 Write-Host "  - sql/workoutware_db_setup.sql"
-Write-Host "  - sql/sample_data.sql (optional)"
 Write-Host "`nUse MySQL Workbench, DBeaver, or:"
 Write-Host "  mysql -u root -pRutgers123 < sql/workoutware_db_setup.sql"
-Read-Host "Press Enter after running the database setup scripts..."
+Read-Host "Press Enter after running the database setup script..."
 
 # Step 4: Setup Python virtual environment
 Write-Host "`nStep 4: Creating Python virtual environment..."
@@ -98,14 +97,21 @@ if ($admin -eq "y" -or $admin -eq "Y") {
     python manage.py createsuperuser
 }
 
-# Step 9: Optional: Start Django server
+# Step 9: Optional: Add sample data
+Write-Host "`nStep 9: Sample data setup..."
+Write-Host "IMPORTANT: To run the application with sample data, you must first create a normal user through the login page of the application."
+Write-Host "Then, the following SQL script can be ran:"
+Write-Host "  - sql/sample_data.sql"
+Write-Host "`nUse MySQL Workbench, DBeaver, or:"
+Write-Host "  mysql -u root -pRutgers123 < sql/sample_data.sql"
+Read-Host "Press Enter to acknowledge..."
+
+# Step 10: Optional: Start Django server
 Write-Host "`n=========================================="
 Write-Host "Installation Complete!"
 Write-Host "==========================================`n"
 Write-Host "Start Django server:"
 Write-Host "  python manage.py runserver`n"
-Write-Host "Start Streamlit:"
-Write-Host "  streamlit run streamlit_client/app.py`n"
 
 $startServer = Read-Host "Start Django server now? (y/n)"
 if ($startServer -eq "y" -or $startServer -eq "Y") {

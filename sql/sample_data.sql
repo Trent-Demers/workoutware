@@ -123,33 +123,6 @@ INSERT INTO user_info (
 	 170.80, '2023-02-18', NULL, 1, 'Lose Weight', 'admin');
 
 
-INSERT INTO auth_user (password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES
-('pbkdf2_sha256$260000$a1$ffe8123aa90e3e991b8c4bc3dfb91872','2025-01-05 10:15:21',0,'kroberts','Kevin','Roberts','kevin.roberts@example.com',0,1,'2024-11-22 09:13:00'),
-('pbkdf2_sha256$260000$a2$d902ac3b19ff12aa8fc129bd342b17f1','2025-01-07 08:44:09',0,'mthompson','Maria','Thompson','maria.t@example.com',0,1,'2023-07-14 13:22:00'),
-('pbkdf2_sha256$260000$a3$7bc1d29eeaa112451ff00b31b0c3fa55','2025-01-09 16:11:47',1,'jnguyen','James','Nguyen','j.nguyen@example.com',1,1,'2024-01-08 15:18:00'),
-('pbkdf2_sha256$260000$a4$fa1d334c1bca2219ac09bb2aa71b62fc','2025-01-04 11:55:33',0,'smitchell','Sarah','Mitchell','sarah.mitchell@example.com',0,1,'2024-05-29 10:00:00'),
-('pbkdf2_sha256$260000$a5$2e71f1bd9cc88934512aa7e4ce12c681','2025-01-02 09:12:05',0,'wturner','William','Turner','wturner@example.com',0,1,'2022-08-11 14:32:00'),
-('pbkdf2_sha256$260000$a6$c44fa22198bd87f19ba0ee77a912dcee','2025-01-08 19:02:44',0,'jlee','Jessica','Lee','jessica.lee@example.com',0,1,'2024-09-10 09:00:00'),
-('pbkdf2_sha256$260000$a7$5591c31dcefc11ccd219a1bbcf92ae10','2025-01-06 07:10:21',0,'rchavez','Rafael','Chavez','rafael.chavez@example.net',0,1,'2023-04-21 12:55:00'),
-('pbkdf2_sha256$260000$a8$afb19df003aa9287cbb24d21f33fb233','2025-01-03 14:00:57',0,'aowens','Amy','Owens','amy.owens@example.com',0,1,'2024-02-13 17:21:00'),
-('pbkdf2_sha256$260000$a9$df93cdafba77b122991cce09f2ba11ce','2025-01-10 12:43:16',0,'cward','Christopher','Ward','chris.ward@example.com',0,1,'2022-12-19 09:41:00'),
-('pbkdf2_sha256$260000$a10$aad118c3900e1ca33a2f07831ca0ae11','2025-01-05 16:55:19',0,'lgray','Lauren','Gray','lauren.gray@example.org',0,1,'2024-10-01 08:00:00'),
-('pbkdf2_sha256$260000$a11$77ecbb0f8112399d1aab478009d122ee','2025-01-07 11:47:33',0,'pdiaz','Paul','Diaz','paul.diaz@example.com',0,1,'2023-03-11 10:15:00'),
-('pbkdf2_sha256$260000$a12$f23bcd1190ccaad771ea129cb33e7121','2025-01-09 09:22:51',0,'mramirez','Monica','Ramirez','monica.ramirez@example.com',0,1,'2024-03-24 15:33:00'),
-('pbkdf2_sha256$260000$a13$19fc0ee3aa998db113acd221a0bd4341','2025-01-08 13:40:17',0,'sdonaldson','Samuel','Donaldson','sam.donaldson@example.com',0,1,'2023-09-15 09:47:00'),
-('pbkdf2_sha256$260000$a14$bb1d33f9acf1290ce48adde2211fa433','2025-01-04 17:30:09',1,'kpatel','Kiran','Patel','kpatel@example.net',1,1,'2022-11-20 11:55:00'),
-('pbkdf2_sha256$260000$a15$dee1129cc0eaa4310bbd99821cd8d12e','2025-01-06 10:29:44',0,'obrewer','Olivia','Brewer','olivia.brewer@example.com',0,1,'2024-04-01 10:20:00'),
-('pbkdf2_sha256$260000$a16$aa8e19ffc33d92cbb1aa0ff61930b991','2025-01-03 08:22:11',0,'hyoung','Henry','Young','henry.young@example.com',0,1,'2024-10-31 18:41:00'),
-('pbkdf2_sha256$260000$a17$0d1bcbcdcaa82113a0dc771baa33219f','2025-01-05 14:18:01',0,'jcarter','Julia','Carter','julia.carter@example.com',0,1,'2023-05-07 13:29:00'),
-('pbkdf2_sha256$260000$a18$1caa938bc11d52ff1909bb2e30cd12ff','2025-01-10 09:41:54',0,'bdaniels','Brandon','Daniels','brandon.d@example.com',0,1,'2024-06-17 07:40:00'),
-('pbkdf2_sha256$260000$a19$fe123d991099bbaa1ccbb99233f0accc','2025-01-02 15:09:22',0,'jrogers','Jane','Rogers','jane.rogers@example.com',0,1,'2023-10-03 09:55:00'),
-('pbkdf2_sha256$260000$a20$9b1eca1cc0da93ee1200aaf3921177fb','2025-01-07 19:22:15',0,'agarcia','Alex','Garcia','alex.garcia@example.net',0,1,'2024-08-22 12:00:00'),
-('pbkdf2_sha256$260000$a21$bbf31ccae310099d11bcaa23d12ef33c','2025-01-03 11:44:39',0,'bcoleman','Brian','Coleman','brian.coleman@example.com',0,1,'2022-05-30 16:20:00'),
-('pbkdf2_sha256$260000$a22$cdbb8130199acccc22dd9931aaef09bc','2025-01-08 15:50:14',0,'ldavis','Lily','Davis','lily.davis@example.com',0,1,'2024-12-05 09:12:00'),
-('pbkdf2_sha256$260000$a23$dcfee7190cbb11ed33aa998201cd3700','2025-01-09 18:02:57',0,'hkim','Hannah','Kim','hannah.kim@example.com',0,1,'2023-09-02 08:33:00'),
-('pbkdf2_sha256$260000$a24$f2130bce12ee09cc41bb129cb3de2210','2025-01-04 12:29:01',0,'atorres','Antonio','Torres','antonio.torres@example.com',0,1,'2024-11-15 19:55:00'),
-('pbkdf2_sha256$260000$a25$a1bf33aa9981ddcc00ff1932a0eec19d','2025-01-10 14:37:48',1,'vmorgan','Vanessa','Morgan','vanessa.morgan@example.com',1,1,'2023-02-18 15:16:00');
-
  --
  -- EXERCISE TEST DATA
  --
