@@ -225,7 +225,12 @@ INSERT INTO workout_sessions (session_id, user_id, session_name, session_date, s
 (12,5,'Strength Template A','2025-11-01',NULL,NULL,NULL,NULL,0,1),
 (13,5,'Strength Template B','2025-11-01',NULL,NULL,NULL,NULL,0,1),
 (14,5,'Conditioning Template','2025-11-01',NULL,NULL,NULL,NULL,0,1),
-(15,5,'Mobility Template','2025-11-01',NULL,NULL,NULL,NULL,0,1);
+(15,5,'Mobility Template','2025-11-01',NULL,NULL,NULL,NULL,0,1),
+(16,44,'Upper Body Strength','2025-11-26','17:15:00','18:10:00',55,80.10,1,0),
+(17,44,'Upper Body Strength','2025-11-27','17:15:00','18:10:00',55,80.10,1,0),
+(18,44,'Upper Body Strength','2025-11-28','17:15:00','18:10:00',55,80.10,1,0),
+(19,40,'Upper Body Strength','2025-11-27','17:15:00','18:10:00',55,80.10,1,0),
+(20,40,'Upper Body Strength','2025-11-28','17:15:00','18:10:00',55,80.10,1,0);
 
 INSERT INTO session_exercises (session_exercise_id, session_id, exercise_id, exercise_order, target_sets, target_reps, completed) VALUES
 (1,1,1,1,4,12,1),
@@ -244,7 +249,12 @@ INSERT INTO session_exercises (session_exercise_id, session_id, exercise_id, exe
 (14,11,1,1,4,10,1),
 (15,11,4,2,4,8,1),
 (16,11,5,3,3,10,1),
-(17,11,10,4,3,12,1);
+(17,11,10,4,3,12,1),
+(18,16,4,1,4,12,1),
+(19,17,19,1,4,12,1),
+(20,18,5,1,4,12,1),
+(21,19,4,1,4,12,1),
+(22,20,19,1,4,12,1);
 
 INSERT INTO sets (set_id, session_exercise_id, set_number, weight, reps, rpe, completed, is_warmup, completion_time) VALUES
 (1,1,1,40.00,12,7,1,0,'2025-11-26 17:15:00'),
@@ -302,7 +312,12 @@ INSERT INTO sets (set_id, session_exercise_id, set_number, weight, reps, rpe, co
 (53,17,1,40.00,12,7,1,0,'2025-12-09 19:50:00'),
 (54,17,2,45.00,12,8,1,0,'2025-12-09 20:00:00'),
 (55,17,3,50.00,12,8,1,0,'2025-12-09 20:10:00'),
-(56,17,4,55.00,12,9,1,0,'2025-12-09 20:20:00');
+(56,17,4,55.00,12,9,1,0,'2025-12-09 20:20:00'),
+(57,18,1,100.00,12,7,1,0,'2025-11-26 17:15:00'),
+(58,19,1,30.00,12,8,1,0,'2025-11-26 17:25:00'),
+(59,20,1,50.00,12,8,1,0,'2025-11-26 17:35:00'),
+(60,21,1,80.00,12,9,1,0,'2025-11-26 17:45:00'),
+(61,22,1,20.00,10,7,1,0,'2025-11-26 17:55:00');
 
 INSERT INTO user_pb (pr_id, user_id, exercise_id, pr_type, pb_weight, pb_reps, pb_time, pb_date, previous_pr, notes) VALUES
 (1,5,1,'weight',50.00,12,NULL,'2025-11-30',45.00,'Push-Up PR from Upper Body sessions'),
@@ -310,7 +325,12 @@ INSERT INTO user_pb (pr_id, user_id, exercise_id, pr_type, pb_weight, pb_reps, p
 (3,5,5,'weight',60.00,12,NULL,'2025-12-02',55.00,'Overhead Press PR set in session 4'),
 (4,5,6,'weight',57.00,10,NULL,'2025-12-09',52.00,'Pull-Up weighted PR reached in session 16'),
 (5,5,10,'weight',55.00,12,NULL,'2025-12-09',50.00,'Bicep Curl PR in session 17'),
-(6,5,19,'weight',52.00,12,NULL,'2025-12-09',47.00,'Tricep Kickback PR in session 13');
+(6,5,19,'weight',52.00,12,NULL,'2025-12-09',47.00,'Tricep Kickback PR in session 13'),
+(7,44,4,'weight',100.00,12,NULL,'2025-11-30',45.00,'Push-Up PR from Upper Body sessions'),
+(8,44,19,'weight',30.00,12,NULL,'2025-11-30',45.00,'Push-Up PR from Upper Body sessions'),
+(9,44,5,'weight',50.00,12,NULL,'2025-11-30',45.00,'Push-Up PR from Upper Body sessions'),
+(10,40,4,'weight',80.00,12,NULL,'2025-11-30',45.00,'Push-Up PR from Upper Body sessions'),
+(11,40,19,'weight',20.00,10,NULL,'2025-11-30',45.00,'Push-Up PR from Upper Body sessions');
 
 INSERT INTO user_stats_log (log_id, user_id, date, weight, neck, waist, hips, body_fat_percentage, notes) VALUES
 (1,5,'2025-08-01',180.0,15.0,34.0,38.0,21.0,'Starting weekly measurements'),
