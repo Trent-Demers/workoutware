@@ -84,29 +84,49 @@ Workoutware is a Django-based exercise tracking application backed by a relation
 ### User Dashboard Page
 ![User Dashboard Page](screenshots/user_dashboard.png)
 
-### Progress Page
-![Progress Page](Snapshots/Progress%20Page.jpeg)
-
-### Fitness Goals Page
-![Fitness Goals Page](Snapshots/Fitness%20Goals%20Page.jpeg)
-
-### Log Body Stats Page
-![Log Body Stats Page](Snapshots/Log%20Body%20Stats%20Page.jpeg)
-
-### Add Exercise Page
-![Add Exercise Page](Snapshots/Add%20Exercise%20Page.jpeg)
+![](screenshots/recent_pbs_and_goals.png)
 
 ### Log Workout Page
-![Log Workout Page](Snapshots/Log%20Workout%20Page.jpeg)
+![Log Workout Page](screenshots/new_workout_session.png)
 
-### Log Set Page
-![Log Set Page](Snapshots/Log%20Set%20Page.jpeg)
+### Add Exercises and Sets Page
+![Add Exercises and Sets Page](screenshots/new_exercise_in_session.png)
 
-### Completed Workouts Page
-![Completed Workouts Page](Snapshots/Completed%20Workouts%20Page.jpeg)
+![](screenshots/exercise_set_logging.png)
 
-### Completed Workouts This Week Page
-![Completed Workouts This Week Page](Snapshots/Completed%20Workouts%20This%20Week%20Page.jpeg)
+### Completed Workouts This Week
+![Completed Workouts This Week](screenshots/recent_completed_workouts.png)
+
+### Total Completed Workouts
+![Total Completed Workouts](screenshots/completed_workouts.png)
+
+### Progress Page
+![Progress Page](screenshots/top_5_progression.png)
+
+![](screenshots/exercise_progression.png)
+
+![](screenshots/body_weight_progression.png)
+
+![](screenshots/recommendations.png)
+
+![](screenshots/weekly_metrics.png)
+
+### Manage Goals Page
+![Manage Goals Page](screenshots/new_goal.png)
+
+![](screenshots/active_goals.png)
+
+### Log Body Stats Page
+![Log Body Stats Page](screenshots/log_body_measurements.png)
+
+![](screenshots/recent_body_measurements.png)
+
+### Leaderboard & User Lookup
+![Leaderboard & User Lookup](screenshots/global_leaderboard.png)
+
+![](screenshots/exercise_leaderboard.png)
+
+![](screenshots/profile_overview.png)
 
 ---
 
