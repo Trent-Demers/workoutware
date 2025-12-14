@@ -75,6 +75,8 @@ Workoutware is a Django-based exercise tracking application backed by a relation
 ### Admin Dashboard Page
 ![Admin Dashboard Page](screenshots/admin_dashboard.png)
 
+(screenshots/admin_exercise_library.png)
+
 ### User Dashboard Page
 ![User Dashboard Page](screenshots/user_dashboard.png)
 
